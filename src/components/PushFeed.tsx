@@ -18,9 +18,10 @@ import { AnnouncementCard } from './AnnouncementCard';
 interface PushFeedProps {
   onSelectTicker: (ticker: string) => void;
   onOpenAlertSettings: () => void;
+  onClearUrgent?: () => void;
 }
 
-export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps) {
+export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }: PushFeedProps) {
   const [windowHours, setWindowHours] = useState<number>(24);
   const [onlyMaterial, setOnlyMaterial] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<AnnouncementCategory | 'ALL'>('ALL');
@@ -85,13 +86,27 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps)
             <Zap className="w-3.5 h-3.5 fill-emerald-400" />
             Windowed Push Digest
           </span>
-          <button
-            onClick={onOpenAlertSettings}
-            className="text-[11px] font-mono text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
-          >
-            <SlidersHorizontal className="w-3 h-3 text-neutral-400" />
-            <span>Triggers: &gt;2x Vol | ±3%</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {onClearUrgent && (
+              <button
+                onClick={() => {
+                  sound.playSuccess();
+                  onClearUrgent();
+                }}
+                className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20 flex items-center gap-1 transition-colors"
+                title="Mark all urgent alerts as reviewed"
+              >
+                <span>✓ Clear Badge</span>
+              </button>
+            )}
+            <button
+              onClick={onOpenAlertSettings}
+              className="text-[11px] font-mono text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
+            >
+              <SlidersHorizontal className="w-3 h-3 text-neutral-400" />
+              <span>Triggers: &gt;2x Vol | ±3%</span>
+            </button>
+          </div>
         </div>
         <p className="text-xs text-neutral-300 leading-relaxed">
           High-conviction filtration across your 18 portfolio companies. Routine secretarial filings are collapsed by default to preserve attention.

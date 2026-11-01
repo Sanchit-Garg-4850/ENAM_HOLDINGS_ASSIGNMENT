@@ -23,6 +23,37 @@ export default function Home() {
   const [diligence, setDiligence] = useState<DiligenceModule | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+  // Dynamic Urgent Alerts Badge & Status
+  const [urgentCount, setUrgentCount] = useState<number>(0);
+  const [hasAcknowledgedPush, setHasAcknowledgedPush] = useState<boolean>(false);
+
+  // Poll announcements for live urgent count
+  useEffect(() => {
+    async function checkUrgentCount() {
+      try {
+        const res = await fetch('/api/announcements?windowHours=24&onlyMaterial=true');
+        const json = await res.json();
+        if (json.success && typeof json.urgentCount === 'number') {
+          if (!hasAcknowledgedPush) {
+            setUrgentCount(json.urgentCount);
+          }
+        }
+      } catch (err) {
+        console.warn('Failed to load urgent count:', err);
+      }
+    }
+
+    checkUrgentCount();
+  }, [hasAcknowledgedPush]);
+
+  function handleTabChange(tab: NavTab) {
+    setActiveTab(tab);
+    if (tab === 'push') {
+      setUrgentCount(0);
+      setHasAcknowledgedPush(true);
+    }
+  }
+
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isAlertsOpen, setIsAlertsOpen] = useState<boolean>(false);
@@ -46,19 +77,19 @@ export default function Home() {
       if (!e.metaKey && !e.ctrlKey && !e.altKey) {
         if (e.key === '1') {
           sound.playClick();
-          setActiveTab('push');
+          handleTabChange('push');
         } else if (e.key === '2') {
           sound.playClick();
-          setActiveTab('pull');
+          handleTabChange('pull');
         } else if (e.key === '3') {
           sound.playClick();
-          setActiveTab('narrative');
+          handleTabChange('narrative');
         } else if (e.key === '4') {
           sound.playClick();
-          setActiveTab('constellation');
+          handleTabChange('constellation');
         } else if (e.key === '5') {
           sound.playClick();
-          setActiveTab('copilot');
+          handleTabChange('copilot');
         }
       }
     }
@@ -170,6 +201,10 @@ export default function Home() {
                   setActiveTab('pull');
                 }}
                 onOpenAlertSettings={() => setIsAlertsOpen(true)}
+                onClearUrgent={() => {
+                  setUrgentCount(0);
+                  setHasAcknowledgedPush(true);
+                }}
               />
             )}
 
@@ -213,8 +248,8 @@ export default function Home() {
       {/* Mobile-First Bottom Navigation Bar */}
       <BottomNav
         activeTab={activeTab}
-        onChangeTab={setActiveTab}
-        urgentCount={2}
+        onChangeTab={handleTabChange}
+        urgentCount={urgentCount}
       />
 
       {/* Search & Dynamic Generalization Modal */}

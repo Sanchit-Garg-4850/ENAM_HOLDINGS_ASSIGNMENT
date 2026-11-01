@@ -22,6 +22,8 @@ interface Node3D {
   color: string;
   glowColor: string;
   price: number;
+  changePercent?: number;
+  volumeRatio?: number;
 }
 
 export function PortfolioConstellation3D({
@@ -34,6 +36,31 @@ export function PortfolioConstellation3D({
   const [hoveredNode, setHoveredNode] = useState<Node3D | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [rotationSpeed, setRotationSpeed] = useState(0.003);
+  const [liveQuotes, setLiveQuotes] = useState<Record<string, { price: number; changePercent: number; volumeRatio: number }>>({});
+
+  // Fetch live quotes from /api/portfolio
+  useEffect(() => {
+    async function loadLiveQuotes() {
+      try {
+        const res = await fetch('/api/portfolio');
+        const json = await res.json();
+        if (json.success && json.data) {
+          const map: Record<string, { price: number; changePercent: number; volumeRatio: number }> = {};
+          json.data.forEach((q: any) => {
+            map[q.ticker] = {
+              price: q.price,
+              changePercent: q.changePercent,
+              volumeRatio: q.volumeRatio,
+            };
+          });
+          setLiveQuotes(map);
+        }
+      } catch (err) {
+        console.warn('Constellation failed to load live quotes:', err);
+      }
+    }
+    loadLiveQuotes();
+  }, []);
 
   // Sector color palette
   const sectorColors: Record<string, { main: string; glow: string }> = {
@@ -74,6 +101,10 @@ export function PortfolioConstellation3D({
 
       // Size scaled roughly to log(marketCap)
       const radius = company.marketCapCategory === 'Mega Cap' ? 12 : company.marketCapCategory === 'Large Cap' ? 9 : 7;
+      const live = liveQuotes[company.ticker];
+      const livePrice = live?.price ?? company.basePrice;
+      const liveChange = live?.changePercent;
+      const liveVolRatio = live?.volumeRatio;
 
       return {
         ticker: company.ticker,
@@ -86,7 +117,9 @@ export function PortfolioConstellation3D({
         baseRadius: radius,
         color: colorSet.main,
         glowColor: colorSet.glow,
-        price: company.basePrice,
+        price: livePrice,
+        changePercent: liveChange,
+        volumeRatio: liveVolRatio,
       };
     });
 
@@ -279,7 +312,7 @@ export function PortfolioConstellation3D({
       canvas.removeEventListener('touchmove', handleTouchMove);
       canvas.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [activeTicker, hoveredNode, isFullscreen, rotationSpeed]);
+  }, [activeTicker, hoveredNode, isFullscreen, rotationSpeed, liveQuotes]);
 
   return (
     <div
@@ -347,6 +380,19 @@ export function PortfolioConstellation3D({
                 </div>
                 <div className="text-[10px] font-mono text-neutral-500 mt-0.5">
                   {hoveredNode.sector}
+                </div>
+                <div className="flex items-center gap-2 mt-1 text-xs font-mono">
+                  <span className="text-white font-semibold">₹{hoveredNode.price?.toLocaleString()}</span>
+                  {hoveredNode.changePercent !== undefined && (
+                    <span className={hoveredNode.changePercent >= 0 ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
+                      {hoveredNode.changePercent >= 0 ? '+' : ''}{hoveredNode.changePercent}%
+                    </span>
+                  )}
+                  {hoveredNode.volumeRatio !== undefined && hoveredNode.volumeRatio > 1.2 && (
+                    <span className="text-amber-400 text-[10px] bg-amber-500/10 px-1 rounded border border-amber-500/20">
+                      {hoveredNode.volumeRatio}x Vol
+                    </span>
+                  )}
                 </div>
               </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell,
@@ -124,6 +124,40 @@ export function NotificationCenter({
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<AlertNotification[]>(INITIAL_NOTIFICATIONS);
   const [filter, setFilter] = useState<'all' | 'urgent' | 'anomaly'>('all');
+
+  // Load live alerts from /api/announcements
+  useEffect(() => {
+    async function loadLiveAlerts() {
+      try {
+        const res = await fetch('/api/announcements?windowHours=24&onlyMaterial=true');
+        const json = await res.json();
+        if (json.success && json.data && json.data.length > 0) {
+          const liveAlerts: AlertNotification[] = json.data.slice(0, 8).map((a: any) => ({
+            id: a.id,
+            ticker: a.ticker,
+            symbol: a.ticker.replace(/\.(NS|BO)$/, ''),
+            companyName: a.companyName,
+            title: a.headline,
+            detail: a.oneLineTakeaway,
+            timestamp: a.publishedAt,
+            category: a.anomaly ? 'anomaly' : a.category === 'results' ? 'results' : a.category === 'management_change' ? 'mgmt_change' : a.category === 'capex' ? 'capex' : 'regulatory',
+            tier: a.tier === 'tier1_urgent' ? 'urgent' : 'material',
+            isRead: false,
+            metric: a.anomaly ? `${a.anomaly.volumeSpikeRatio}x Vol` : a.results ? `${a.results.revenueYoY >= 0 ? '+' : ''}${a.results.revenueYoY}% YoY` : undefined,
+          }));
+
+          setNotifications((prev) => {
+            const existingIds = new Set(liveAlerts.map((l) => l.id));
+            const remaining = prev.filter((p) => !existingIds.has(p.id));
+            return [...liveAlerts, ...remaining];
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to load live alerts in NotificationCenter:', err);
+      }
+    }
+    loadLiveAlerts();
+  }, []);
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
