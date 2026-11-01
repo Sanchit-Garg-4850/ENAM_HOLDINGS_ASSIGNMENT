@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Header } from '@/components/Header';
 import { BottomNav, NavTab } from '@/components/BottomNav';
 import { PushFeed } from '@/components/PushFeed';
@@ -10,6 +11,7 @@ import { CopilotDrawer } from '@/components/CopilotDrawer';
 import { SearchModal } from '@/components/SearchModal';
 import { AlertSettingsModal } from '@/components/AlertSettingsModal';
 import { PortfolioConstellation3D } from '@/components/PortfolioConstellation3D';
+import { NotificationToast } from '@/components/NotificationToast';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
 import { sound } from '@/lib/sound';
@@ -137,53 +139,75 @@ export default function Home() {
         activeTicker={activeTicker}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAlerts={() => setIsAlertsOpen(true)}
+        onSelectTicker={(ticker) => {
+          handleSelectTicker(ticker);
+          setActiveTab('pull');
+        }}
       />
 
-      {/* Main Content Area */}
+      {/* Floating Animated Push Anomaly Toast */}
+      <NotificationToast
+        onSelectTicker={(ticker) => {
+          handleSelectTicker(ticker);
+          setActiveTab('pull');
+        }}
+      />
+
+      {/* Main Content Area with Fluid Page Transition Animations */}
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 sm:py-6">
-        {activeTab === 'push' && (
-          <PushFeed
-            onSelectTicker={(ticker) => {
-              handleSelectTicker(ticker);
-              setActiveTab('pull');
-            }}
-            onOpenAlertSettings={() => setIsAlertsOpen(true)}
-          />
-        )}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+          >
+            {activeTab === 'push' && (
+              <PushFeed
+                onSelectTicker={(ticker) => {
+                  handleSelectTicker(ticker);
+                  setActiveTab('pull');
+                }}
+                onOpenAlertSettings={() => setIsAlertsOpen(true)}
+              />
+            )}
 
-        {activeTab === 'pull' && (
-          <PullDiligence
-            quote={currentQuote}
-            diligence={currentDiligence}
-            onSelectTicker={handleSelectTicker}
-            onOpenSearch={() => setIsSearchOpen(true)}
-          />
-        )}
+            {activeTab === 'pull' && (
+              <PullDiligence
+                quote={currentQuote}
+                diligence={currentDiligence}
+                onSelectTicker={handleSelectTicker}
+                onOpenSearch={() => setIsSearchOpen(true)}
+              />
+            )}
 
-        {activeTab === 'narrative' && (
-          <NarrativeVsNumbers
-            quote={currentQuote}
-            diligence={currentDiligence}
-            onSelectTicker={handleSelectTicker}
-          />
-        )}
+            {activeTab === 'narrative' && (
+              <NarrativeVsNumbers
+                quote={currentQuote}
+                diligence={currentDiligence}
+                onSelectTicker={handleSelectTicker}
+              />
+            )}
 
-        {activeTab === 'constellation' && (
-          <PortfolioConstellation3D
-            activeTicker={activeTicker}
-            onSelectTicker={(ticker) => {
-              handleSelectTicker(ticker);
-              setActiveTab('pull');
-            }}
-          />
-        )}
+            {activeTab === 'constellation' && (
+              <PortfolioConstellation3D
+                activeTicker={activeTicker}
+                onSelectTicker={(ticker) => {
+                  handleSelectTicker(ticker);
+                  setActiveTab('pull');
+                }}
+              />
+            )}
 
-        {activeTab === 'copilot' && (
-          <CopilotDrawer
-            quote={currentQuote}
-            onSelectTicker={handleSelectTicker}
-          />
-        )}
+            {activeTab === 'copilot' && (
+              <CopilotDrawer
+                quote={currentQuote}
+                onSelectTicker={handleSelectTicker}
+              />
+            )}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Mobile-First Bottom Navigation Bar */}

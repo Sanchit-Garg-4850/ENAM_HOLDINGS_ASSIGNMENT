@@ -1,7 +1,10 @@
 // Primary Diligence & 8-Module Fundamental Analysis
 import { DiligenceModule } from '../lib/types';
+import { MORE_DILIGENCE_STORE } from './diligenceMore';
+import { MORE_DILIGENCE_STORE_2 } from './diligenceMore2';
+import { MORE_DILIGENCE_STORE_3 } from './diligenceMore3';
 
-export const PRIMARY_DILIGENCE_STORE: Record<string, DiligenceModule> = {
+const BASE_DILIGENCE_STORE: Record<string, DiligenceModule> = {
   // 1. TRENT LTD
   'TRENT.NS': {
     businessSnapshot: {
@@ -569,3 +572,11 @@ export const PRIMARY_DILIGENCE_STORE: Record<string, DiligenceModule> = {
     ],
   },
 };
+
+export const PRIMARY_DILIGENCE_STORE: Record<string, DiligenceModule> = {
+  ...BASE_DILIGENCE_STORE,
+  ...MORE_DILIGENCE_STORE,
+  ...MORE_DILIGENCE_STORE_2,
+  ...MORE_DILIGENCE_STORE_3,
+};
+

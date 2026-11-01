@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   ExternalLink,
   TrendingUp,
@@ -13,6 +14,8 @@ import {
 } from 'lucide-react';
 import { Announcement } from '@/lib/types';
 import { CATEGORY_REGISTRY } from '@/lib/classification';
+import { AnimatedCounter } from './AnimatedCounter';
+import { sound } from '@/lib/sound';
 
 interface AnnouncementCardProps {
   announcement: Announcement;
@@ -24,7 +27,9 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
   const isUrgent = announcement.tier === 'tier1_urgent';
 
   return (
-    <article
+    <motion.article
+      whileHover={{ y: -2, scale: 1.004 }}
+      transition={{ duration: 0.16 }}
       className={`rounded-xl border transition-all p-4 ${
         isUrgent
           ? 'bg-neutral-900/90 border-neutral-750 shadow-md shadow-neutral-950/50'
@@ -36,7 +41,10 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
         <div className="flex items-center gap-1.5 flex-wrap">
           {/* Ticker Chip */}
           <button
-            onClick={() => onSelectTicker?.(announcement.ticker)}
+            onClick={() => {
+              sound.playClick();
+              onSelectTicker?.(announcement.ticker);
+            }}
             className="px-2 py-0.5 rounded bg-neutral-800 hover:bg-neutral-700 text-white font-mono font-bold text-xs tracking-wide transition-colors"
           >
             {announcement.ticker.replace('.NS', '')}
@@ -49,10 +57,14 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
             {catInfo.label}
           </span>
 
-          {/* Tier 1 Urgent Indicator */}
+          {/* Tier 1 Urgent Indicator with Radar Ping */}
           {isUrgent && (
-            <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/30">
-              High Impact
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/30">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500"></span>
+              </span>
+              <span>High Impact</span>
             </span>
           )}
         </div>
@@ -91,7 +103,8 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
             <div className="p-2.5 rounded-lg bg-neutral-950 border border-neutral-800">
               <span className="text-[10px] text-neutral-400 font-mono">Revenue</span>
               <div className="text-sm sm:text-base font-bold font-mono text-white mt-0.5">
-                ₹{announcement.results.revenue.toLocaleString()} <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
+                ₹<AnimatedCounter value={announcement.results.revenue} decimals={1} />{' '}
+                <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
               </div>
               <div className="flex items-center gap-1.5 mt-1 text-[10px] font-mono">
                 <span className={announcement.results.revenueYoY >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
@@ -108,7 +121,8 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
             <div className="p-2.5 rounded-lg bg-neutral-950 border border-neutral-800">
               <span className="text-[10px] text-neutral-400 font-mono">EBITDA ({announcement.results.ebitdaMargin}%)</span>
               <div className="text-sm sm:text-base font-bold font-mono text-white mt-0.5">
-                ₹{announcement.results.ebitda.toLocaleString()} <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
+                ₹<AnimatedCounter value={announcement.results.ebitda} decimals={1} />{' '}
+                <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
               </div>
               <div className="flex items-center gap-1.5 mt-1 text-[10px] font-mono">
                 <span className={announcement.results.ebitdaYoY >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
@@ -125,7 +139,8 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
             <div className="p-2.5 rounded-lg bg-neutral-950 border border-neutral-800">
               <span className="text-[10px] text-neutral-400 font-mono">PBT</span>
               <div className="text-sm sm:text-base font-bold font-mono text-white mt-0.5">
-                ₹{announcement.results.pbt.toLocaleString()} <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
+                ₹<AnimatedCounter value={announcement.results.pbt} decimals={1} />{' '}
+                <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
               </div>
               <div className="flex items-center gap-1.5 mt-1 text-[10px] font-mono">
                 <span className={announcement.results.pbtYoY >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
@@ -142,7 +157,8 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
             <div className="p-2.5 rounded-lg bg-neutral-950 border border-neutral-800">
               <span className="text-[10px] text-neutral-400 font-mono">PAT (Margin: {announcement.results.patMargin}%)</span>
               <div className="text-sm sm:text-base font-bold font-mono text-white mt-0.5">
-                ₹{announcement.results.pat.toLocaleString()} <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
+                ₹<AnimatedCounter value={announcement.results.pat} decimals={1} />{' '}
+                <span className="text-[10px] text-neutral-400 font-normal">Cr</span>
               </div>
               <div className="flex items-center gap-1.5 mt-1 text-[10px] font-mono">
                 <span className={announcement.results.patYoY >= 0 ? 'text-emerald-400' : 'text-rose-400'}>
@@ -236,6 +252,6 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
           </a>
         )}
       </div>
-    </article>
+    </motion.article>
   );
 }

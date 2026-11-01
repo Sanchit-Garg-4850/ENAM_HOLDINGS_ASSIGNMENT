@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { sound } from '@/lib/sound';
 import {
   SlidersHorizontal,
   ChevronDown,
@@ -103,7 +105,10 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps)
           {windowOptions.map((opt) => (
             <button
               key={opt.hours}
-              onClick={() => setWindowHours(opt.hours)}
+              onClick={() => {
+                sound.playClick();
+                setWindowHours(opt.hours);
+              }}
               className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all ${
                 windowHours === opt.hours
                   ? 'bg-neutral-800 text-white font-semibold shadow-sm'
@@ -117,11 +122,14 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps)
 
         {/* Materiality Toggle */}
         <button
-          onClick={() => setOnlyMaterial(!onlyMaterial)}
+          onClick={() => {
+            sound.playClick();
+            setOnlyMaterial(!onlyMaterial);
+          }}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-mono transition-all ${
             onlyMaterial
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 font-medium'
-              : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+              : 'bg-neutral-900 border-neutral-850 text-neutral-400 hover:text-white'
           }`}
         >
           <Filter className="w-3 h-3" />
@@ -134,10 +142,13 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps)
         {categoryFilters.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => setSelectedCategory(cat.id)}
+            onClick={() => {
+              sound.playClick();
+              setSelectedCategory(cat.id);
+            }}
             className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all border ${
               selectedCategory === cat.id
-                ? 'bg-neutral-800 border-neutral-700 text-white'
+                ? 'bg-neutral-800 border-neutral-700 text-white font-semibold'
                 : 'bg-neutral-900/60 border-neutral-850 text-neutral-400 hover:text-neutral-200'
             }`}
           >
@@ -146,7 +157,7 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps)
         ))}
       </div>
 
-      {/* Announcements List */}
+      {/* Announcements List with Staggered Entrance Animations */}
       {isLoading ? (
         <div className="space-y-3 py-8 text-center text-neutral-500 text-xs font-mono">
           <div className="inline-block w-6 h-6 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin mb-2"></div>
@@ -162,34 +173,50 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings }: PushFeedProps)
         </div>
       ) : (
         <div className="space-y-3">
-          {announcements.map((item) => (
-            <AnnouncementCard
+          {announcements.map((item, idx) => (
+            <motion.div
               key={item.id}
-              announcement={item}
-              onSelectTicker={onSelectTicker}
-            />
+              initial={{ opacity: 0, y: 14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.22, delay: Math.min(idx * 0.04, 0.4) }}
+            >
+              <AnnouncementCard
+                announcement={item}
+                onSelectTicker={onSelectTicker}
+              />
+            </motion.div>
           ))}
         </div>
       )}
 
       {/* Collapsed Routine Filings Counter Tray */}
-      {onlyMaterial && collapsedRoutineCount > 0 && (
-        <div className="rounded-xl border border-neutral-850 bg-neutral-900/50 p-3 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-neutral-400 font-mono flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-neutral-600"></span>
-              <strong>{collapsedRoutineCount}</strong> routine filings collapsed (ESOPs, Reg 74(5), duplicate certificates)
-            </span>
-            <button
-              onClick={() => setOnlyMaterial(false)}
-              className="text-emerald-400 hover:text-emerald-300 font-mono font-medium flex items-center gap-1 transition-colors"
-            >
-              <span>View All</span>
-              <ChevronDown className="w-3 h-3" />
-            </button>
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {onlyMaterial && collapsedRoutineCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="rounded-xl border border-neutral-850 bg-neutral-900/50 p-3 text-xs"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-neutral-400 font-mono flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-neutral-600"></span>
+                <strong>{collapsedRoutineCount}</strong> routine filings collapsed (ESOPs, Reg 74(5), duplicate certificates)
+              </span>
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  setOnlyMaterial(false);
+                }}
+                className="text-emerald-400 hover:text-emerald-300 font-mono font-medium flex items-center gap-1 transition-colors"
+              >
+                <span>View All</span>
+                <ChevronDown className="w-3 h-3" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

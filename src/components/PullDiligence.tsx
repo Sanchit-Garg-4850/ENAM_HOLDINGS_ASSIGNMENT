@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2,
   TrendingUp,
@@ -21,6 +22,7 @@ import { PORTFOLIO_COMPANIES } from '@/data/portfolio';
 import { InteractiveFinancialChart } from './InteractiveFinancialChart';
 import { CashWaterfallVisualizer } from './CashWaterfallVisualizer';
 import { PeerComparisonMatrix } from './PeerComparisonMatrix';
+import { AnimatedCounter } from './AnimatedCounter';
 import { sound } from '@/lib/sound';
 
 interface PullDiligenceProps {
@@ -93,7 +95,7 @@ export function PullDiligence({
           {/* Price & Day Change */}
           <div className="text-right">
             <div className="text-xl sm:text-2xl font-bold font-mono text-white">
-              ₹{quote.price.toLocaleString()}
+              <AnimatedCounter value={quote.price} decimals={2} prefix="₹" />
             </div>
             <div
               className={`text-xs font-mono font-medium flex items-center justify-end gap-1 ${
@@ -177,8 +179,16 @@ export function PullDiligence({
         ))}
       </div>
 
-      {/* MODULE TAB 1: Business & Financial Snapshot */}
-      {activeModuleTab === 'snapshot' && (
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeModuleTab}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.18, ease: 'easeOut' }}
+        >
+          {/* MODULE TAB 1: Business & Financial Snapshot */}
+          {activeModuleTab === 'snapshot' && (
         <div className="space-y-3">
           {/* Business Overview & Moat */}
           <div className="p-4 rounded-xl bg-neutral-900/70 border border-neutral-800 space-y-3">
@@ -532,6 +542,8 @@ export function PullDiligence({
           </div>
         </div>
       )}
+        </motion.div>
+      </AnimatePresence>
 
       {/* Primary Sources & Citations Footer */}
       <div className="p-3 rounded-xl bg-neutral-950 border border-neutral-850 text-xs">

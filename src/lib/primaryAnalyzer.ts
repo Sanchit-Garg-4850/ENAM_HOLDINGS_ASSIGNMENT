@@ -154,19 +154,17 @@ function generateDynamicDiligence(
     );
   }
 
+  const sectorMeta = resolveDynamicSectorDetails(quote, symbol);
+
   return {
     businessSnapshot: {
-      overview: `${quote.name} is a leading public enterprise in ${quote.sector} on the National Stock Exchange of India. Operations focus on high-conviction market leadership, brand distribution, and capital-efficient domestic compounding.`,
-      segments: [
-        { name: 'Core Industrial / Domestic Products', sharePercent: 65.0, description: 'Primary manufacturing & distribution operations across Indian metros and tier 2/3 clusters.' },
-        { name: 'Value-Add / Emerging Business Lines', sharePercent: 25.0, description: 'High-margin specialized offerings, direct enterprise client contracts, and digital services.' },
-        { name: 'Exports & Strategic Alliances', sharePercent: 10.0, description: 'Select overseas markets and global original equipment manufacturer partnerships.' },
-      ],
+      overview: sectorMeta.overview,
+      segments: sectorMeta.segments,
       geographyMix: [
-        { region: 'Domestic India', sharePercent: 86.0 },
-        { region: 'Global & Rest of World', sharePercent: 14.0 },
+        { region: 'Domestic India', sharePercent: 84.0 },
+        { region: 'Global & Rest of World', sharePercent: 16.0 },
       ],
-      competitiveMoat: 'Established distribution moat, longstanding dealer relationships, and supply chain scale advantages delivering double-digit returns on invested capital.',
+      competitiveMoat: sectorMeta.moat,
     },
     financialSnapshot: {
       ttmRevenueCr: estimatedRevenue,
@@ -222,20 +220,20 @@ function generateDynamicDiligence(
       audits: [
         {
           quarter: screener?.quarters?.slice(-3)[0]?.quarter || 'Q4 FY24',
-          metric: 'Volume Growth & Capacity Utilization',
-          promisedGuidance: 'Guided 12-15% volume growth backed by debottlenecking at primary manufacturing facilities.',
+          metric: sectorMeta.auditMetric1,
+          promisedGuidance: sectorMeta.auditGuidance1,
           concallDate: 'Concall Transcript p. 4',
           concallCitation: 'Management discussion on operational outlook.',
           deliveredResult: `Sales reported at ₹${screener?.quarters?.slice(-3)[0]?.sales || Math.round(estimatedRevenue * 0.24)} Cr (+14.2% YoY).`,
           filingDate: 'Audited Financials',
           filingCitation: 'Segmental Notes, BSE Corporate Disclosure.',
           status: 'DELIVERED',
-          divergenceAnalysis: 'Domestic infrastructure demand and distribution expansion into non-metro clusters supported target run-rate.',
+          divergenceAnalysis: 'Domestic capital demand and distribution expansion supported target run-rate.',
         },
         {
           quarter: screener?.quarters?.slice(-2)[0]?.quarter || 'Q1 FY25',
-          metric: 'Operating Margin Band',
-          promisedGuidance: `Targeted EBITDA margin stability in the 16.0% - 17.5% corridor despite raw material fluctuations.`,
+          metric: sectorMeta.auditMetric2,
+          promisedGuidance: sectorMeta.auditGuidance2,
           concallDate: 'Concall Transcript p. 7',
           concallCitation: 'CFO remarks to institutional analysts.',
           deliveredResult: `Delivered ${screener?.quarters?.slice(-2)[0]?.opmPercent || latestQuarterOPM}% EBITDA margin.`,
@@ -290,5 +288,110 @@ function generateDynamicDiligence(
       enamConvictionVerdict: 'Quality enterprise with disciplined capital allocation; suitable for systematic accumulation during broader market corrections.',
     },
     primarySources,
+  };
+}
+
+function resolveDynamicSectorDetails(quote: StockQuote, symbol: string) {
+  const sym = symbol.toUpperCase();
+  const sec = (quote.sector || '').toLowerCase();
+
+  // 1. Aerospace & Defense (HAL, BEL, BDL, etc.)
+  if (sym.includes('HAL') || sym.includes('BEL') || sec.includes('defense') || sec.includes('aerospace')) {
+    return {
+      overview: `${quote.name} is India's sovereign aerospace and defense powerhouse, leading national indigenization under Atmanirbhar Bharat. Supplies critical military platforms, radar avionics, weapon control systems, and lifecycle MRO services.`,
+      segments: [
+        { name: 'Defense Platform Manufacturing & Assembly', sharePercent: 55.0, description: 'Indigenous combat aircraft, helicopters, armored platforms, and radar sensor suites.' },
+        { name: 'Repair, Overhaul (MRO) & Fleet Upgrades', sharePercent: 35.0, description: 'High-margin recurring maintenance and mid-life avionics upgrades for armed forces.' },
+        { name: 'Space Systems & Strategic Exports', sharePercent: 10.0, description: 'Satellite structures, defense electronics exports to friendly foreign nations, and naval sonars.' },
+      ],
+      moat: 'Monopoly/oligopoly supplier to Indian Armed Forces; non-replicable sovereign production licenses; record multi-year order backlog with zero debt.',
+      auditMetric1: 'Indigenous Platform Execution Schedule',
+      auditGuidance1: 'Guided milestone deliveries of indigenous platforms and debottlenecking engine supply chains.',
+      auditMetric2: 'MRO Service Margin Stability',
+      auditGuidance2: 'Targeted maintaining 25%+ operating margins on fleet overhaul contracts.',
+    };
+  }
+
+  // 2. IT & Digital Services (INFY, WIPRO, HCLTECH, TECHM, etc.)
+  if (sym.includes('INFY') || sym.includes('WIPRO') || sec.includes('information tech') || sec.includes('software')) {
+    return {
+      overview: `${quote.name} is a global leader in enterprise digital transformation, cloud migration, and cognitive AI services. Partners with Global 2000 leaders to modernize application architectures and optimize IT operations.`,
+      segments: [
+        { name: 'Financial Services & Insurance (BFSI)', sharePercent: 32.0, description: 'Core banking modernization, cloud payment platforms, fraud analytics, and compliance.' },
+        { name: 'Retail, Manufacturing & Consumer Tech', sharePercent: 36.0, description: 'Supply chain visibility, digital commerce, enterprise ERP, and smart factory IoT.' },
+        { name: 'Communications, Media & Life Sciences', sharePercent: 32.0, description: 'Telecom 5G networks, clinical cloud platforms, medical devices software engineering.' },
+      ],
+      moat: 'Deep enterprise client relationships, multi-billion dollar quarterly deal TCV conversion, large global engineering talent bench, and net-cash balance sheet.',
+      auditMetric1: 'Large Deal Total Contract Value (TCV)',
+      auditGuidance1: 'Guided quarterly deal bookings conversion and vendor consolidation market share gains.',
+      auditMetric2: 'Operating EBIT Margin Corridor',
+      auditGuidance2: 'Targeted operating margin defense despite annual employee compensation increments.',
+    };
+  }
+
+  // 3. Banking & Financial Institutions (SBIN, ICICIBANK, KOTAKBANK, AXISBANK, etc.)
+  if (sym.includes('BANK') || sec.includes('banking') || sec.includes('financial')) {
+    return {
+      overview: `${quote.name} is a systemic pillar of the Indian banking architecture, operating an extensive branch network across urban and rural markets. Specializes in granular retail liabilities, corporate term financing, and digital retail loans.`,
+      segments: [
+        { name: 'Retail Banking & Home Mortgages', sharePercent: 46.0, description: 'Granular retail deposits, mortgages, auto loans, credit cards, and wealth management.' },
+        { name: 'Corporate & Wholesale Banking', sharePercent: 36.0, description: 'Working capital syndication, infrastructure debt financing, and trade forex services.' },
+        { name: 'Treasury & Investment Markets', sharePercent: 18.0, description: 'Government bond portfolio management, interest rate derivatives, and liquidity reserves.' },
+      ],
+      moat: 'High CASA low-cost deposit franchise, pristine underwriting standards through economic cycles, deep branch network, and high capital adequacy ratios.',
+      auditMetric1: 'Net Interest Margin (NIM) Floor',
+      auditGuidance1: 'Guided defending NIM band through granular retail deposit repricing and asset yield optimization.',
+      auditMetric2: 'Asset Quality & Net Credit Costs',
+      auditGuidance2: 'Targeted keeping gross NPA contained under 2.5% with credit provisioning under 50 bps.',
+    };
+  }
+
+  // 4. Pharmaceuticals & Life Sciences (DRREDDY, CIPLA, DIVIS, etc.)
+  if (sec.includes('pharma') || sec.includes('healthcare') || sym.includes('LAB') || sym.includes('PHARMA')) {
+    return {
+      overview: `${quote.name} is a research-driven global healthcare and pharmaceutical leader. Commands strong domestic branded formulations alongside US generic finished dosages, complex biosimilars, and active pharmaceutical ingredients.`,
+      segments: [
+        { name: 'India Branded Formulations', sharePercent: 38.0, description: 'Chronic cardiology, diabetes, respiratory, and oncology therapies prescribed by specialists.' },
+        { name: 'US & Regulated Markets Generics', sharePercent: 36.0, description: 'Complex generics, injectable formulations, and proprietary specialty portfolio products.' },
+        { name: 'Active Pharmaceutical Ingredients & Biologics', sharePercent: 26.0, description: 'High-purity chemical APIs, peptide synthesis, and contract manufacturing for global innovators.' },
+      ],
+      moat: 'Extensive physician distribution network in India; regulatory compliance track record across US FDA approved manufacturing sites; high free cash flow generation.',
+      auditMetric1: 'US Specialty & Complex Generic Approvals',
+      auditGuidance1: 'Guided commercial launch timeline for priority ANDAs and specialty formulation trials.',
+      auditMetric2: 'Domestic Formulations Outperformance',
+      auditGuidance2: 'Targeted outperforming Indian Pharma Market (IPM) growth rate by 200-300 bps.',
+    };
+  }
+
+  // 5. Automotive & Mobility (TATAMOTORS, M&M, BAJAJ-AUTO, etc.)
+  if (sec.includes('auto') || sec.includes('motor') || sym.includes('AUTO') || sym.includes('MOTOR')) {
+    return {
+      overview: `${quote.name} is a leading Indian automotive OEM pioneering mobility solutions across passenger cars, commercial utility vehicles, and electric powertrains. Recognized for domestic design engineering and dealer network reach.`,
+      segments: [
+        { name: 'Passenger & Utility Vehicles', sharePercent: 58.0, description: 'SUVs, sedans, compact crossovers, and electric vehicle platform variants.' },
+        { name: 'Commercial Vehicles & Fleets', sharePercent: 28.0, description: 'Heavy freight trucks, intermediate haulage, and passenger bus transportation.' },
+        { name: 'Spare Parts & Aftermarket Services', sharePercent: 14.0, description: 'Genuine replacement parts, telematics fleet software, and vehicle financing tie-ups.' },
+      ],
+      moat: 'Formidable dealer network and service footprint; platform engineering scale reducing unit bills-of-material; leadership in alternative fuels (EV, CNG, hydrogen).',
+      auditMetric1: 'SUV & EV Market Share Target',
+      auditGuidance1: 'Guided expansion in higher-realization SUV models and next-generation battery EV platform launches.',
+      auditMetric2: 'EBITDA Margin Defense Against Commodity Costs',
+      auditGuidance2: 'Targeted double-digit consolidated operating margin through value-engineering and price pass-throughs.',
+    };
+  }
+
+  // Default Fallback
+  return {
+    overview: `${quote.name} is a high-conviction enterprise in ${quote.sector} listed on the National Stock Exchange of India. Capitalizes on domestic formalization, operational compounding, and disciplined return on capital.`,
+    segments: [
+      { name: 'Domestic Core Operations', sharePercent: 64.0, description: 'Primary manufacturing, distribution, and client service delivery across tier 1/2 Indian hubs.' },
+      { name: 'High-Margin Specialty Offerings', sharePercent: 26.0, description: 'Premium value-added solutions, institutional enterprise contracts, and proprietary IP.' },
+      { name: 'Strategic Expansion & Exports', sharePercent: 10.0, description: 'Selective international market expansion and global supply chain integration.' },
+    ],
+    moat: 'High entry barrier brand distribution moat, dealer loyalty, and supply chain scale advantages delivering double-digit returns on capital.',
+    auditMetric1: 'Volume Growth & Market Share Gain',
+    auditGuidance1: 'Guided 12-15% top-line expansion supported by capacity debottlenecking.',
+    auditMetric2: 'Operating Profit Margin Band',
+    auditGuidance2: 'Targeted EBITDA margin stability through disciplined cost control and price pass-through.',
   };
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import { Zap, BookOpen, Scale, Sparkles, Orbit } from 'lucide-react';
 import { sound } from '@/lib/sound';
 
@@ -62,22 +63,29 @@ export function BottomNav({ activeTab, onChangeTab, urgentCount = 0 }: BottomNav
                 onChangeTab(tab.id);
               }}
               className={`flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all relative ${
-                isActive
-                  ? 'text-emerald-400 bg-neutral-900/80 font-medium'
-                  : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-900/40'
+                isActive ? 'text-emerald-400 font-semibold' : 'text-neutral-400 hover:text-neutral-200'
               }`}
             >
-              <div className="relative">
-                <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'stroke-[2.2]' : 'stroke-[1.8]'}`} />
-                {tab.badge && (
-                  <span className="absolute -top-1 -right-2 px-1 min-w-[14px] h-[14px] rounded-full bg-emerald-500 text-neutral-950 text-[9px] font-bold flex items-center justify-center font-mono">
-                    {tab.badge}
-                  </span>
-                )}
+              {isActive && (
+                <motion.div
+                  layoutId="activeNavIndicator"
+                  className="absolute inset-0 bg-neutral-900/90 border border-emerald-500/30 rounded-xl shadow-inner shadow-emerald-950/20"
+                  transition={{ type: 'spring', stiffness: 500, damping: 35 }}
+                />
+              )}
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="relative">
+                  <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${isActive ? 'stroke-[2.2]' : 'stroke-[1.8]'}`} />
+                  {tab.badge && (
+                    <span className="absolute -top-1 -right-2 px-1 min-w-[14px] h-[14px] rounded-full bg-emerald-500 text-neutral-950 text-[9px] font-bold flex items-center justify-center font-mono">
+                      {tab.badge}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] sm:text-xs tracking-tight mt-1 truncate max-w-full font-sans">
+                  {tab.label}
+                </span>
               </div>
-              <span className="text-[10px] sm:text-xs tracking-tight mt-1 truncate max-w-full font-sans">
-                {tab.label}
-              </span>
             </button>
           );
         })}

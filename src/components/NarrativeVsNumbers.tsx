@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { motion } from 'framer-motion';
 import {
   Scale,
   CheckCircle2,
@@ -13,6 +14,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { GuidanceAuditItem, DiligenceModule, StockQuote } from '@/lib/types';
+import { AnimatedCounter } from './AnimatedCounter';
+import { sound } from '@/lib/sound';
 
 interface NarrativeVsNumbersProps {
   quote: StockQuote;
@@ -28,7 +31,7 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
   const partialCount = auditData.audits.filter((a) => a.status === 'PARTIAL').length;
   const missedCount = auditData.audits.filter((a) => a.status === 'MISSED').length;
 
-  const demoPresets = ['TRENT.NS', 'DIXON.NS', 'ZOMATO.NS', 'RELIANCE.NS'];
+  const demoPresets = ['TRENT.NS', 'DIXON.NS', 'ZOMATO.NS', 'RELIANCE.NS', 'HDFCBANK.NS', 'TCS.NS', 'KAYNES.NS'];
 
   return (
     <div className="space-y-4 pb-20">
@@ -56,7 +59,10 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
           {demoPresets.map((t) => (
             <button
               key={t}
-              onClick={() => onSelectTicker?.(t)}
+              onClick={() => {
+                sound.playClick();
+                onSelectTicker?.(t);
+              }}
               className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all border ${
                 quote.ticker === t
                   ? 'bg-indigo-500/20 border-indigo-500/40 text-indigo-300 font-bold'
@@ -74,8 +80,7 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
         {/* Score Ring */}
         <div className="flex items-center gap-3">
           <div className="relative w-14 h-14 rounded-full bg-neutral-950 border-2 border-indigo-500/40 flex items-center justify-center font-mono font-bold text-white text-lg shadow-inner">
-            <span>{reliability}</span>
-            <span className="text-[10px] text-neutral-400 font-normal">%</span>
+            <AnimatedCounter value={reliability} suffix="%" />
           </div>
           <div>
             <div className="text-xs font-semibold text-white">Management Reliability</div>
@@ -120,8 +125,12 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
           const isMissed = audit.status === 'MISSED';
 
           return (
-            <div
+            <motion.div
               key={idx}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              whileHover={{ y: -2, scale: 1.004 }}
+              transition={{ duration: 0.22, delay: idx * 0.05 }}
               className="rounded-xl border border-neutral-800 bg-neutral-925/80 p-4 space-y-3 hover:border-neutral-750 transition-all"
             >
               {/* Quarter & Metric Header */}
@@ -197,7 +206,7 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
                   <span>{audit.divergenceAnalysis}</span>
                 </div>
               </div>
-            </div>
+            </motion.div>
           );
         })}
       </div>

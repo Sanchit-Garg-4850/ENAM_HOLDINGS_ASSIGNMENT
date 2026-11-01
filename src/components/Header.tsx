@@ -4,13 +4,21 @@ import React from 'react';
 import { Activity, Bell, Search, ShieldCheck } from 'lucide-react';
 import { sound } from '@/lib/sound';
 
+import { NotificationCenter } from './NotificationCenter';
+
 interface HeaderProps {
   onOpenSearch: () => void;
   onOpenAlerts: () => void;
+  onSelectTicker: (ticker: string) => void;
   activeTicker: string;
 }
 
-export function Header({ onOpenSearch, onOpenAlerts, activeTicker }: HeaderProps) {
+export function Header({
+  onOpenSearch,
+  onOpenAlerts,
+  onSelectTicker,
+  activeTicker,
+}: HeaderProps) {
   return (
     <header className="sticky top-0 z-30 w-full bg-neutral-950/90 backdrop-blur-md border-b border-neutral-850 px-4 py-3">
       <div className="max-w-4xl mx-auto flex items-center justify-between gap-3">
@@ -52,18 +60,11 @@ export function Header({ onOpenSearch, onOpenAlerts, activeTicker }: HeaderProps
             </kbd>
           </button>
 
-          {/* Triggered Alert Settings */}
-          <button
-            onClick={() => {
-              sound.playClick();
-              onOpenAlerts();
-            }}
-            className="p-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white transition-all hover:bg-neutral-850 relative"
-            title="Configure Anomaly Alerts"
-          >
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-          </button>
+          {/* Interactive Live Alert Radar Notification Center */}
+          <NotificationCenter
+            onSelectTicker={onSelectTicker}
+            onOpenAlertSettings={onOpenAlerts}
+          />
         </div>
       </div>
     </header>
