@@ -22,6 +22,7 @@ We built **FINN**, a mobile-first, high-density financial intelligence layer des
 FINN operates in two cohesive modes:
 1. **Push Stream (Proactive Alerting & Windowed Digest)**:
    - Configurable time horizons (`24 Hours`, `3 Days`, `7 Days`, `30 Days`) monitoring exchange filings, end-of-day volumes, and prices across an 18-company mock portfolio.
+   - Live integration with Screener.in and BSE India exchange repositories, automatically fetching and classifying live filings with direct links to primary regulatory PDFs.
    - An intelligent 17-category classification engine that separates **Tier 1 Urgent / Material filings** from **Tier 3 routine paperwork** (collapsing ESOP allotments, duplicate certificates, and compliance filings into a single expandable count).
    - Enriched presentations:
      - **Quarterly Results**: Direct 4-cell financial grid (**Revenue, EBITDA, PBT, PAT** with QoQ & YoY percentages and margin badges).
