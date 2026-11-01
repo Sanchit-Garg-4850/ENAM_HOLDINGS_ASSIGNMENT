@@ -9,8 +9,10 @@ import { NarrativeVsNumbers } from '@/components/NarrativeVsNumbers';
 import { CopilotDrawer } from '@/components/CopilotDrawer';
 import { SearchModal } from '@/components/SearchModal';
 import { AlertSettingsModal } from '@/components/AlertSettingsModal';
+import { PortfolioConstellation3D } from '@/components/PortfolioConstellation3D';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
+import { sound } from '@/lib/sound';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<NavTab>('push');
@@ -22,6 +24,46 @@ export default function Home() {
   // Modals
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [isAlertsOpen, setIsAlertsOpen] = useState<boolean>(false);
+
+  // Global Keyboard Shortcuts (Cmd+K, 1-5)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      // Don't intercept if user is typing in an input or textarea
+      const target = e.target as HTMLElement;
+      if (target?.tagName === 'INPUT' || target?.tagName === 'TEXTAREA' || target?.isContentEditable) {
+        return;
+      }
+
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        sound.playClick();
+        setIsSearchOpen(true);
+        return;
+      }
+
+      if (!e.metaKey && !e.ctrlKey && !e.altKey) {
+        if (e.key === '1') {
+          sound.playClick();
+          setActiveTab('push');
+        } else if (e.key === '2') {
+          sound.playClick();
+          setActiveTab('pull');
+        } else if (e.key === '3') {
+          sound.playClick();
+          setActiveTab('narrative');
+        } else if (e.key === '4') {
+          sound.playClick();
+          setActiveTab('constellation');
+        } else if (e.key === '5') {
+          sound.playClick();
+          setActiveTab('copilot');
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // User Alert Configuration
   const [alertConfig, setAlertConfig] = useState<AlertConfig>({
@@ -123,6 +165,16 @@ export default function Home() {
             quote={currentQuote}
             diligence={currentDiligence}
             onSelectTicker={handleSelectTicker}
+          />
+        )}
+
+        {activeTab === 'constellation' && (
+          <PortfolioConstellation3D
+            activeTicker={activeTicker}
+            onSelectTicker={(ticker) => {
+              handleSelectTicker(ticker);
+              setActiveTab('pull');
+            }}
           />
         )}
 

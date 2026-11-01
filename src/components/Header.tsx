@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Activity, Bell, Search, ShieldCheck } from 'lucide-react';
+import { sound } from '@/lib/sound';
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -36,18 +37,27 @@ export function Header({ onOpenSearch, onOpenAlerts, activeTicker }: HeaderProps
         <div className="flex items-center gap-2">
           {/* Quick Ticker Switcher Button */}
           <button
-            onClick={onOpenSearch}
+            onClick={() => {
+              sound.playClick();
+              onOpenSearch();
+            }}
             className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-300 text-xs font-mono transition-all hover:bg-neutral-850"
-            title="Search any NSE stock"
+            title="Search any NSE stock (⌘K)"
           >
             <Search className="w-3.5 h-3.5 text-neutral-400" />
             <span className="hidden sm:inline text-neutral-400">Search:</span>
             <span className="font-semibold text-emerald-400">{activeTicker.replace('.NS', '')}</span>
+            <kbd className="hidden sm:inline-block px-1.5 py-0.2 text-[9px] text-neutral-400 bg-neutral-800 rounded border border-neutral-750 font-mono">
+              ⌘K
+            </kbd>
           </button>
 
           {/* Triggered Alert Settings */}
           <button
-            onClick={onOpenAlerts}
+            onClick={() => {
+              sound.playClick();
+              onOpenAlerts();
+            }}
             className="p-2 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-white transition-all hover:bg-neutral-850 relative"
             title="Configure Anomaly Alerts"
           >

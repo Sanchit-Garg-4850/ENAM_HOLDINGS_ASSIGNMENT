@@ -33,8 +33,17 @@ FINN operates in two cohesive modes:
    - **Showstopper: Narrative vs. Numbers Audit**: A side-by-side audit of what management promised in concalls over the last 4 quarters vs what was delivered in audited filings, complete with citations, variance attribution, and a Management Reliability Score.
    - **Cash Quality Sentinel**: Evaluates whether accounting profits convert to real cash via the Cash Conversion Ratio ($\text{OCF}/\text{PAT}$) and FCF yields.
    - **On-Demand Generalization**: Dynamic live ingestion and diligence synthesis for **any valid NSE ticker** (tested and verified on tickers outside the portfolio like `TITAN.NS`, `SUZLON.NS`, and `HAL.NS`).
-3. **FINN Copilot**:
-   - An interactive conversational agent providing instant, cited answers from primary filings with quick prompt chips.
+3. **Interactive 3D Portfolio Universe & Visual Diligence**:
+   - **3D Orbital Constellation**: Real-time 3D interactive physics canvas mapping portfolio companies into sector clusters with Fibonacci distribution, inertial drag/touch rotation, holographic HUD inspect cards, and double-click diligence navigation.
+   - **Interactive Scrubbing Trajectory Charts**: SVG multi-period bar & margin line charts with real-time hover scrub tooltips and tactile audio feedback.
+   - **Cash Flow Waterfall Visualizer**: Step-by-step visual waterfall decomposing accounting profit into real cash: Revenue → EBITDA → PAT → Working Capital changes → Operating Cash Flow (OCF) → Free Cash Flow (FCF).
+   - **Peer Benchmarking Matrix**: Cross-company side-by-side comparative analysis of margins, ROCE, cash conversion, and management reliability scores.
+4. **Voice-Enabled FINN Copilot & Investment Memo Generator**:
+   - **Speech-to-Text Dictation**: Hands-free voice queries via the Web Speech API for on-the-go fund managers.
+   - **Text-to-Speech Audio Readout**: Natural spoken diligence summaries accompanied by a live animated audio equalizer waveform.
+   - **Primary Citation Inspector**: Tap any citation to inspect verbatim management quotes and filing paragraphs with document metadata.
+   - **One-Click Investment Memo Export**: Generates and downloads a structured, publication-ready Markdown research memo.
+   - **Tactile Web Audio Engine & Keyboard Shortcuts**: Zero-dependency synthesizer providing subtle mechanical clicks and chimes; pro-grade keyboard shortcuts (`⌘K` for search, `1`-`5` for instant tab switching).
 
 ---
 

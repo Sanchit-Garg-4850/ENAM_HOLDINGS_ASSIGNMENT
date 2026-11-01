@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Sparkles,
   Send,
@@ -12,8 +12,19 @@ import {
   DollarSign,
   ShieldAlert,
   HelpCircle,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  Download,
+  Copy,
+  Check,
+  X,
+  FileText,
 } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { StockQuote } from '@/lib/types';
+import { sound } from '@/lib/sound';
 
 interface CopilotDrawerProps {
   quote: StockQuote;
@@ -34,11 +45,11 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
     {
       id: 'welcome',
       sender: 'assistant',
-      text: `### 🤖 FINN Primary Intelligence Agent\n\nI am grounded **strictly in primary company filings** (Annual Reports, Concall Transcripts, and Exchange Results). No broker opinions or secondary commentary.\n\nActive Security: **${quote.name} (${quote.symbol})**\n\nHow can I assist your diligence? Select a high-conviction query below or ask directly:`,
+      text: `### 🤖 FINN Primary Intelligence Copilot\n\nI am grounded **strictly in primary company filings** (Annual Reports, Concall Transcripts, and Audited Results). No broker notes or secondary gossip.\n\nActive Security: **${quote.name} (${quote.symbol})**\n\nHow can I assist your diligence? Select a command below or ask directly:`,
       citations: [
         {
           source: `${quote.symbol} Latest Regulatory Disclosures`,
-          quote: 'Primary investor disclosures and transcripts',
+          quote: 'Primary exchange filings, concalls & audited P&L statements',
           type: 'NSE Primary Filing',
         },
       ],
@@ -46,6 +57,21 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  // Voice Recognition (Speech to Text)
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+
+  // Audio Playback (Text to Speech)
+  const [speakingMsgId, setSpeakingMsgId] = useState<string | null>(null);
+
+  // Citation Inspector Modal
+  const [inspectedCitation, setInspectedCitation] = useState<{
+    source: string;
+    quote: string;
+    type: string;
+  } | null>(null);
 
   const quickPrompts = [
     {
@@ -70,9 +96,90 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
     },
   ];
 
+  // Initialize Speech Recognition if supported
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition =
+        (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          setInput((prev) => (prev ? `${prev} ${transcript}` : transcript));
+          setIsRecording(false);
+          sound.playClick();
+        };
+
+        recognition.onerror = () => {
+          setIsRecording(false);
+        };
+
+        recognition.onend = () => {
+          setIsRecording(false);
+        };
+
+        recognitionRef.current = recognition;
+      }
+    }
+  }, []);
+
+  function toggleVoiceRecording() {
+    sound.playClick();
+    if (!recognitionRef.current) {
+      alert('Speech recognition is not supported in this browser. Please type your query.');
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsRecording(true);
+      } catch (err) {
+        console.error('Speech error:', err);
+      }
+    }
+  }
+
+  function toggleSpeech(msgId: string, text: string) {
+    if (typeof window === 'undefined' || !window.speechSynthesis) return;
+
+    if (speakingMsgId === msgId) {
+      window.speechSynthesis.cancel();
+      setSpeakingMsgId(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    sound.playClick();
+
+    // Strip markdown formatting for speech
+    const cleanText = text
+      .replace(/[#*_`]/g, '')
+      .replace(/\[.*?\]/g, '')
+      .slice(0, 500);
+
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.05;
+    utterance.pitch = 1.0;
+
+    utterance.onend = () => setSpeakingMsgId(null);
+    utterance.onerror = () => setSpeakingMsgId(null);
+
+    setSpeakingMsgId(msgId);
+    window.speechSynthesis.speak(utterance);
+  }
+
   async function handleSend(queryText?: string) {
     const textToSend = queryText || input;
     if (!textToSend.trim() || isLoading) return;
+
+    sound.playClick();
 
     const userMsg: Message = {
       id: `user-${Date.now()}`,
@@ -94,6 +201,19 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
 
       const data = await res.json();
       if (data.success) {
+        sound.playChime();
+
+        // Trigger confetti for high management reliability audit
+        if (data.response.includes('92/100') || data.response.includes('94/100') || data.response.includes('DELIVERED')) {
+          confetti({
+            particleCount: 45,
+            spread: 60,
+            origin: { y: 0.8 },
+            colors: ['#10b981', '#34d399', '#6ee7b7'],
+          });
+          sound.playSuccess();
+        }
+
         const assistantMsg: Message = {
           id: `asst-${Date.now()}`,
           sender: 'assistant',
@@ -119,25 +239,64 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
     }
   }
 
+  function handleCopy(id: string, text: string) {
+    sound.playClick();
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  }
+
+  function handleExportMemo() {
+    sound.playClick();
+    const memoContent = [
+      `# FINN INSTITUTIONAL INVESTMENT MEMO`,
+      `**Target Security:** ${quote.name} (${quote.symbol})`,
+      `**Price:** ₹${quote.price} | **Market Cap:** ₹${quote.marketCapCr} Cr | **Sector:** ${quote.sector}`,
+      `**Date Generated:** ${new Date().toLocaleString()}`,
+      `\n---\n`,
+      ...messages.map((m) => `### [${m.sender.toUpperCase()}]\n${m.text}\n`),
+    ].join('\n');
+
+    const blob = new Blob([memoContent], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FINN_MEMO_${quote.symbol}_${Date.now()}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   return (
     <div className="space-y-4 pb-20">
       {/* Top Copilot Header Card */}
-      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-neutral-900 to-neutral-950 border border-emerald-800/30 flex items-center justify-between gap-3">
+      <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-neutral-900 to-neutral-950 border border-emerald-800/30 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-white text-sm font-bold tracking-tight">FINN Copilot</h2>
+            <h2 className="text-white text-sm font-bold tracking-tight">FINN Copilot 2.0</h2>
             <p className="text-[11px] text-neutral-400">
-              Grounded exclusively in <span className="text-emerald-400 font-medium">Primary Sources</span>
+              Grounded in <span className="text-emerald-400 font-medium">Primary Annual Reports & Concalls</span>
             </p>
           </div>
         </div>
 
-        <span className="font-mono text-xs px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 font-semibold">
-          {quote.symbol}
-        </span>
+        <div className="flex items-center gap-2">
+          {/* Export Memo */}
+          <button
+            onClick={handleExportMemo}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-300 text-xs font-mono transition-colors"
+            title="Download Investment Memo"
+          >
+            <Download className="w-3.5 h-3.5 text-emerald-400" />
+            <span className="hidden sm:inline">Export Memo</span>
+          </button>
+
+          <span className="font-mono text-xs px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 font-semibold">
+            {quote.symbol}
+          </span>
+        </div>
       </div>
 
       {/* Quick Prompt Chips */}
@@ -172,26 +331,59 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`p-3.5 rounded-xl border text-xs leading-relaxed ${
+            className={`p-3.5 rounded-xl border text-xs leading-relaxed transition-all ${
               msg.sender === 'user'
                 ? 'bg-neutral-850 border-neutral-750 text-white ml-8 sm:ml-12'
-                : 'bg-neutral-925/90 border-neutral-850 text-neutral-200 mr-4 sm:mr-8'
+                : 'bg-neutral-925/90 border-neutral-850 text-neutral-200 mr-4 sm:mr-8 shadow-sm'
             }`}
           >
-            <div className="flex items-center gap-1.5 text-[10px] text-neutral-400 font-mono mb-1.5">
-              {msg.sender === 'user' ? (
-                <>
-                  <User className="w-3 h-3 text-neutral-400" />
-                  <span>You</span>
-                </>
-              ) : (
-                <>
-                  <Bot className="w-3 h-3 text-emerald-400" />
-                  <span className="text-emerald-400 font-semibold">FINN Agent</span>
-                </>
+            <div className="flex items-center justify-between gap-2 mb-1.5">
+              <div className="flex items-center gap-1.5 text-[10px] text-neutral-400 font-mono">
+                {msg.sender === 'user' ? (
+                  <>
+                    <User className="w-3 h-3 text-neutral-400" />
+                    <span>You</span>
+                  </>
+                ) : (
+                  <>
+                    <Bot className="w-3 h-3 text-emerald-400" />
+                    <span className="text-emerald-400 font-semibold">FINN Agent</span>
+                  </>
+                )}
+                <span className="text-neutral-600">•</span>
+                <span>{msg.timestamp}</span>
+              </div>
+
+              {/* Action buttons on assistant messages */}
+              {msg.sender === 'assistant' && (
+                <div className="flex items-center gap-1.5">
+                  {/* Voice playback */}
+                  <button
+                    onClick={() => toggleSpeech(msg.id, msg.text)}
+                    className="p-1 rounded text-neutral-400 hover:text-white transition-colors"
+                    title={speakingMsgId === msg.id ? 'Stop Speaking' : 'Read Out Loud'}
+                  >
+                    {speakingMsgId === msg.id ? (
+                      <VolumeX className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                    ) : (
+                      <Volume2 className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+
+                  {/* Copy message */}
+                  <button
+                    onClick={() => handleCopy(msg.id, msg.text)}
+                    className="p-1 rounded text-neutral-400 hover:text-white transition-colors"
+                    title="Copy response"
+                  >
+                    {copiedId === msg.id ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-400" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
               )}
-              <span className="text-neutral-600">•</span>
-              <span>{msg.timestamp}</span>
             </div>
 
             {/* Markdown-style formatted body */}
@@ -202,18 +394,23 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
               <div className="mt-3 pt-2.5 border-t border-neutral-850 space-y-1.5">
                 <span className="text-[10px] font-mono uppercase text-emerald-400/90 font-semibold flex items-center gap-1">
                   <FileCheck className="w-3 h-3" />
-                  Primary Citations
+                  Primary Citations (Click to Inspect)
                 </span>
                 <div className="space-y-1">
                   {msg.citations.map((c, idx) => (
-                    <div
+                    <button
                       key={idx}
-                      className="p-1.5 rounded bg-neutral-950/80 border border-neutral-850 text-[11px] text-neutral-400 font-mono flex items-start justify-between gap-2"
+                      onClick={() => {
+                        sound.playClick();
+                        setInspectedCitation(c);
+                      }}
+                      className="w-full p-2 rounded-lg bg-neutral-950/90 hover:bg-neutral-900 border border-neutral-850 hover:border-emerald-500/30 text-[11px] text-neutral-300 font-mono text-left transition-all flex items-start justify-between gap-2"
                     >
                       <span className="line-clamp-1">
-                        [{c.type}] {c.source}: &ldquo;{c.quote}&rdquo;
+                        <strong className="text-emerald-400">[{c.type}]</strong> {c.source}: &ldquo;{c.quote}&rdquo;
                       </span>
-                    </div>
+                      <ExternalLink className="w-3 h-3 text-neutral-500 shrink-0 mt-0.5" />
+                    </button>
                   ))}
                 </div>
               </div>
@@ -229,7 +426,7 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
         )}
       </div>
 
-      {/* Input Bar */}
+      {/* Input Bar with Voice & Send */}
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -237,14 +434,32 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
         }}
         className="flex items-center gap-2 pt-2 sticky bottom-16 bg-neutral-950/90 backdrop-blur-md pb-2"
       >
+        <button
+          type="button"
+          onClick={toggleVoiceRecording}
+          className={`p-2.5 rounded-xl border transition-all ${
+            isRecording
+              ? 'bg-rose-500/20 border-rose-500/50 text-rose-400 animate-pulse'
+              : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+          }`}
+          title={isRecording ? 'Listening... Tap to stop' : 'Voice Input (Speak your query)'}
+        >
+          {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+        </button>
+
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder={`Ask FINN about ${quote.symbol} (e.g., Working capital cycle)...`}
+          placeholder={
+            isRecording
+              ? 'Listening... speak now'
+              : `Ask FINN about ${quote.symbol} (or try /audit, /cash)...`
+          }
           disabled={isLoading}
-          className="flex-1 bg-neutral-900 border border-neutral-800 focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 outline-none transition-colors"
+          className="flex-1 bg-neutral-900 border border-neutral-800 focus:border-emerald-500/50 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-neutral-500 outline-none transition-colors font-sans"
         />
+
         <button
           type="submit"
           disabled={!input.trim() || isLoading}
@@ -254,6 +469,56 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
           <Send className="w-4 h-4" />
         </button>
       </form>
+
+      {/* Primary Citation Inspector Modal */}
+      {inspectedCitation && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-lg rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-neutral-800 pb-3">
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-white text-sm font-bold">Primary Document Verification</h3>
+              </div>
+              <button
+                onClick={() => setInspectedCitation(null)}
+                className="text-neutral-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <span className="text-[10px] font-mono text-neutral-400 uppercase block">Source Document:</span>
+                <span className="text-sm font-bold text-white font-mono">{inspectedCitation.source}</span>
+                <span className="inline-block ml-2 text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                  {inspectedCitation.type}
+                </span>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 space-y-1">
+                <span className="text-[10px] font-mono text-neutral-500 uppercase block">Verbatim Primary Excerpt:</span>
+                <p className="text-xs text-neutral-200 leading-relaxed italic bg-emerald-500/10 p-2.5 rounded border border-emerald-500/20 text-emerald-100 font-mono">
+                  &ldquo;{inspectedCitation.quote}&rdquo;
+                </p>
+              </div>
+
+              <p className="text-[11px] text-neutral-400 leading-relaxed">
+                FINN strictly enforces grounding in verified disclosures filed with the National Stock Exchange of India and BSE. Secondary broker commentary and speculative news articles are barred.
+              </p>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                onClick={() => setInspectedCitation(null)}
+                className="px-4 py-1.5 rounded-lg bg-neutral-800 text-neutral-200 hover:text-white text-xs font-mono"
+              >
+                Close Inspector
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

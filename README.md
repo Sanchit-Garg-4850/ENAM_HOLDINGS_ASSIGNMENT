@@ -27,9 +27,20 @@ An investor today is drowning in hundreds of corporate filings, earnings notific
   - **Contextual Management Changes**: Automatically enriches executive changes with incoming pedigree (past company, education, domain tenure).
   - **EOD Anomaly Detector**: Flags volume spikes $> 2\times$ 20-DMA and price moves $> \pm 3\%$.
 - **Pull Diligence**:
-  - 8 core modules: Business Model, Financial Snapshot, Trajectory, Balance Sheet, Cash Quality (Cash Conversion Ratio $\text{OCF}/\text{PAT}$), Forward Guidance Ledger, Bull vs. Bear case, and Primary Citations.
-- **FINN Copilot Drawer**:
-  - Conversational primary diligence agent with quick prompt chips and citations to primary disclosures.
+  - 8 core modules: Business Model, Financial Snapshot, Multi-Year Trajectory with Interactive Scrubbing SVG Charts, Balance Sheet Health, Cash Quality with Visual Cash Waterfall, Forward Guidance Ledger, Bull vs. Bear Case, and Peer Benchmark Matrix.
+- **🌌 3D Portfolio Universe**:
+  - Real-time 3D orbital physics canvas mapping portfolio companies into Fibonacci clusters by sector, with inertial mouse/touch drag rotation, holographic HUD inspect cards, and double-click diligence jump.
+- **🎙️ Voice-Enabled FINN Copilot**:
+  - Speech-to-Text voice dictation (Web Speech API) for hands-free queries.
+  - Text-to-Speech audio readout with animated equalizer waveform.
+  - Primary Citation Inspector modal showing verbatim concall quotes and exchange paragraphs.
+  - One-click investment memo export in Markdown format.
+  - Confetti burst celebration on high-conviction insights.
+- **🔊 Tactile Zero-Dependency Web Audio Synthesizer**:
+  - Procedurally generated subtle mechanical clicks, chimes, and chords using the Web Audio API.
+- **⌨️ Keyboard Shortcuts**:
+  - `⌘K` or `Ctrl+K`: Instant ticker search modal.
+  - Keys `1`-`5`: Instant tab switching across Push, Pull, Narrative, 3D Orbit, and Copilot.
 - **Configurable Alert Sliders**:
   - User-configurable volume multiplier ($1.2\times$ to $5.0\times$) and price move ($\pm 1\%$ to $\pm 10\%$) triggers.
 

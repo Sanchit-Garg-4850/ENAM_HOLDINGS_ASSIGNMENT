@@ -18,6 +18,10 @@ import {
 } from 'lucide-react';
 import { StockQuote, DiligenceModule } from '@/lib/types';
 import { PORTFOLIO_COMPANIES } from '@/data/portfolio';
+import { InteractiveFinancialChart } from './InteractiveFinancialChart';
+import { CashWaterfallVisualizer } from './CashWaterfallVisualizer';
+import { PeerComparisonMatrix } from './PeerComparisonMatrix';
+import { sound } from '@/lib/sound';
 
 interface PullDiligenceProps {
   quote: StockQuote;
@@ -33,7 +37,7 @@ export function PullDiligence({
   onOpenSearch,
 }: PullDiligenceProps) {
   const [activeModuleTab, setActiveModuleTab] = useState<
-    'snapshot' | 'trajectory' | 'balanceSheet' | 'cash' | 'guidance' | 'thesis'
+    'snapshot' | 'trajectory' | 'balanceSheet' | 'cash' | 'guidance' | 'thesis' | 'peers'
   >('snapshot');
 
   const fs = diligence.financialSnapshot;
@@ -154,10 +158,14 @@ export function PullDiligence({
           { id: 'cash', label: '4. Cash Quality' },
           { id: 'guidance', label: '5. Forward Guidance' },
           { id: 'thesis', label: '6. Bull vs Bear' },
+          { id: 'peers', label: '7. Peer Benchmarks' },
         ].map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveModuleTab(tab.id as any)}
+            onClick={() => {
+              sound.playClick();
+              setActiveModuleTab(tab.id as any);
+            }}
             className={`px-3 py-1.5 rounded-lg text-xs font-mono whitespace-nowrap transition-all ${
               activeModuleTab === tab.id
                 ? 'bg-neutral-800 text-white font-semibold shadow-sm'
@@ -276,6 +284,18 @@ export function PullDiligence({
           <p className="text-xs text-neutral-300 leading-relaxed p-2.5 rounded-lg bg-neutral-950 border border-neutral-850">
             {tr.marginSummary}
           </p>
+
+          {/* Interactive Trajectory Chart */}
+          <InteractiveFinancialChart
+            data={tr.multiYearFinancials.map((f) => ({
+              period: f.year,
+              revenue: f.revenue,
+              ebitda: f.ebitda,
+              margin: f.margin,
+              pat: f.pat,
+            }))}
+            symbol={quote.symbol}
+          />
 
           {/* Multi-Year Table */}
           <div className="overflow-x-auto rounded-lg border border-neutral-850">
@@ -402,10 +422,18 @@ export function PullDiligence({
             </div>
           </div>
 
+          {/* Cash Flow Waterfall Visualizer */}
+          <CashWaterfallVisualizer diligence={diligence} symbol={quote.symbol} />
+
           <p className="text-xs text-neutral-300 leading-relaxed p-3 rounded-lg bg-neutral-950 border border-neutral-850">
             {cq.assessment}
           </p>
         </div>
+      )}
+
+      {/* MODULE TAB 7: Peer Benchmarking */}
+      {activeModuleTab === 'peers' && (
+        <PeerComparisonMatrix onSelectTicker={onSelectTicker} activeTicker={quote.ticker} />
       )}
 
       {/* MODULE TAB 5: Forward Guidance Ledger */}
