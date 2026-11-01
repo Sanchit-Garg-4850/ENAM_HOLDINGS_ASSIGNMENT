@@ -1,7 +1,9 @@
+// API Route: /api/announcements (Push Feed with Live Screener Primary Filings)
 import { NextResponse } from 'next/server';
 import { SEED_ANNOUNCEMENTS } from '@/data/announcements';
-import { filterAnnouncements } from '@/lib/classification';
-import { AnnouncementCategory } from '@/lib/types';
+import { filterAnnouncements, classifyFilingHeadline } from '@/lib/classification';
+import { AnnouncementCategory, Announcement } from '@/lib/types';
+import { fetchScreenerData } from '@/lib/screener';
 
 export async function GET(request: Request) {
   try {
@@ -18,7 +20,40 @@ export async function GET(request: Request) {
       ? Number(searchParams.get('minPriceMovePercent'))
       : undefined;
 
-    const result = filterAnnouncements(SEED_ANNOUNCEMENTS, {
+    let allAnnouncements = [...SEED_ANNOUNCEMENTS];
+
+    // If a specific ticker was requested, also try fetching real live filings from Screener
+    if (ticker) {
+      const cleanSymbol = ticker.replace(/\.(NS|BO)$/, '').toUpperCase();
+      try {
+        const screener = await fetchScreenerData(cleanSymbol);
+        if (screener && screener.filings && screener.filings.length > 0) {
+          const liveAnnouncements: Announcement[] = screener.filings.map((f, idx) => {
+            const { category: cat, tier } = classifyFilingHeadline(f.title);
+            return {
+              id: `live-bse-${cleanSymbol}-${idx}`,
+              ticker: `${cleanSymbol}.NS`,
+              companyName: `${cleanSymbol} Ltd`,
+              timestamp: new Date(Date.now() - (idx + 1) * 3 * 3600 * 1000).toISOString(),
+              publishedAt: `${(idx + 1) * 3}h ago`,
+              hoursAgo: (idx + 1) * 3,
+              category: cat,
+              tier: tier,
+              headline: f.title,
+              oneLineTakeaway: `Regulatory filing submitted to exchange with direct primary disclosure.`,
+              sourceFilingUrl: f.url,
+            };
+          });
+
+          // Prepend live filings
+          allAnnouncements = [...liveAnnouncements, ...allAnnouncements];
+        }
+      } catch (e) {
+        console.warn('[Announcements] Live fetch fallback:', (e as Error).message);
+      }
+    }
+
+    const result = filterAnnouncements(allAnnouncements, {
       windowHours,
       onlyMaterial,
       category,

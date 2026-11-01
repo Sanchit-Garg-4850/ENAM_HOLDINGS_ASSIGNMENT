@@ -150,6 +150,121 @@ export const CATEGORY_REGISTRY: Record<AnnouncementCategory, CategoryInfo> = {
 };
 
 /**
+ * Classifies raw exchange filing headlines into one of the 17 taxonomy categories
+ * and assigns an appropriate materiality priority tier.
+ */
+export function classifyFilingHeadline(headline: string): {
+  category: AnnouncementCategory;
+  tier: MaterialityTier;
+} {
+  const h = headline.toLowerCase();
+
+  if (
+    h.includes('financial result') ||
+    h.includes('board meeting outcome') ||
+    h.includes('quarterly result') ||
+    h.includes('audited result') ||
+    h.includes('unaudited result')
+  ) {
+    return { category: 'results', tier: 'tier1_urgent' };
+  }
+  if (
+    h.includes('resignation') ||
+    h.includes('appointment') ||
+    h.includes('retirement') ||
+    h.includes('change in directorate') ||
+    h.includes('kmp') ||
+    h.includes('cfo') ||
+    h.includes('ceo') ||
+    h.includes('managing director')
+  ) {
+    return { category: 'management_change', tier: 'tier1_urgent' };
+  }
+  if (
+    h.includes('merger') ||
+    h.includes('acquisition') ||
+    h.includes('demerger') ||
+    h.includes('joint venture') ||
+    h.includes('scheme of arrangement')
+  ) {
+    return { category: 'M&A', tier: 'tier1_urgent' };
+  }
+  if (
+    h.includes('litigation') ||
+    h.includes('nclt') ||
+    h.includes('order') ||
+    h.includes('penalty') ||
+    h.includes('regulatory') ||
+    h.includes('warning letter')
+  ) {
+    return { category: 'litigation', tier: 'tier1_urgent' };
+  }
+  if (h.includes('pledge') || h.includes('encumbrance') || h.includes('reg 31')) {
+    return { category: 'pledging', tier: 'tier1_urgent' };
+  }
+  if (
+    h.includes('capex') ||
+    h.includes('expansion') ||
+    h.includes('new plant') ||
+    h.includes('facility') ||
+    h.includes('capacity')
+  ) {
+    return { category: 'capex', tier: 'tier2_material' };
+  }
+  if (
+    h.includes('credit rating') ||
+    h.includes('rating update') ||
+    h.includes('crisil') ||
+    h.includes('icra') ||
+    h.includes('care')
+  ) {
+    return { category: 'credit_rating', tier: 'tier2_material' };
+  }
+  if (h.includes('dividend') || h.includes('record date')) {
+    return { category: 'dividend', tier: 'tier2_material' };
+  }
+  if (h.includes('bonus') || h.includes('split')) {
+    return { category: 'bonus_split', tier: 'tier2_material' };
+  }
+  if (
+    h.includes('rights issue') ||
+    h.includes('qip') ||
+    h.includes('preferential allotment') ||
+    h.includes('fund raise')
+  ) {
+    return { category: 'fund_raise', tier: 'tier2_material' };
+  }
+  if (
+    h.includes('concall') ||
+    h.includes('earnings call') ||
+    h.includes('audio recording') ||
+    h.includes('transcript')
+  ) {
+    return { category: 'earnings_call', tier: 'tier2_material' };
+  }
+  if (
+    h.includes('investor presentation') ||
+    h.includes('presentation') ||
+    h.includes('analyst meet') ||
+    h.includes('investor meeting')
+  ) {
+    return { category: 'investor_meetings', tier: 'tier3_routine' };
+  }
+  if (
+    h.includes('duplicate') ||
+    h.includes('loss of share') ||
+    h.includes('reg 39') ||
+    h.includes('reg 74') ||
+    h.includes('esop') ||
+    h.includes('compliance certificate')
+  ) {
+    return { category: 'unclassified', tier: 'tier3_routine' };
+  }
+
+  return { category: 'press_release', tier: 'tier2_material' };
+}
+
+/**
  * Filter announcements based on window hours, materiality preference, and anomaly sliders.
  */
 export function filterAnnouncements(
