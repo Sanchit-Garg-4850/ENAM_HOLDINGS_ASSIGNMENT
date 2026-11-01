@@ -1,0 +1,143 @@
+Reference: Announcement Categories &
+Financial Glossary
+A companion to the Build Challenge brief. You do not need a finance background — this document
+explains the corporate-announcement categories and the financial terms and documents referenced
+in the main brief. Lean on it freely.
+
+1. Corporate announcement categories
+How we classify the announcements companies file with the exchanges. In the main brief this is
+offered as guidance only — you may use it, adapt it, or ignore it.
+Category
+results
+M&A
+fund_raise
+management_change
+litigation
+insider_trading
+earnings_call
+investor_meetings
+credit_rating
+dividend
+bonus_split
+capex
+press_release
+postal_ballot
+agm_egm
+pledging
+unclassified
+
+What goes in it
+Quarterly/annual results, the board meeting approving them, results
+decks and shareholder letters, and ads confirming results were
+published.
+Any acquisition, merger, demerger, or joint venture — including
+investing in a subsidiary, or selling a stake in one.
+Raising money from outside investors — rights issues, QIPs, preferential
+allotments, buybacks, or debt like commercial paper.
+Any change at the top — a CEO, CFO, MD, or director joining, resigning,
+or retiring.
+Lawsuits, regulatory orders, fines, warnings, or insolvency/restructuring
+proceedings.
+A promoter or insider buying/selling their own personal shareholding.
+Anything about the investor conference call — the notice, the
+transcript, or the recording link.
+One-on-one or small-group meetings with specific investors/funds, or
+attending an investor conference.
+A rating agency assigning, upgrading, downgrading, or reaffirming a
+credit rating.
+A cash dividend being declared, with its record date.
+A bonus issue or stock split — share count changes but no cash comes
+to you.
+Approving spend on a new plant, facility, or capacity expansion.
+General news — order wins, new products, partnerships, rumour
+clarifications — not covered by another category.
+Shareholders voting by postal ballot — the notice and the result.
+Annual or Extraordinary General Meeting — the notice and the result.
+A promoter pledging, releasing, or changing the pledge status of shares.
+Routine, low-relevance paperwork — ESOP allotments, compliance
+certificates, ESG reports, auditor appointments — that doesn't
+materially move the stock.
+
+2. Documents you'll work with
+Annual Report (AR) — A company's yearly disclosure. Contains the business overview, management
+discussion, audited financial statements (P&L, balance sheet, cash-flow), and the notes and auditor's
+report. The single richest primary source.
+Quarterly results — The financial results a company publishes every quarter (revenue, profit, etc.),
+filed with the exchanges. Less detailed than the annual report but far more current.
+Concall / earnings-call transcript — A quarterly call where management discusses the results and
+answers analysts' questions. The transcript is where you find guidance, tone, and what analysts are
+pressing on.
+Investor presentation — A slide deck management releases (often with results) framing strategy,
+KPIs, and segment performance in their own words.
+Exchange filing / announcement — Any disclosure a listed company files with NSE/BSE — the raw
+feed the push side monitors.
+screener.in — A widely-used site that consolidates a company's annual reports, concall transcripts,
+and standardised multi-year financials in one place — the easiest place to fetch fundamentals.
+Primary vs. secondary data — Primary data comes straight from the company (filings, reports,
+transcripts). Secondary data is other people's commentary on it (news, broker notes, research
+reports). The pull/analysis side of this challenge must use primary data only.
+
+3. Headline financial terms
+Revenue — Total sales — the top line of the P&L; the money coming in from selling goods/services.
+EBITDA — Earnings Before Interest, Tax, Depreciation & Amortisation. A rough proxy for operating
+profitability — how profitable the core business is before financing and accounting effects.
+PBT — Profit Before Tax — profit after all costs and interest but before income tax.
+PAT — Profit After Tax — the bottom line; what's left for shareholders after tax. Also called "net
+profit."
+Margin — A profit figure as a % of revenue (e.g. EBITDA margin = EBITDA ÷ revenue). Shows how
+much of each rupee of sales becomes profit.
+QoQ (quarter-on-quarter) — This quarter compared with the immediately previous quarter.
+YoY (year-on-year) — This quarter compared with the same quarter a year earlier — the usual way
+to strip out seasonality.
+
+4. Balance-sheet, cash & ratio terms
+Balance sheet — A snapshot of what a company owns (assets) and owes (liabilities) at a point in
+time, plus shareholders' equity.
+Debt / leverage — Money the company has borrowed. "Leverage" describes how much debt it
+carries relative to its equity or earnings — more debt means more risk.
+Debt-to-Equity (D/E) — A leverage ratio: total debt ÷ shareholders' equity. Higher = more reliance
+on borrowing.
+Working-capital cycle — The cash tied up in day-to-day operations — inventory and money owed by
+customers, minus money owed to suppliers. A lengthening cycle can quietly drain cash.
+Cash flow — The actual cash moving in and out, as opposed to accounting profit. "Cash from
+operations" is the cash the core business generates.
+
+Cash conversion — How well accounting profit turns into real cash. Persistent profit without
+matching cash flow is a red flag.
+Free cash flow (FCF) — Cash from operations minus capital spending — the cash genuinely left over.
+ROCE / ROE — Return on Capital Employed / Return on Equity — how much profit the company
+generates per rupee of capital / shareholders' money. Higher is generally better.
+Contingent liabilities — Potential future obligations (e.g. disputed taxes, guarantees) disclosed in
+the notes — not yet on the balance sheet but worth watching.
+Related-party transactions (RPTs) — Deals between the company and its own promoters/insiders or
+their other businesses — legitimate but a place to watch for value leaking out.
+Auditor's qualification — When the auditor flags a concern about the accounts rather than signing
+off cleanly — a signal to dig deeper.
+
+5. Corporate-action & market terms
+NSE / BSE — India's two main stock exchanges (National / Bombay Stock Exchange). Listed
+companies file their announcements here.
+Ticker / symbol — A stock's short code. On Yahoo Finance, Indian tickers add .NS (NSE) or .BO (BSE)
+— e.g. RELIANCE.NS.
+Market capitalisation — The total market value of a company's shares (share price × number of
+shares). A rough measure of company size.
+Promoter — The controlling shareholder / founding group of an Indian listed company.
+Pledging — A promoter using their own shares as collateral for a loan. Heavy pledging is a risk signal.
+Material announcement — A disclosure significant enough to potentially move the stock, as
+opposed to routine compliance paperwork.
+Guidance — Management's own stated forward expectations — for growth, margins, capex, and so
+on.
+Capex (capital expenditure) — Spending on long-term assets like new plants or capacity.
+Dividend — A cash payout to shareholders from profits.
+Record date — The cut-off date deciding who's eligible for a dividend, bonus, or split.
+Bonus issue / stock split — Corporate actions that increase your share count without any cash
+changing hands; each share is worth proportionally less.
+Buyback — A company buying back its own shares from the market, usually returning surplus cash
+to shareholders.
+Rights issue / QIP / preferential allotment — Ways a company raises fresh equity — from existing
+shareholders (rights), from institutions (QIP = Qualified Institutional Placement), or to specific
+investors (preferential allotment).
+EOD (end-of-day) — Data taken after market close — the daily close price and traded volume used
+on the push side.
+
+

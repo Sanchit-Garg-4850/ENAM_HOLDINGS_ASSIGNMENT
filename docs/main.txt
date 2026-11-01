@@ -1,0 +1,250 @@
+ENAM Holdings - AI Engineer Build Challenge
+FINN: Financial Investment Agent
+Release Date: Tuesday, October 27, 2026
+Deadline: Sunday, November 1, 2026
+Deliverable: A mobile-first working prototype + repository + covering note
+What we're evaluating: How you build, what you choose to build, and the creativity and judgment
+behind it — not completeness or polish.
+Companion file. A separate reference document accompanies this brief — “Reference:
+Announcement Categories & Financial Glossary.” It lists the corporate-announcement categories
+and explains every financial term and document type mentioned here in plain English. You do not
+need any prior finance knowledge — lean on it freely.
+
+About this challenge
+We are a public-markets investment firm. We run lean — a small team makes high-conviction
+decisions and lives with the outcomes. We're building an AI-powered intelligence layer for how we
+invest, and this challenge is a taste of the real problem. You do not need finance or public-markets
+expertise: the domain is scaffolded for you, and the companion reference document explains
+everything financial referenced here. We're hiring for building ability, product instinct, and
+creativity.
+
+The problem
+An investor today is drowning in information — prices, filings, announcements, results, macro. It
+never stops, and most of it doesn't matter. The scarce skill is not aggregating information. It's
+filtering it: surfacing the few things that actually matter and burying everything else, beautifully.
+Build something that becomes part of a daily investor's workflow — a product they reach for
+through the day that saves them time and shows them only what's important.
+
+What you'll build
+FINN - a mobile-first financial investment agent. It works in two modes of interaction:
+●
+
+Push — it proactively tells you what changed and why you should care.
+
+●
+
+Pull — you ask it to research or analyse something on demand.
+
+We guide you on the backend (the data). The frontend — the product, the interaction model, the
+design — is deliberately yours. That's where we most want to see how you think.
+
+Your companies
+●
+
+Portfolio: choose your own mock portfolio of 15–20 NSE/BSE-listed companies. Pick a mix
+that makes for an interesting demo — different sectors and sizes will show more.
+
+●
+
+Ad-hoc research: in addition, pick a handful of companies (say 3–5), which can be outside
+your portfolio, to demo the on-demand research on.
+
+ENAM Holdings Pvt. Ltd.
+
+1
+
+●
+
+Build the engine to generalise. The research must not be hard-wired to your demo set —
+build it so it works on any NSE ticker where the data is available. We may point it at a
+company you didn't pick.
+
+The backend — your data sources (guided)
+Three sources. Get them working; don't over-engineer them — this part is plumbing, not the point.
+●
+
+Price & volume (end-of-day) for your portfolio. Freely scrapable at end of day from public
+sources — Yahoo Finance is the usual starting point (the yfinance Python library; Indian
+tickers use .NS for NSE and .BO for BSE, e.g. RELIANCE.NS). Anything equivalent works.
+
+●
+
+Corporate announcements / filings from NSE/BSE for those stocks. A classification of
+announcement types is provided in the companion reference document — use it, adapt it, or
+ignore it. It's there to orient you, not to constrain you.
+
+●
+
+Company fundamentals — annual reports and concall (earnings-call) transcripts, both
+available as links on screener.in (or the company's investor-relations site).
+
+The frontend — your canvas
+This is the heart of the challenge. Give us part of a real investor's daily workflow, built beautifully.
+The items below are examples of the kinds of things that help — illustrations, not a checklist. What
+you choose to build, and how, is the signal.
+
+Push — the app reaches out to you
+Push is the app telling you what changed without being asked. Think of it in two flavours:
+1. A windowed digest. For a time window I choose — by default the last 24 hours, but let me pick
+the period — show me every corporate filing/announcement across my portfolio, filtered and
+prioritised so I see what matters first and the routine stuff is collapsed or hidden.
+2. Triggered alerts. Tell me the moment something crosses a threshold, for example:
+●
+
+a material announcement of a type I care about (results, M&A, management change, and so
+on); or
+
+●
+
+an unusual move in my end-of-day data — e.g. volume more than ~2× its recent average, or
+a price move beyond ±X% in a day. Make the threshold configurable: the point is that I
+decide what "unusual" means and the app watches for it.
+
+How a pushed item should be presented — two examples we love; the rest is your call:
+●
+
+Management change → don't just say "CFO resigned." Pull a short background/bio of the
+incoming person (e.g. from LinkedIn) so I instantly know who they are and where they came
+from.
+
+●
+
+Quarterly results → take the actual results filing and give me a first cut of the headline
+numbers — Revenue, EBITDA, PBT and PAT — this quarter vs. last quarter (QoQ) and vs. the
+same quarter a year ago (YoY). Those four are defined in the reference document.
+
+For every other announcement type, decide what earns my attention: a one-line summary next to
+the filing, or just the filing surfaced at the right priority. That judgment is the point.
+
+Pull — you ask it to dig in
+Pull is on-demand analysis of a company, grounded in its fundamentals (annual reports + concall
+transcripts). Below are eight kinds of output a good research view might contain — we spell them
+
+ENAM Holdings Pvt. Ltd.
+
+2
+
+out because you may not have a finance background. Treat them as a menu: pick what you build and
+how deep you go. Each is explained further in the reference document.
+●
+
+Business snapshot — what the company does, its segments, revenue mix.
+
+●
+
+Financial snapshot — current headline numbers (revenue, margins, PAT, key ratios) at a
+glance.
+
+●
+
+Trajectory — the multi-year direction: what's growing, what's compressing.
+
+●
+
+Balance sheet — debt, leverage, working-capital cycle, funding structure.
+
+●
+
+Cash quality — cash-flow trend and cash conversion: do profits turn into cash?
+
+●
+
+Narrative vs. numbers — where management's story and the actual financials agree or
+diverge.
+
+●
+
+Guidance — what management has explicitly guided on headline numbers (growth, margins,
+capex).
+
+●
+
+Bull vs. bear — a tight case each way.
+
+Worked example — numbers vs. narrative: take the last four quarters and, against management's
+own headline guidance and growth commentary, tell me what was promised vs. what was actually
+delivered. This is the difference between summarising management and analysing them — and it's
+the kind of thing we value most.
+One discipline for the pull side: ground it in the primary sources (annual reports + transcripts). No
+broker notes, no news, no research reports, and don't lean on the model's own outside knowledge
+of the company. Differentiated signal lives in primary data; secondary commentary is where it gets
+noisy. (Push-side enrichment like a person's professional background is a different thing and
+completely fine.)
+
+The interaction model — experiment
+How the investor interacts with all of this is entirely up to you, and we strongly encourage you to
+experiment. Chat, voice, a copilot, a dashboard, or something we haven't thought of — try more
+than the obvious. Everything mobile-first. The best submissions will show a point of view about how
+an investor should interact with this, not just what data to show.
+
+The bar — no AI slop
+Whatever you build: core, concise, beautifully presented, and interactive. It should save the investor
+time and show them what's important — and feel like a product someone thought hard about, not a
+model filling a template. Density and design both count.
+
+Tools, models & cost
+●
+
+No restriction on models. Use anything — open-source, local, or any commercial provider.
+Pick the right tool for each step; that choice is part of what we're evaluating.
+
+●
+
+This is comfortably doable on free tiers — you do not need to spend to compete.
+
+●
+
+Efficiency earns bonus points. The less you spend to achieve the same result, the better.
+Smart model routing (cheap models for bulk extraction, a stronger model only where
+reasoning demands it), caching, and chunking are exactly the instincts we're looking for.
+
+Scope, and how we grade
+●
+
+The deliverable is a mobile-first working prototype. We grade creativity, product sense,
+judgment, and architecture — not completeness.
+
+ENAM Holdings Pvt. Ltd.
+
+3
+
+●
+
+Thin-but-working beats broad-but-broken. A focused prototype that nails one or two
+workflows beautifully beats a broad one that doesn't run. A demo that doesn't run is the
+worst outcome.
+
+●
+
+Build the smallest thing that proves you can build the real thing well.
+
+What to submit
+●
+
+The mobile-first prototype — a deployed link, Expo/TestFlight, or responsive web; however
+you ship it, make it easy for us to try on a phone.
+
+●
+
+The GitHub repository
+
+●
+
+Your AI build history — the coding-agent and LLM conversations you used while building
+(e.g. Claude Code, Cursor, or ChatGPT exports / share links). We want to see how you work
+with the tools, not just the finished code.
+
+●
+
+A short writeup (in your covering email) Cover what you built, the key decisions and tradeoffs, what you deliberately left out, and where you'd take it next.
+
+●
+
+Submit your response in an email with the links and attachments to assessment@enam.com
+with the subject line as “ENAM - IIT screening - 2027”
+
+ENAM Holdings Pvt. Ltd.
+
+4
+
+
