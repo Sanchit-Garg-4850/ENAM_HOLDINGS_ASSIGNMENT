@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell,
@@ -122,8 +123,13 @@ export function NotificationCenter({
   onOpenAlertSettings,
 }: NotificationCenterProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [notifications, setNotifications] = useState<AlertNotification[]>(INITIAL_NOTIFICATIONS);
   const [filter, setFilter] = useState<'all' | 'urgent' | 'anomaly'>('all');
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Load live alerts from /api/announcements
   useEffect(() => {
@@ -204,23 +210,24 @@ export function NotificationCenter({
         )}
       </motion.button>
 
-      {/* Centered Modal Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
-            {/* Backdrop click dismiss */}
-            <div
-              className="fixed inset-0"
-              onClick={() => setIsOpen(false)}
-            />
+      {/* Centered Modal Overlay via Portal to escape header backdrop-filter containing block */}
+      {mounted && isOpen && typeof document !== 'undefined'
+        ? createPortal(
+            <AnimatePresence>
+              <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+                {/* Backdrop click dismiss */}
+                <div
+                  className="fixed inset-0"
+                  onClick={() => setIsOpen(false)}
+                />
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="relative w-full max-w-md rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-10 overflow-hidden font-sans max-h-[85vh] flex flex-col"
-            >
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: 10 }}
+                  transition={{ duration: 0.18, ease: 'easeOut' }}
+                  className="relative w-full max-w-md rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-10 overflow-hidden font-sans max-h-[85vh] flex flex-col my-auto"
+                >
               {/* Header */}
               <div className="p-3.5 border-b border-neutral-850 flex items-center justify-between bg-neutral-900/50">
                 <div className="flex items-center gap-2">
@@ -360,10 +367,12 @@ export function NotificationCenter({
                   <span>Configure Volume & Price Swing Triggers</span>
                 </button>
               </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                </motion.div>
+              </div>
+            </AnimatePresence>,
+            document.body
+          )
+        : null}
     </div>
   );
 }
