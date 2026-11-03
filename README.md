@@ -2,13 +2,12 @@
 ### Built for ENAM Holdings — AI Engineer Build Challenge
 *A mobile-first, high-conviction intelligence layer for public-markets investing.*
 
-**Candidate:** Sanchit Garg  
-**Roll Number:** 230908  
-**Submission For:** ENAM Holdings — AI Engineer Build Challenge  
-**Email Subject:** `ENAM - IIT screening - 2027`  
-**GitHub Repository:** [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)  
-**Live Deployed Prototype (Vercel):** [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app)  
-**Test Suite Status:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`)
+[![Live App on Vercel](https://img.shields.io/badge/Live_App-enam--holdings--assignment.vercel.app-00DC82?style=for-the-badge&logo=vercel&logoColor=white)](https://enam-holdings-assignment.vercel.app)
+[![Tests Passing](https://img.shields.io/badge/Tests-14%2F14_Passing-brightgreen?style=for-the-badge)](https://enam-holdings-assignment.vercel.app)
+
+> 🚀 **Direct Live App Link:** **[https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app)**  
+> 👤 **Candidate:** Sanchit Garg | **Roll Number:** 230908 | **Email Subject:** `ENAM - IIT screening - 2027`  
+> 🧪 **Automated Test Suite:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`)
 
 ---
 
@@ -158,7 +157,7 @@ FINN is zero-config ready for Vercel deployment:
 ```bash
 npx vercel --prod
 ```
-Or import directly via GitHub repository: `https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT`.
+Or connect your GitHub repository directly to Vercel for automatic deployment on push.
 
 ---
 
@@ -185,7 +184,7 @@ FINN includes an end-to-end integration test suite (`scripts/test_suite.ts`) ver
 ## 📋 Evaluation Deliverables Check
 
 - [x] **Mobile-first Working Prototype**: Built and optimized for mobile viewports, responsive, live on Vercel at [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app) and runs locally on `http://localhost:3000`.
-- [x] **GitHub Repository**: Clean, modular, typed codebase at [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT).
+- [x] **GitHub Repository**: Clean, modular, typed full-stack TypeScript codebase with comprehensive documentation and test suite.
 - [x] **AI Build History**: Documented in [`docs/AI_BUILD_HISTORY.md`](docs/AI_BUILD_HISTORY.md).
 - [x] **Covering Note**: Complete writeup in [`docs/COVERING_NOTE.md`](docs/COVERING_NOTE.md).
 - [x] **Requirements Checklist**: Line-by-line verification in [`docs/REQUIREMENTS_CHECKLIST.md`](docs/REQUIREMENTS_CHECKLIST.md).
