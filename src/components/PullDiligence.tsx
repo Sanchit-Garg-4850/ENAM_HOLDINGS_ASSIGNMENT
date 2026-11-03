@@ -16,6 +16,8 @@ import {
   Search,
   CheckCircle2,
   AlertTriangle,
+  FileText,
+  Users,
 } from 'lucide-react';
 import { StockQuote, DiligenceModule } from '@/lib/types';
 import { PORTFOLIO_COMPANIES } from '@/data/portfolio';
@@ -24,6 +26,7 @@ import { CashWaterfallVisualizer } from './CashWaterfallVisualizer';
 import { PeerComparisonMatrix } from './PeerComparisonMatrix';
 import { AnimatedCounter } from './AnimatedCounter';
 import { FinancialAnalyticsCharts } from './FinancialAnalyticsCharts';
+import { ExecutiveMemoModal } from './ExecutiveMemoModal';
 import { sound } from '@/lib/sound';
 
 interface PullDiligenceProps {
@@ -42,6 +45,19 @@ export function PullDiligence({
   const [activeModuleTab, setActiveModuleTab] = useState<
     'snapshot' | 'trajectory' | 'balanceSheet' | 'cash' | 'guidance' | 'thesis' | 'peers' | 'analytics'
   >('snapshot');
+  const [isMemoOpen, setIsMemoOpen] = useState<boolean>(false);
+
+  // Derive sector peers dynamically from PORTFOLIO_COMPANIES for 1-tap comparison
+  const relevantPeers = React.useMemo(() => {
+    const sameSector = PORTFOLIO_COMPANIES.filter(
+      (c) => c.sector === quote.sector && c.ticker !== quote.ticker
+    );
+    if (sameSector.length >= 3) return sameSector.slice(0, 5);
+    const others = PORTFOLIO_COMPANIES.filter(
+      (c) => c.ticker !== quote.ticker && !sameSector.some((s) => s.ticker === c.ticker)
+    );
+    return [...sameSector, ...others].slice(0, 5);
+  }, [quote.sector, quote.ticker]);
 
   const fs = diligence.financialSnapshot;
   const bs = diligence.balanceSheet;
@@ -80,13 +96,24 @@ export function PullDiligence({
       <div className="p-4 rounded-2xl bg-gradient-to-br from-neutral-900 via-neutral-925 to-neutral-950 border border-neutral-800 shadow-md">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-white text-lg sm:text-xl font-bold tracking-tight">
                 {quote.name}
               </h1>
               <span className="font-mono text-xs px-2 py-0.5 rounded bg-neutral-800 text-emerald-400 border border-neutral-700 font-semibold">
                 {quote.symbol}
               </span>
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  setIsMemoOpen(true);
+                }}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:text-emerald-300 text-xs font-mono font-medium transition-colors"
+                title="Generate 1-Page Institutional Diligence Memo"
+              >
+                <FileText className="w-3.5 h-3.5" />
+                <span>1-Page Memo</span>
+              </button>
             </div>
             <p className="text-xs text-neutral-400 mt-0.5">
               {quote.sector} • {quote.marketCapCategory} • Market Cap: ₹{quote.marketCapCr.toLocaleString()} Cr
@@ -150,6 +177,30 @@ export function PullDiligence({
             </span>
           </div>
         </div>
+
+        {/* One-Tap Sector Peer Chips */}
+        {relevantPeers.length > 0 && (
+          <div className="flex items-center gap-1.5 mt-3 pt-2.5 border-t border-neutral-800/80 overflow-x-auto no-scrollbar">
+            <span className="text-[10px] text-neutral-400 font-mono shrink-0 flex items-center gap-1">
+              <Users className="w-3 h-3 text-emerald-400" />
+              <span>Sector Peers:</span>
+            </span>
+            {relevantPeers.map((peer) => (
+              <button
+                key={peer.ticker}
+                onClick={() => {
+                  sound.playClick();
+                  onSelectTicker(peer.ticker);
+                }}
+                className="px-2 py-0.5 rounded-md bg-neutral-950/70 hover:bg-neutral-800 border border-neutral-850 hover:border-neutral-700 text-xs font-mono text-neutral-300 hover:text-emerald-400 transition-colors shrink-0 flex items-center gap-1"
+                title={`Switch diligence to ${peer.name}`}
+              >
+                <span>{peer.symbol}</span>
+                <span className="text-[9px] text-neutral-500">₹{peer.basePrice}</span>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Diligence Modules Sub-Navigation */}
@@ -578,6 +629,14 @@ export function PullDiligence({
           ))}
         </div>
       </div>
+
+      {/* 1-Click Executive Diligence Memo Modal */}
+      <ExecutiveMemoModal
+        quote={quote}
+        diligence={diligence}
+        isOpen={isMemoOpen}
+        onClose={() => setIsMemoOpen(false)}
+      />
     </div>
   );
 }

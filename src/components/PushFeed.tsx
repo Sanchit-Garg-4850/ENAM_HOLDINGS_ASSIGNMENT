@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { Announcement, AnnouncementCategory } from '@/lib/types';
 import { AnnouncementCard } from './AnnouncementCard';
+import { QuickPeekModal } from './QuickPeekModal';
 
 interface CacheEntry {
   data: Announcement[];
@@ -36,6 +37,7 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
   const [onlyMaterial, setOnlyMaterial] = useState<boolean>(true);
   const [selectedCategory, setSelectedCategory] = useState<AnnouncementCategory | 'ALL'>('ALL');
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [peekAnnouncement, setPeekAnnouncement] = useState<Announcement | null>(null);
   const [collapsedRoutineCount, setCollapsedRoutineCount] = useState<number>(0);
   const [showRoutineDrawer, setShowRoutineDrawer] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -290,6 +292,7 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
               <AnnouncementCard
                 announcement={item}
                 onSelectTicker={onSelectTicker}
+                onQuickPeek={(ann) => setPeekAnnouncement(ann)}
               />
             </motion.div>
           ))}
@@ -324,6 +327,14 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Quick Peek Inspection Modal (Spacebar / 1-Tap) */}
+      <QuickPeekModal
+        announcement={peekAnnouncement}
+        isOpen={Boolean(peekAnnouncement)}
+        onClose={() => setPeekAnnouncement(null)}
+        onSelectTicker={onSelectTicker}
+      />
     </div>
   );
 }

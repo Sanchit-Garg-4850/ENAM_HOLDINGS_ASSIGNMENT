@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
   Scale,
@@ -12,6 +12,10 @@ import {
   ArrowRight,
   TrendingUp,
   Sparkles,
+  Volume2,
+  Square,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { GuidanceAuditItem, DiligenceModule, StockQuote } from '@/lib/types';
 import { AnimatedCounter } from './AnimatedCounter';
@@ -27,9 +31,41 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
   const auditData = diligence.narrativeVsNumbers;
   const reliability = auditData.reliabilityScore;
 
+  const [playingIdx, setPlayingIdx] = useState<number | null>(null);
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
+
   const deliveredCount = auditData.audits.filter((a) => a.status === 'DELIVERED').length;
   const partialCount = auditData.audits.filter((a) => a.status === 'PARTIAL').length;
   const missedCount = auditData.audits.filter((a) => a.status === 'MISSED').length;
+
+  function toggleAudioPlayback(idx: number, text: string) {
+    sound.playClick();
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    if (playingIdx === idx) {
+      window.speechSynthesis.cancel();
+      setPlayingIdx(null);
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.0;
+    utterance.onend = () => setPlayingIdx(null);
+    utterance.onerror = () => setPlayingIdx(null);
+
+    setPlayingIdx(idx);
+    window.speechSynthesis.speak(utterance);
+  }
+
+  function handleCopyCitation(idx: number, audit: GuidanceAuditItem) {
+    sound.playSuccess();
+    const text = `> "${audit.promisedGuidance}"\n> — Concall ${audit.concallDate} (${audit.concallCitation})\n\nDelivered: ${audit.deliveredResult} (Audited Filing ${audit.filingDate}, ${audit.filingCitation})`;
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  }
 
   const demoPresets = ['TRENT.NS', 'DIXON.NS', 'ZOMATO.NS', 'RELIANCE.NS', 'HDFCBANK.NS', 'TCS.NS', 'KAYNES.NS'];
 
@@ -169,17 +205,70 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
 
               {/* Side-by-Side Comparison Box */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 text-xs">
-                {/* What Management Promised */}
-                <div className="p-3 rounded-lg bg-neutral-950 border border-neutral-850 space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-indigo-400 font-mono text-[10px] uppercase font-semibold">
-                    <Mic className="w-3 h-3" />
-                    <span>Concall Promise ({audit.concallDate})</span>
+                {/* What Management Promised with Quartr-grade Audio Sync */}
+                <div
+                  className={`p-3 rounded-lg bg-neutral-950 border transition-all space-y-1.5 ${
+                    playingIdx === idx
+                      ? 'border-indigo-500/60 shadow-md shadow-indigo-950/40 ring-1 ring-indigo-500/30'
+                      : 'border-neutral-850'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-1 text-indigo-400 font-mono text-[10px] uppercase font-semibold">
+                    <div className="flex items-center gap-1.5">
+                      <Mic className="w-3 h-3" />
+                      <span>Concall Promise ({audit.concallDate})</span>
+                    </div>
+
+                    <button
+                      onClick={() => toggleAudioPlayback(idx, audit.promisedGuidance)}
+                      className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono transition-colors ${
+                        playingIdx === idx
+                          ? 'bg-indigo-500 text-white font-bold'
+                          : 'bg-indigo-500/10 text-indigo-300 hover:bg-indigo-500/20'
+                      }`}
+                      title={playingIdx === idx ? 'Stop audio readout' : 'Play synchronized concall audio readout'}
+                    >
+                      {playingIdx === idx ? (
+                        <>
+                          <Square className="w-2.5 h-2.5 fill-current text-white" />
+                          <span>Stop</span>
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="w-2.5 h-2.5" />
+                          <span>Play</span>
+                        </>
+                      )}
+                    </button>
                   </div>
-                  <p className="text-neutral-200 text-xs leading-relaxed italic">
+
+                  <p
+                    className={`text-xs leading-relaxed italic transition-colors ${
+                      playingIdx === idx ? 'text-indigo-200 font-medium' : 'text-neutral-200'
+                    }`}
+                  >
                     &ldquo;{audit.promisedGuidance}&rdquo;
                   </p>
-                  <div className="text-[10px] text-neutral-400 font-mono">
-                    Citation: {audit.concallCitation}
+
+                  <div className="flex items-center justify-between text-[10px] text-neutral-400 font-mono pt-1.5 border-t border-neutral-900">
+                    <span>Citation: {audit.concallCitation}</span>
+                    <button
+                      onClick={() => handleCopyCitation(idx, audit)}
+                      className="text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
+                      title="Copy quote with verified citation"
+                    >
+                      {copiedIdx === idx ? (
+                        <>
+                          <Check className="w-2.5 h-2.5 text-emerald-400" />
+                          <span className="text-emerald-400 font-medium">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-2.5 h-2.5" />
+                          <span>Cite</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                 </div>
 
@@ -192,7 +281,7 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
                   <p className="text-neutral-200 text-xs leading-relaxed font-medium">
                     {audit.deliveredResult}
                   </p>
-                  <div className="text-[10px] text-neutral-400 font-mono">
+                  <div className="text-[10px] text-neutral-400 font-mono pt-1.5 border-t border-neutral-900">
                     Citation: {audit.filingCitation}
                   </div>
                 </div>

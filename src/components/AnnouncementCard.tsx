@@ -11,6 +11,7 @@ import {
   FileText,
   Clock,
   Sparkles,
+  Eye,
 } from 'lucide-react';
 import { Announcement } from '@/lib/types';
 import { CATEGORY_REGISTRY } from '@/lib/classification';
@@ -20,9 +21,10 @@ import { sound } from '@/lib/sound';
 interface AnnouncementCardProps {
   announcement: Announcement;
   onSelectTicker?: (ticker: string) => void;
+  onQuickPeek?: (announcement: Announcement) => void;
 }
 
-export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementCardProps) {
+export function AnnouncementCard({ announcement, onSelectTicker, onQuickPeek }: AnnouncementCardProps) {
   const catInfo = CATEGORY_REGISTRY[announcement.category] || CATEGORY_REGISTRY.unclassified;
   const isUrgent = announcement.tier === 'tier1_urgent';
 
@@ -229,15 +231,29 @@ export function AnnouncementCard({ announcement, onSelectTicker }: AnnouncementC
         </div>
       )}
 
-      {/* Bottom Action Footer with Primary PDF link */}
+      {/* Bottom Action Footer with Primary PDF link & Quick Peek */}
       <div className="flex items-center justify-between pt-2 border-t border-neutral-850/60 text-[11px]">
-        <button
-          onClick={() => onSelectTicker?.(announcement.ticker)}
-          className="text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 transition-colors"
-        >
-          <span>Deep-dive {announcement.ticker.replace('.NS', '')}</span>
-          <span>→</span>
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onSelectTicker?.(announcement.ticker)}
+            className="text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 transition-colors"
+          >
+            <span>Deep-dive {announcement.ticker.replace('.NS', '')}</span>
+            <span>→</span>
+          </button>
+
+          <button
+            onClick={() => {
+              sound.playClick();
+              onQuickPeek?.(announcement);
+            }}
+            className="flex items-center gap-1 px-2 py-0.5 rounded bg-neutral-800/80 hover:bg-neutral-800 text-neutral-300 hover:text-white transition-colors font-mono text-[10px]"
+            title="Quick Peek preview (Spacebar)"
+          >
+            <Eye className="w-3 h-3 text-neutral-400" />
+            <span>Peek</span>
+          </button>
+        </div>
 
         {announcement.sourceFilingUrl && (
           <a

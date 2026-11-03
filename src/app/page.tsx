@@ -14,6 +14,7 @@ import { PortfolioConstellation3D } from '@/components/PortfolioConstellation3D'
 import { NotificationToast } from '@/components/NotificationToast';
 import { OnboardingTutorial } from '@/components/OnboardingTutorial';
 import { AppearanceModal } from '@/components/AppearanceModal';
+import { MorningBriefingPill } from '@/components/MorningBriefingPill';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
 import { sound } from '@/lib/sound';
@@ -210,6 +211,17 @@ export default function Home() {
 
       {/* Main Content Area with Fluid Page Transition Animations */}
       <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 sm:py-6 pb-24 sm:pb-28">
+        {/* Glanceable 1-Second Morning Briefing Delta Banner */}
+        <div className="mb-4">
+          <MorningBriefingPill
+            onSelectTicker={(ticker) => {
+              handleSelectTicker(ticker);
+              setActiveTab('pull');
+            }}
+            onOpenPushFeed={() => setActiveTab('push')}
+          />
+        </div>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
