@@ -115,6 +115,20 @@ The build followed an iterative, test-driven approach using Antigravity's agenti
   - Header Sun/Moon toggle button and Platform Tutorial button for instantaneous on-demand access.
   - SVG and Canvas dynamic theme adaptation (`InteractiveFinancialChart`, `PortfolioConstellation3D`).
 
+### Step 9: Aesthetic Durability, Zero-Lag Navigation & Quartr-Grade Ergonomics
+- **Aesthetic Durability Research:** Grounded in Koyfin, Linear, and Quartr design principles—balancing dense financial telemetry with zero cognitive fatigue.
+- **Components & Systems Engineered:**
+  - `MorningBriefingPill.tsx`: The 1-second view. Quiet frosted header badge calculating overnight deltas (new filings, top margin alerts, forensic clean bill of health) with slide-over 3-bullet synthesis drawer and "Mark as Reviewed" state.
+  - `QuickPeekModal.tsx`: Unbroken browsing flow. Pressing `Space` or clicking `Peek` on any announcement card opens an instant modal preview with 4-box headline results, management pedigree, and primary exchange text without losing scroll position in the feed.
+  - `ExecutiveMemoModal.tsx`: The 60-second action. 1-click generation of a publication-ready 1-page institutional investment memo with valuation percentiles, DuPont ROCE, forensic checklist, and copyable Markdown or print-ready PDF styling.
+  - `One-Tap Sector Peer Chips`: Embedded in `PullDiligence.tsx`. Automatically derives direct industry peers (e.g., `TITAN`, `DMART`, `VMART` for `TRENT.NS`) for 1-tap model switching.
+  - `Quartr-Grade Audio Sync`: Embedded in `NarrativeVsNumbers.tsx`. Real-time click-to-play concall speech synthesis ($0.00 zero-cost Web Speech API) and 1-click citation copy button formatted for investment committee notes.
+  - `FinancialAnalyticsCharts.tsx`: Embedded in `PullDiligence.tsx`. Implements DuPont 3-Stage ROCE decomposition gauge (Operating Margin $\times$ Asset Turnover), Cash Conversion Cycle (DSO + DIO - DPO), Capex Reinvestment Rate, and 52W Valuation Band.
+  - `NotificationCenter.tsx`: Fixed stacking context bug by mounting dialog to `document.body` via `createPortal`, completely escaping sticky header `backdrop-filter` clipping.
+  - `PortfolioConstellation3D.tsx`: Calibrated drag physics so dragging right naturally pulls the 3D sphere right across mouse and touch handlers.
+  - `PushFeed.tsx` SWR Caching: Module-level in-memory cache eliminating tab navigational lag; instant 0ms cached render with silent background revalidation and spinning manual refresh button.
+  - `AppearanceModal.tsx`: Added 5 custom accent color schemes (Emerald, Cyber Cyan, Terminal Amber, Violet Iris, Rose Quartz) and smooth CSS theme switching.
+
 ---
 
 ## 3. Reflection on Design Decisions
@@ -123,4 +137,8 @@ The build followed an iterative, test-driven approach using Antigravity's agenti
 - **Instant Response Times:** In-memory caching and optimized Next.js 16 route handlers ensure sub-second latency across all mobile interactions.
 - **High Information Density:** Avoided unnecessary whitespace and generic illustrations. Emphasized tabular typography, compact badges, and financial figures that respect the investor's time.
 - **Dual Aesthetic Excellence:** Seamlessly delivers both the high-focus Bloomberg/Linear dark mode and an executive, glare-free light mode with uncompromising contrast and tactile sound design.
+- **The 1-10-60 Ergonomic Law:**
+  - 1 second: Morning briefing delta pill & volume heat badges.
+  - 10 seconds: Quick peek modal & DuPont ROCE decomposition.
+  - 60 seconds: 1-click institutional memo export & audio-synced concall quotes.
 

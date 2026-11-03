@@ -29,14 +29,24 @@ FINN operates in two cohesive modes:
      - **Quarterly Results**: Direct 4-cell financial grid (**Revenue, EBITDA, PBT, PAT** with QoQ & YoY percentages and margin badges).
      - **Management Changes**: Enriched with incoming executive pedigree (former company, education, and domain tenure).
      - **Configurable Anomaly Triggers**: Sliders for volume spikes ($> 2.0\times$ 20-DMA) and daily price swings ($> \pm 3.0\%$).
+     - **Morning Briefing Delta Pill**: Quiet header pill calculating overnight deltas ("3 New Filings | 1 Margin Alert | 0 Forensic Flags") with 1-tap executive slide-over synthesis.
+     - **Spacebar / 1-Tap Quick Peek Drawer**: Inspect complete 4-box financials, executive backgrounds, and official BSE PDFs without leaving the feed.
 2. **Pull Workspace (Primary Diligence & Showstopper Guidance Audit)**:
    - 8 deep diligence modules grounded **strictly in primary filings** (Annual Reports & Concall Transcripts).
    - **Showstopper: Narrative vs. Numbers Audit**: A side-by-side audit of what management promised in concalls over the last 4 quarters vs what was delivered in audited filings, complete with citations, variance attribution, and a Management Reliability Score.
+   - **Quartr-Grade Concall Audio Readout & Citation Sync**: Click-to-play synchronized audio playback of management quotes ($0.00 zero-cost Web Speech API) and 1-click citation copy button.
    - **Cash Quality Sentinel**: Evaluates whether accounting profits convert to real cash via the Cash Conversion Ratio ($\text{OCF}/\text{PAT}$) and FCF yields.
+   - **One-Tap Sector Peer Chips**: Automatically derives direct competitors in the same sector (e.g. `TITAN`, `DMART`, `VMART` for `TRENT.NS`) for instant 1-tap diligence switching.
+   - **1-Click Institutional 1-Page Investment Memo Exporter**: Generates a presentation-ready investment memo with DuPont ROCE, forensic checks, valuation percentiles, copyable Markdown, and print-to-PDF formatting.
    - **On-Demand Generalization**: Dynamic live ingestion and diligence synthesis for **any valid NSE ticker** (tested and verified on tickers outside the portfolio like `TITAN.NS`, `SUZLON.NS`, and `HAL.NS`).
 3. **Interactive 3D Portfolio Universe & Visual Diligence**:
-   - **3D Orbital Constellation**: Real-time 3D interactive physics canvas mapping portfolio companies into sector clusters with Fibonacci distribution, inertial drag/touch rotation, holographic HUD inspect cards, and double-click diligence navigation.
+   - **3D Orbital Constellation**: Real-time 3D interactive physics canvas mapping portfolio companies into sector clusters with Fibonacci distribution, inertial drag/touch rotation (intuitive physical dragging math), holographic HUD inspect cards, and double-click diligence navigation.
    - **Interactive Scrubbing Trajectory Charts**: SVG multi-period bar & margin line charts with real-time hover scrub tooltips and tactile audio feedback.
+   - **Financial Analytics & Capital Allocation Suite**:
+     - **DuPont 3-Stage ROCE Decomposition Gauge**: Operating Margin $\times$ Asset Turnover $\rightarrow$ Core ROCE.
+     - **Cash Conversion Cycle**: DSO + DIO - DPO breakdown with visual progress tracking.
+     - **Capex Reinvestment Rate Gauge**: Capex/OCF vs Surplus Free Cash Flow.
+     - **52-Week Valuation Band Percentile**: Visual positioning against 52W range.
    - **Cash Flow Waterfall Visualizer**: Step-by-step visual waterfall decomposing accounting profit into real cash: Revenue → EBITDA → PAT → Working Capital changes → Operating Cash Flow (OCF) → Free Cash Flow (FCF).
    - **Peer Benchmarking Matrix**: Cross-company side-by-side comparative analysis of margins, ROCE, cash conversion, and management reliability scores.
 4. **Voice-Enabled FINN Copilot & Investment Memo Generator**:
@@ -44,9 +54,10 @@ FINN operates in two cohesive modes:
    - **Text-to-Speech Audio Readout**: Natural spoken diligence summaries accompanied by a live animated audio equalizer waveform.
    - **Primary Citation Inspector**: Tap any citation to inspect verbatim management quotes and filing paragraphs with document metadata.
    - **One-Click Investment Memo Export**: Generates and downloads a structured, publication-ready Markdown research memo.
-   - **Tactile Web Audio Engine & Keyboard Shortcuts**: Zero-dependency synthesizer providing subtle mechanical clicks and chimes; pro-grade keyboard shortcuts (`⌘K` for search, `1`-`5` for instant tab switching).
-5. **Adaptive Light/Dark Theme & Interactive User Onboarding Walkthrough**:
+   - **Tactile Web Audio Engine & Keyboard Shortcuts**: Zero-dependency synthesizer providing subtle mechanical clicks and chimes; pro-grade keyboard shortcuts (`⌘K` for search, `1`-`5` for instant tab switching, `Space` for Quick Peek).
+5. **Adaptive Light/Dark Theme, 5 Accent Palettes & Guided Onboarding**:
    - **Seamless Light & Dark Modes**: Instant switch via header toggle with tokenized CSS custom variables, persistent in localStorage, adapting all UI cards, SVG charts, and 3D canvas labels with WCAG-compliant high-contrast accents.
+   - **5 Theme Accent Palettes**: Emerald Green, Cyber Cyan, Terminal Amber, Violet Iris, and Rose Quartz selectable in the Appearance Modal.
    - **Interactive 5-Stage Guided Tour**: Auto-launches for first-time visitors with keyboard shortcut navigation, tab auto-switching, and celebratory confetti upon completing the tour of ENAM's core mandate and features.
 
 ---
