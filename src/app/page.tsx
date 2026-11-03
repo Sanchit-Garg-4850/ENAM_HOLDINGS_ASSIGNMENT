@@ -360,6 +360,7 @@ export default function Home() {
                   quote={currentQuote}
                   diligence={currentDiligence}
                   onSelectTicker={handleSelectTicker}
+                  onOpenSearch={() => setIsSearchOpen(true)}
                 />
               )
             )}

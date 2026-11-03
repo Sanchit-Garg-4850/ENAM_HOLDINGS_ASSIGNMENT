@@ -16,6 +16,7 @@ import {
   Square,
   Copy,
   Check,
+  Search,
 } from 'lucide-react';
 import { GuidanceAuditItem, DiligenceModule, StockQuote } from '@/lib/types';
 import { AnimatedCounter } from './AnimatedCounter';
@@ -25,9 +26,10 @@ interface NarrativeVsNumbersProps {
   quote: StockQuote;
   diligence: DiligenceModule;
   onSelectTicker?: (ticker: string) => void;
+  onOpenSearch?: () => void;
 }
 
-export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: NarrativeVsNumbersProps) {
+export function NarrativeVsNumbers({ quote, diligence, onSelectTicker, onOpenSearch }: NarrativeVsNumbersProps) {
   const auditData = diligence.narrativeVsNumbers;
   const reliability = auditData.reliabilityScore;
 
@@ -67,7 +69,13 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
     setTimeout(() => setCopiedIdx(null), 2000);
   }
 
-  const demoPresets = ['TRENT.NS', 'DIXON.NS', 'ZOMATO.NS', 'RELIANCE.NS', 'HDFCBANK.NS', 'TCS.NS', 'KAYNES.NS'];
+  const demoPresets = ['TRENT.NS', 'HAL.NS', 'BEL.NS', 'DIXON.NS', 'TITAN.NS', 'INFY.NS', 'ZOMATO.NS', 'RELIANCE.NS', 'HDFCBANK.NS', 'TCS.NS'];
+  const allPresets = React.useMemo(() => {
+    if (!demoPresets.includes(quote.ticker)) {
+      return [quote.ticker, ...demoPresets];
+    }
+    return demoPresets;
+  }, [quote.ticker]);
 
   return (
     <div className="space-y-4 pb-20">
@@ -91,8 +99,21 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker }: Narrati
 
         {/* Demo Ticker Pills */}
         <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-neutral-800/60 overflow-x-auto no-scrollbar">
-          <span className="text-[10px] text-neutral-400 font-mono shrink-0">Switch Case:</span>
-          {demoPresets.map((t) => (
+          {onOpenSearch && (
+            <button
+              onClick={() => {
+                sound.playClick();
+                onOpenSearch();
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-300 hover:text-white shrink-0 transition-colors"
+              title="Search any NSE stock (⌘K)"
+            >
+              <Search className="w-3.5 h-3.5 text-indigo-400" />
+              <span>Search</span>
+            </button>
+          )}
+          <span className="text-[10px] text-neutral-400 font-mono shrink-0">Audit Stock:</span>
+          {allPresets.map((t) => (
             <button
               key={t}
               onClick={() => {

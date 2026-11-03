@@ -16,7 +16,7 @@ export interface ScreenerQuarterData {
 export interface ScreenerDocumentLink {
   title: string;
   date?: string;
-  type: 'Annual Report' | 'Concall' | 'Presentation' | 'Exchange Filing' | 'Credit Rating';
+  type: 'Annual Report' | 'Concall' | 'Concall Transcript' | 'Presentation' | 'Exchange Filing' | 'Credit Rating';
   url: string;
 }
 
@@ -51,6 +51,7 @@ export interface ScreenerCompanyData {
   filings: ScreenerDocumentLink[];
   presentations: ScreenerDocumentLink[];
   creditRatings: ScreenerDocumentLink[];
+  concalls?: ScreenerDocumentLink[];
 }
 
 const screenerCache = new Map<string, { data: ScreenerCompanyData; timestamp: number }>();
@@ -238,6 +239,29 @@ export async function fetchScreenerData(symbol: string, companyName?: string): P
       }
     }
 
+    // Parse Real Concall Transcripts & Audio / Presentations
+    const concalls: ScreenerDocumentLink[] = [];
+    const concallsSection = html.match(/concalls flex-column[\s\S]*?<\/ul>/);
+    if (concallsSection) {
+      const lis = [...concallsSection[0].matchAll(/<li[^>]*>([\s\S]*?)<\/li>/g)];
+      for (const li of lis) {
+        const dateMatch = li[1].match(/<div[^>]*>([\s\S]*?)<\/div>/);
+        const dateStr = dateMatch ? dateMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+        const links = [...li[1].matchAll(/<a[^>]*href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/g)];
+        for (const a of links) {
+          const typeText = a[2].replace(/<[^>]+>/g, '').trim();
+          const href = a[1];
+          if (typeText.toLowerCase().includes('transcript') || href.endsWith('.pdf')) {
+            concalls.push({
+              title: `${dateStr} Earnings Call ${typeText}`,
+              type: 'Concall Transcript',
+              url: href,
+            });
+          }
+        }
+      }
+    }
+
     // 4. Parse Real Company Profile & Segments Description
     const paras = [...html.matchAll(/<div class="company-profile"[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/g)]
       .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/\[\d+\]/g, '').trim())
@@ -322,6 +346,7 @@ export async function fetchScreenerData(symbol: string, companyName?: string): P
       filings: filings.slice(0, 10),
       presentations: presentations.slice(0, 6),
       creditRatings: creditRatings.slice(0, 4),
+      concalls: concalls.slice(0, 10),
     };
 
     screenerCache.set(cleanSymbol, { data: companyData, timestamp: now });
