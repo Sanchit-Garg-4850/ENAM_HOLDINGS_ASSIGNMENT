@@ -147,8 +147,8 @@ export function PortfolioConstellation3D({
       if (isDragging) {
         const deltaX = e.clientX - lastMouseX;
         const deltaY = e.clientY - lastMouseY;
-        angleY = deltaX * 0.006;
-        angleX = -deltaY * 0.006;
+        angleY = -deltaX * 0.006;
+        angleX = deltaY * 0.006;
         lastMouseX = e.clientX;
         lastMouseY = e.clientY;
       } else {
@@ -192,8 +192,8 @@ export function PortfolioConstellation3D({
       if (isDragging && e.touches.length === 1) {
         const deltaX = e.touches[0].clientX - lastMouseX;
         const deltaY = e.touches[0].clientY - lastMouseY;
-        angleY = deltaX * 0.008;
-        angleX = -deltaY * 0.008;
+        angleY = -deltaX * 0.008;
+        angleX = deltaY * 0.008;
         lastMouseX = e.touches[0].clientX;
         lastMouseY = e.touches[0].clientY;
       }

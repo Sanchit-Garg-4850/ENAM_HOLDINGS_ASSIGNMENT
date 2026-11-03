@@ -55,6 +55,9 @@ export function BottomNav({ activeTab, onChangeTab, urgentCount = 0 }: BottomNav
               key={tab.id}
               onClick={() => {
                 sound.playClick();
+                if (typeof window !== 'undefined' && window.scrollY > 40) {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
                 onChangeTab(tab.id);
               }}
               className={`flex flex-col items-center justify-center py-1 px-1 rounded-xl transition-all relative ${

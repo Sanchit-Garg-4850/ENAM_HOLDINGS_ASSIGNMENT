@@ -11,9 +11,19 @@ import {
   Layers,
   Sparkles,
   Zap,
+  RefreshCw,
 } from 'lucide-react';
 import { Announcement, AnnouncementCategory } from '@/lib/types';
 import { AnnouncementCard } from './AnnouncementCard';
+
+interface CacheEntry {
+  data: Announcement[];
+  collapsedRoutineCount: number;
+  timestamp: number;
+}
+
+// Module-level in-memory cache preserved across tab switches
+const PUSH_FEED_CACHE: Record<string, CacheEntry> = {};
 
 interface PushFeedProps {
   onSelectTicker: (ticker: string) => void;
@@ -28,7 +38,9 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [collapsedRoutineCount, setCollapsedRoutineCount] = useState<number>(0);
   const [showRoutineDrawer, setShowRoutineDrawer] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [isBackgroundFetching, setIsBackgroundFetching] = useState<boolean>(false);
 
   // Time window options
   const windowOptions = [
@@ -48,9 +60,23 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
     { id: 'pledging', label: 'Pledging' },
   ];
 
+  // SWR: Instant render from cache + silent background revalidation
   useEffect(() => {
-    async function fetchAnnouncements() {
+    const cacheKey = `${windowHours}_${onlyMaterial}_${selectedCategory}`;
+    const cached = PUSH_FEED_CACHE[cacheKey];
+
+    // If cache hit, immediately serve cached announcements with zero navigational lag
+    if (cached) {
+      setAnnouncements(cached.data);
+      setCollapsedRoutineCount(cached.collapsedRoutineCount);
+      setIsLoading(false);
+    } else {
       setIsLoading(true);
+    }
+
+    let isCancelled = false;
+    async function revalidate() {
+      setIsBackgroundFetching(true);
       try {
         const params = new URLSearchParams({
           windowHours: windowHours.toString(),
@@ -63,19 +89,74 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
 
         const res = await fetch(`/api/announcements?${params.toString()}`);
         const json = await res.json();
-        if (json.success) {
-          setAnnouncements(json.data);
-          setCollapsedRoutineCount(json.collapsedRoutineCount || 0);
+        if (!isCancelled && json.success) {
+          const newIds = JSON.stringify(json.data.map((d: any) => d.id));
+          const oldIds = cached ? JSON.stringify(cached.data.map((d: any) => d.id)) : '';
+
+          // Only update state if new data was fetched or cache was empty
+          if (newIds !== oldIds || !cached) {
+            setAnnouncements(json.data);
+            setCollapsedRoutineCount(json.collapsedRoutineCount || 0);
+          }
+
+          PUSH_FEED_CACHE[cacheKey] = {
+            data: json.data,
+            collapsedRoutineCount: json.collapsedRoutineCount || 0,
+            timestamp: Date.now(),
+          };
         }
       } catch (err) {
-        console.error('Failed to load push announcements:', err);
+        console.warn('Background revalidation failed:', err);
       } finally {
-        setIsLoading(false);
+        if (!isCancelled) {
+          setIsLoading(false);
+          setIsBackgroundFetching(false);
+          setIsRefreshing(false);
+        }
       }
     }
 
-    fetchAnnouncements();
+    revalidate();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [windowHours, onlyMaterial, selectedCategory]);
+
+  // Explicit user manual refresh
+  async function handleManualRefresh() {
+    sound.playClick();
+    setIsRefreshing(true);
+    const cacheKey = `${windowHours}_${onlyMaterial}_${selectedCategory}`;
+
+    try {
+      const params = new URLSearchParams({
+        windowHours: windowHours.toString(),
+        onlyMaterial: onlyMaterial.toString(),
+      });
+
+      if (selectedCategory !== 'ALL') {
+        params.append('category', selectedCategory);
+      }
+
+      const res = await fetch(`/api/announcements?${params.toString()}`);
+      const json = await res.json();
+      if (json.success) {
+        PUSH_FEED_CACHE[cacheKey] = {
+          data: json.data,
+          collapsedRoutineCount: json.collapsedRoutineCount || 0,
+          timestamp: Date.now(),
+        };
+        setAnnouncements(json.data);
+        setCollapsedRoutineCount(json.collapsedRoutineCount || 0);
+        sound.playChime();
+      }
+    } catch (err) {
+      console.error('Manual refresh failed:', err);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }
 
   return (
     <div className="space-y-4 pb-20">
@@ -86,7 +167,18 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
             <Zap className="w-3.5 h-3.5 fill-emerald-400" />
             Windowed Push Digest
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            {/* Manual Refresh Button */}
+            <button
+              onClick={handleManualRefresh}
+              disabled={isRefreshing}
+              className="text-[10px] font-mono text-neutral-300 hover:text-white bg-neutral-900 border border-neutral-800 hover:border-neutral-700 px-2 py-0.5 rounded flex items-center gap-1.5 transition-colors disabled:opacity-60"
+              title="Refresh and check for live announcements"
+            >
+              <RefreshCw className={`w-3 h-3 text-emerald-400 ${isRefreshing || isBackgroundFetching ? 'animate-spin' : ''}`} />
+              <span>{isRefreshing ? 'Refreshing...' : 'Refresh'}</span>
+            </button>
+
             {onClearUrgent && (
               <button
                 onClick={() => {
@@ -101,10 +193,10 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
             )}
             <button
               onClick={onOpenAlertSettings}
-              className="text-[11px] font-mono text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
+              className="text-[11px] font-mono text-neutral-400 hover:text-white flex items-center gap-1 transition-colors hidden sm:flex"
             >
               <SlidersHorizontal className="w-3 h-3 text-neutral-400" />
-              <span>Triggers: &gt;2x Vol | ±3%</span>
+              <span>Triggers: &gt;2x Vol</span>
             </button>
           </div>
         </div>

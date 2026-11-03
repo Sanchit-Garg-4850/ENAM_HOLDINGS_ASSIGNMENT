@@ -66,6 +66,9 @@ export default function Home() {
   }, [hasAcknowledgedPush]);
 
   function handleTabChange(tab: NavTab) {
+    if (typeof window !== 'undefined' && window.scrollY > 40) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
     setActiveTab(tab);
     if (tab === 'push') {
       setUrgentCount(0);

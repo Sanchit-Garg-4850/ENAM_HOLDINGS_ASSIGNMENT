@@ -23,6 +23,7 @@ import { InteractiveFinancialChart } from './InteractiveFinancialChart';
 import { CashWaterfallVisualizer } from './CashWaterfallVisualizer';
 import { PeerComparisonMatrix } from './PeerComparisonMatrix';
 import { AnimatedCounter } from './AnimatedCounter';
+import { FinancialAnalyticsCharts } from './FinancialAnalyticsCharts';
 import { sound } from '@/lib/sound';
 
 interface PullDiligenceProps {
@@ -39,7 +40,7 @@ export function PullDiligence({
   onOpenSearch,
 }: PullDiligenceProps) {
   const [activeModuleTab, setActiveModuleTab] = useState<
-    'snapshot' | 'trajectory' | 'balanceSheet' | 'cash' | 'guidance' | 'thesis' | 'peers'
+    'snapshot' | 'trajectory' | 'balanceSheet' | 'cash' | 'guidance' | 'thesis' | 'peers' | 'analytics'
   >('snapshot');
 
   const fs = diligence.financialSnapshot;
@@ -161,6 +162,7 @@ export function PullDiligence({
           { id: 'guidance', label: '5. Forward Guidance' },
           { id: 'thesis', label: '6. Bull vs Bear' },
           { id: 'peers', label: '7. Peer Benchmarks' },
+          { id: 'analytics', label: '8. Capital Analytics' },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -258,6 +260,9 @@ export function PullDiligence({
               </div>
             </div>
           </div>
+
+          {/* Institutional Decomposed Financial Analytics */}
+          <FinancialAnalyticsCharts diligence={diligence} quote={quote} />
         </div>
       )}
 
@@ -540,6 +545,13 @@ export function PullDiligence({
             </span>
             <p className="text-white font-medium">{bb.enamConvictionVerdict}</p>
           </div>
+        </div>
+      )}
+
+      {/* MODULE TAB 8: Capital Analytics & Ratios */}
+      {activeModuleTab === 'analytics' && (
+        <div className="space-y-4">
+          <FinancialAnalyticsCharts diligence={diligence} quote={quote} />
         </div>
       )}
         </motion.div>
