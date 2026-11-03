@@ -112,8 +112,8 @@ An investor today is drowning in hundreds of corporate filings, earnings notific
 
 1. Clone the repository:
    ```bash
-   git clone <repo-url>
-   cd antigravity
+   git clone https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT.git
+   cd ENAM_HOLDINGS_ASSIGNMENT
    ```
 
 2. Install dependencies:

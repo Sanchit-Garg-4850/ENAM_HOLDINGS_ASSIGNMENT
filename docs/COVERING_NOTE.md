@@ -10,7 +10,7 @@
 Here is our submission for the **FINN: Financial Investment Agent** challenge.
 
 - **Deployed Mobile Prototype:** `https://<your-vercel-deployment-link>` (or run locally via `bun run start`)
-- **GitHub Repository:** `https://github.com/<your-username>/finn-investment-agent`
+- **GitHub Repository:** `https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT`
 - **Requirements Verification Checklist:** Line-by-line audit matrix against both challenge PDF briefs documented in [`docs/REQUIREMENTS_CHECKLIST.md`](file:///home/abhi/sanchit/antigravity/docs/REQUIREMENTS_CHECKLIST.md).
 - **AI Build History:** Detailed prompt trajectories, tool traces, and decisions documented in [`docs/AI_BUILD_HISTORY.md`](file:///home/abhi/sanchit/antigravity/docs/AI_BUILD_HISTORY.md).
 
