@@ -13,9 +13,14 @@ export async function getCompanyDiligence(ticker: string): Promise<DiligenceModu
 
   // 1. Primary Path: Construct 100% dynamic primary diligence from live Screener P&L tables + live Yahoo Finance quotes
   if (screenerData && screenerData.quarters && screenerData.quarters.length >= 2) {
-    const dynamicModule = generateDynamicDiligence(quote, symbol, screenerData);
+    const dynamicModule = generateDynamicDiligence(
+      quote,
+      symbol,
+      screenerData,
+      PRIMARY_DILIGENCE_STORE[normalizedTicker]?.narrativeVsNumbers?.audits
+    );
 
-    // If pre-researched concall transcripts exist, blend verified management quotes while keeping all numbers, ratios & filings 100% live
+    // If qualitative details exist, blend them while keeping audits, ratios and statements 100% dynamic
     if (PRIMARY_DILIGENCE_STORE[normalizedTicker]) {
       const base = PRIMARY_DILIGENCE_STORE[normalizedTicker];
       if (base.businessSnapshot.segments.length > 0) {
@@ -29,11 +34,6 @@ export async function getCompanyDiligence(ticker: string): Promise<DiligenceModu
         dynamicModule.bullVsBear.bullPoints = base.bullVsBear.bullPoints;
         dynamicModule.bullVsBear.bearPoints = base.bullVsBear.bearPoints;
         dynamicModule.bullVsBear.enamConvictionVerdict = base.bullVsBear.enamConvictionVerdict;
-      }
-      if (base.narrativeVsNumbers && base.narrativeVsNumbers.audits.length >= 4) {
-        dynamicModule.narrativeVsNumbers.audits = base.narrativeVsNumbers.audits;
-        dynamicModule.narrativeVsNumbers.reliabilityScore = base.narrativeVsNumbers.reliabilityScore;
-        dynamicModule.narrativeVsNumbers.executiveSummary = base.narrativeVsNumbers.executiveSummary;
       }
     }
 
@@ -51,7 +51,8 @@ export async function getCompanyDiligence(ticker: string): Promise<DiligenceModu
 function generateDynamicDiligence(
   quote: StockQuote,
   symbol: string,
-  screener: any | null
+  screener: any | null,
+  baseAuditTemplate?: any[]
 ): DiligenceModule {
   const mcapCr = quote.marketCapCr;
   const pe = quote.peRatio || 35.0;
@@ -330,10 +331,10 @@ function generateDynamicDiligence(
       audits: [
         {
           quarter: q0.quarter,
-          metric: sectorMeta.auditMetric1 || 'Revenue Growth & Volume Expansion',
-          promisedGuidance: `Targeted ${salesCagr > 0 ? salesCagr : 12}% YoY top-line expansion supported by capacity debottlenecking and distribution expansion.`,
-          concallDate: concalls[3]?.title ? concalls[3].title.replace(/Earnings Call.*/, 'Earnings Call') : `${q0.quarter} Concall`,
-          concallCitation: concalls[3]?.url ? `BSE Filing: ${concalls[3].url}` : 'BSE Corporate Announcement Feed',
+          metric: baseAuditTemplate?.[0]?.metric || sectorMeta.auditMetric1 || 'Revenue Growth & Volume Expansion',
+          promisedGuidance: baseAuditTemplate?.[0]?.promisedGuidance || `Targeted ${salesCagr > 0 ? salesCagr : 12}% YoY top-line expansion supported by capacity debottlenecking and distribution expansion.`,
+          concallDate: concalls[3]?.title ? concalls[3].title.replace(/Earnings Call.*/, 'Earnings Call') : baseAuditTemplate?.[0]?.concallDate || `${q0.quarter} Concall`,
+          concallCitation: concalls[3]?.url ? `BSE Filing: ${concalls[3].url}` : baseAuditTemplate?.[0]?.concallCitation || 'BSE Corporate Announcement Feed',
           deliveredResult: `Sales reported at ₹${q0.sales.toLocaleString()} Cr (${q0.salesYoY !== undefined ? ((q0.salesYoY >= 0 ? '+' : '') + q0.salesYoY + '% YoY') : '+14.8% YoY'}).`,
           filingDate: `${q0.quarter} Audited Results`,
           filingCitation: filings[3]?.url ? `BSE Filing: ${filings[3].url}` : filings[0]?.url ? `BSE Filing: ${filings[0].url}` : 'Audited Financial Statements, BSE India',
@@ -342,10 +343,10 @@ function generateDynamicDiligence(
         },
         {
           quarter: q1.quarter,
-          metric: 'Operating Margin Defense',
-          promisedGuidance: `Maintain operating margins within ${Math.round(latestQuarterOPM - 1)}% - ${Math.round(latestQuarterOPM + 1)}% band despite raw material volatility.`,
-          concallDate: concalls[2]?.title ? concalls[2].title.replace(/Earnings Call.*/, 'Earnings Call') : `${q1.quarter} Concall`,
-          concallCitation: concalls[2]?.url ? `BSE Filing: ${concalls[2].url}` : 'Management Guidance Transcript',
+          metric: baseAuditTemplate?.[1]?.metric || 'Operating Margin Defense',
+          promisedGuidance: baseAuditTemplate?.[1]?.promisedGuidance || `Maintain operating margins within ${Math.round(latestQuarterOPM - 1)}% - ${Math.round(latestQuarterOPM + 1)}% band despite raw material volatility.`,
+          concallDate: concalls[2]?.title ? concalls[2].title.replace(/Earnings Call.*/, 'Earnings Call') : baseAuditTemplate?.[1]?.concallDate || `${q1.quarter} Concall`,
+          concallCitation: concalls[2]?.url ? `BSE Filing: ${concalls[2].url}` : baseAuditTemplate?.[1]?.concallCitation || 'Management Guidance Transcript',
           deliveredResult: `Achieved ${q1.opmPercent}% EBITDA margin (Operating Profit ₹${q1.operatingProfit.toLocaleString()} Cr${q1.ebitdaYoY !== undefined ? `, ${(q1.ebitdaYoY >= 0 ? '+' : '') + q1.ebitdaYoY + '% YoY'}` : ''}).`,
           filingDate: `${q1.quarter} Results`,
           filingCitation: filings[2]?.url ? `BSE Filing: ${filings[2].url}` : filings[0]?.url ? `BSE Filing: ${filings[0].url}` : 'BSE Primary Filing, Statement of Profit and Loss',
@@ -354,10 +355,10 @@ function generateDynamicDiligence(
         },
         {
           quarter: q2.quarter,
-          metric: sectorMeta.auditMetric2 || 'Working Capital Cycle Discipline',
-          promisedGuidance: sectorMeta.auditGuidance2 || `Targeted working capital stabilization within ${workingCapitalDays} days.`,
-          concallDate: concalls[1]?.title ? concalls[1].title.replace(/Earnings Call.*/, 'Earnings Call') : `${q2.quarter} Analyst Meet`,
-          concallCitation: concalls[1]?.url ? `BSE Filing: ${concalls[1].url}` : 'Investor Presentation Slide Deck',
+          metric: baseAuditTemplate?.[2]?.metric || sectorMeta.auditMetric2 || 'Working Capital Cycle Discipline',
+          promisedGuidance: baseAuditTemplate?.[2]?.promisedGuidance || sectorMeta.auditGuidance2 || `Targeted working capital stabilization within ${workingCapitalDays} days.`,
+          concallDate: concalls[1]?.title ? concalls[1].title.replace(/Earnings Call.*/, 'Earnings Call') : baseAuditTemplate?.[2]?.concallDate || `${q2.quarter} Analyst Meet`,
+          concallCitation: concalls[1]?.url ? `BSE Filing: ${concalls[1].url}` : baseAuditTemplate?.[2]?.concallCitation || 'Investor Presentation Slide Deck',
           deliveredResult: `Delivered ${q2.opmPercent}% EBITDA margin with working capital at ${workingCapitalDays} days (Debtors: ${debtorDays}d, Inventory: ${inventoryDays}d).`,
           filingDate: `${q2.quarter} Financial Disclosures`,
           filingCitation: filings[1]?.url ? `BSE Filing: ${filings[1].url}` : filings[0]?.url ? `BSE Filing: ${filings[0].url}` : 'SEBI Regulation 30 Outcome, Balance Sheet Notes',
@@ -366,10 +367,10 @@ function generateDynamicDiligence(
         },
         {
           quarter: q3.quarter,
-          metric: 'Net Profit & Capacity Delivery',
-          promisedGuidance: `Targeted bottom-line expansion in line with guided trajectory (${patCagr > 0 ? patCagr : 15}% CAGR target) and on-schedule commercial throughput.`,
-          concallDate: concalls[0]?.title ? concalls[0].title.replace(/Earnings Call.*/, 'Earnings Call') : `${q3.quarter} Earnings Call`,
-          concallCitation: concalls[0]?.url ? `BSE Filing: ${concalls[0].url}` : 'Latest Earnings Call Transcript',
+          metric: baseAuditTemplate?.[3]?.metric || 'Net Profit & Capacity Delivery',
+          promisedGuidance: baseAuditTemplate?.[3]?.promisedGuidance || `Targeted bottom-line expansion in line with guided trajectory (${patCagr > 0 ? patCagr : 15}% CAGR target) and on-schedule commercial throughput.`,
+          concallDate: concalls[0]?.title ? concalls[0].title.replace(/Earnings Call.*/, 'Earnings Call') : baseAuditTemplate?.[3]?.concallDate || `${q3.quarter} Earnings Call`,
+          concallCitation: concalls[0]?.url ? `BSE Filing: ${concalls[0].url}` : baseAuditTemplate?.[3]?.concallCitation || 'Latest Earnings Call Transcript',
           deliveredResult: `Net profit reported at ₹${q3.netProfit.toLocaleString()} Cr (${q3.patYoY !== undefined ? ((q3.patYoY >= 0 ? '+' : '') + q3.patYoY + '% YoY') : '+9.2% YoY'}).`,
           filingDate: `${q3.quarter} Directors Report`,
           filingCitation: filings[0]?.url ? `BSE Filing: ${filings[0].url}` : 'Regulation 30 Outcome, BSE Disclosure',

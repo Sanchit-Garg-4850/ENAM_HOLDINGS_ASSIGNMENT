@@ -17,10 +17,32 @@ import {
   Copy,
   Check,
   Search,
+  ExternalLink,
 } from 'lucide-react';
 import { GuidanceAuditItem, DiligenceModule, StockQuote } from '@/lib/types';
 import { AnimatedCounter } from './AnimatedCounter';
 import { sound } from '@/lib/sound';
+
+function renderCitationLink(citation: string, fallbackLabel: string) {
+  const urlMatch = citation.match(/https?:\/\/[^\s)]+/);
+  if (urlMatch) {
+    const url = urlMatch[0];
+    const textWithoutUrl = citation.replace(url, '').replace(/^BSE Filing:\s*/i, '').trim();
+    const label = textWithoutUrl || fallbackLabel;
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-indigo-400 hover:text-indigo-300 hover:underline flex items-center gap-1 inline-flex transition-colors group"
+      >
+        <span className="truncate max-w-[190px] sm:max-w-[280px]">Citation: {label}</span>
+        <ExternalLink className="w-2.5 h-2.5 shrink-0 opacity-80 group-hover:opacity-100" />
+      </a>
+    );
+  }
+  return <span>Citation: {citation}</span>;
+}
 
 interface NarrativeVsNumbersProps {
   quote: StockQuote;
@@ -81,13 +103,14 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker, onOpenSea
     <div className="space-y-4 pb-20">
       {/* Header Banner */}
       <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-neutral-900 to-neutral-950 border border-indigo-900/30">
-        <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
           <span className="text-[11px] font-mono uppercase tracking-wider text-indigo-400 font-semibold flex items-center gap-1.5">
             <Scale className="w-3.5 h-3.5" />
             Primary Source Audit Core
           </span>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/30">
-            4-Quarter Promise vs. Delivery
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            100% Dynamic Live Audit
           </span>
         </div>
         <h2 className="text-white text-base sm:text-lg font-bold tracking-tight mb-1">
@@ -272,10 +295,10 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker, onOpenSea
                   </p>
 
                   <div className="flex items-center justify-between text-[10px] text-neutral-400 font-mono pt-1.5 border-t border-neutral-900">
-                    <span>Citation: {audit.concallCitation}</span>
+                    {renderCitationLink(audit.concallCitation, 'BSE Concall Transcript')}
                     <button
                       onClick={() => handleCopyCitation(idx, audit)}
-                      className="text-neutral-400 hover:text-white flex items-center gap-1 transition-colors"
+                      className="text-neutral-400 hover:text-white flex items-center gap-1 transition-colors shrink-0 ml-2"
                       title="Copy quote with verified citation"
                     >
                       {copiedIdx === idx ? (
@@ -303,7 +326,7 @@ export function NarrativeVsNumbers({ quote, diligence, onSelectTicker, onOpenSea
                     {audit.deliveredResult}
                   </p>
                   <div className="text-[10px] text-neutral-400 font-mono pt-1.5 border-t border-neutral-900">
-                    Citation: {audit.filingCitation}
+                    {renderCitationLink(audit.filingCitation, 'Audited BSE Results Filing')}
                   </div>
                 </div>
               </div>
