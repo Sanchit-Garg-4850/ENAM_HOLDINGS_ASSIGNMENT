@@ -172,3 +172,67 @@ html.light[data-accent="rose"] .text-emerald-300 {
 body, button, input, div, header, nav {
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
 }
+
+/* =========================================================================
+   NATIVE CSS SMOOTH SCROLLING & SLEEK SCROLLBAR
+   ========================================================================= */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+/* Sleek minimalist scrollbar (Mac / Linear aesthetic) */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.dark ::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+}
+
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(255, 255, 255, 0.28);
+}
+
+html.light ::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.18);
+  border-radius: 9999px;
+}
+
+html.light ::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(0, 0, 0, 0.32);
+}
+
+/* =========================================================================
+   REFINED MICRO-INTERACTIONS & TACTILE FEEDBACK
+   ========================================================================= */
+
+/* Tactile button depress feedback */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:not(:disabled):active {
+  transform: scale(0.975);
+}
+
+/* Interactive card hover elevation */
+.card-hover-elevate {
+  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease, border-color 0.18s ease;
+}
+
+.card-hover-elevate:hover {
+  transform: translateY(-2px);
+}
+
+/* Subtle focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-emerald-500);
+  outline-offset: 2px;
+}
