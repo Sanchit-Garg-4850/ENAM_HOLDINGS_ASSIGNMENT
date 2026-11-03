@@ -36,11 +36,26 @@ interface Message {
   sender: 'user' | 'assistant';
   text: string;
   citations?: Array<{ source: string; quote: string; type: string }>;
+  engineUsed?: string;
   timestamp: string;
 }
 
 export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
   const [input, setInput] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [tempApiKey, setTempApiKey] = useState('');
+  const [isKeyModalOpen, setIsKeyModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('finn_copilot_api_key');
+      if (stored) {
+        setApiKey(stored);
+        setTempApiKey(stored);
+      }
+    }
+  }, []);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -53,6 +68,7 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
           type: 'NSE Primary Filing',
         },
       ],
+      engineUsed: 'finn_primary_engine',
       timestamp: 'Just now',
     },
   ]);
@@ -196,7 +212,7 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
       const res = await fetch('/api/copilot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: textToSend, ticker: quote.ticker }),
+        body: JSON.stringify({ question: textToSend, ticker: quote.ticker, apiKey: apiKey || undefined }),
       });
 
       const data = await res.json();
@@ -219,6 +235,7 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
           sender: 'assistant',
           text: data.response,
           citations: data.citations,
+          engineUsed: data.engineUsed,
           timestamp: 'Just now',
         };
         setMessages((prev) => [...prev, assistantMsg]);
@@ -283,6 +300,28 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
         </div>
 
         <div className="flex items-center gap-2">
+          {/* LLM Engine Config Button */}
+          <button
+            onClick={() => {
+              sound.playClick();
+              setIsKeyModalOpen(true);
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-xs font-mono transition-colors"
+            title="Configure Generative AI (Gemini / OpenAI)"
+          >
+            {apiKey ? (
+              <span className="text-emerald-400 flex items-center gap-1 font-semibold">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                LLM Active
+              </span>
+            ) : (
+              <span className="text-neutral-400 hover:text-neutral-200 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+                Primary Engine
+              </span>
+            )}
+          </button>
+
           {/* Export Memo */}
           <button
             onClick={handleExportMemo}
@@ -348,6 +387,15 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
                   <>
                     <Bot className="w-3 h-3 text-emerald-400" />
                     <span className="text-emerald-400 font-semibold">FINN Agent</span>
+                    {msg.engineUsed && (
+                      <span className="text-[9px] px-1.5 py-0.2 rounded bg-neutral-800 text-neutral-300 font-mono">
+                        {msg.engineUsed === 'gemini'
+                          ? '✨ Gemini 1.5'
+                          : msg.engineUsed === 'openai'
+                          ? '✨ GPT-4o'
+                          : 'Primary Grounded Engine'}
+                      </span>
+                    )}
                   </>
                 )}
                 <span className="text-neutral-600">•</span>
@@ -515,6 +563,84 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
               >
                 Close Inspector
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Optional Generative AI API Key Modal */}
+      {isKeyModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/80 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-md rounded-2xl bg-neutral-900 border border-neutral-750 p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-emerald-400" />
+                <h3 className="text-white text-sm font-bold">Generative LLM Engine Key</h3>
+              </div>
+              <button
+                onClick={() => setIsKeyModalOpen(false)}
+                className="text-neutral-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <p className="text-xs text-neutral-300 leading-relaxed">
+              FINN runs out-of-the-box on its <strong className="text-emerald-400">Zero-Cost Primary Reasoning Engine</strong> ($0.00 spend).
+              Optionally, enter a free Google Gemini API key or OpenAI key below for full conversational synthesis with primary grounding.
+            </p>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-mono text-neutral-400 uppercase">API Key (Gemini or OpenAI):</label>
+              <input
+                type="password"
+                value={tempApiKey}
+                onChange={(e) => setTempApiKey(e.target.value)}
+                placeholder="AIza... or sk-..."
+                className="w-full px-3 py-2 rounded-xl bg-neutral-950 border border-neutral-750 text-white text-xs font-mono focus:outline-none focus:border-emerald-500/50"
+              />
+              <span className="text-[10px] text-neutral-500 block">
+                Saved locally in your browser. Never transmitted to third-party tracking servers.
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between pt-2">
+              <button
+                onClick={() => {
+                  sound.playClick();
+                  setApiKey('');
+                  setTempApiKey('');
+                  localStorage.removeItem('finn_copilot_api_key');
+                  setIsKeyModalOpen(false);
+                }}
+                className="text-xs text-rose-400 hover:text-rose-300 font-mono transition-colors"
+              >
+                Clear Key (Use Zero-Cost)
+              </button>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setIsKeyModalOpen(false)}
+                  className="px-3 py-1.5 rounded-lg bg-neutral-800 text-neutral-300 hover:text-white text-xs font-mono"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => {
+                    sound.playSuccess();
+                    setApiKey(tempApiKey.trim());
+                    if (tempApiKey.trim()) {
+                      localStorage.setItem('finn_copilot_api_key', tempApiKey.trim());
+                    } else {
+                      localStorage.removeItem('finn_copilot_api_key');
+                    }
+                    setIsKeyModalOpen(false);
+                  }}
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold text-xs font-mono transition-colors"
+                >
+                  Save Engine Key
+                </button>
+              </div>
             </div>
           </div>
         </div>
