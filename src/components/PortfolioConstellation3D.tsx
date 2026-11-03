@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { Sparkles, Maximize2, Minimize2, RotateCcw, ArrowRight, Eye } from 'lucide-react';
 import { PORTFOLIO_COMPANIES } from '@/data/portfolio';
 import { sound } from '@/lib/sound';
+import { useTheme } from '@/lib/themeContext';
 
 interface PortfolioConstellation3DProps {
   onSelectTicker: (ticker: string) => void;
@@ -30,6 +31,8 @@ export function PortfolioConstellation3D({
   onSelectTicker,
   activeTicker,
 }: PortfolioConstellation3DProps) {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -252,7 +255,7 @@ export function PortfolioConstellation3D({
             const y2 = height / 2 + sorted[j].y * s2;
 
             const alpha = Math.max(0.05, Math.min(0.25, ((sorted[i].z + sorted[j].z) / 2 + sphereRadius) / (sphereRadius * 2)));
-            ctx!.strokeStyle = `rgba(16, 185, 129, ${alpha})`;
+            ctx!.strokeStyle = isDark ? `rgba(16, 185, 129, ${alpha})` : `rgba(5, 150, 105, ${alpha * 1.3})`;
             ctx!.beginPath();
             ctx!.moveTo(x1, y1);
             ctx!.lineTo(x2, y2);
@@ -292,7 +295,9 @@ export function PortfolioConstellation3D({
         // Ticker symbol label
         if (scale > 0.85 || isHovered || isActive) {
           ctx!.font = `${isActive ? 'bold' : 'normal'} ${Math.round(10 * scale)}px monospace`;
-          ctx!.fillStyle = isHovered || isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.65)';
+          ctx!.fillStyle = isDark
+            ? (isHovered || isActive ? '#ffffff' : 'rgba(255, 255, 255, 0.7)')
+            : (isHovered || isActive ? '#0f172a' : 'rgba(30, 41, 59, 0.8)');
           ctx!.textAlign = 'center';
           ctx!.fillText(n.symbol, projX, projY - radius - 3);
         }
@@ -312,7 +317,7 @@ export function PortfolioConstellation3D({
       canvas.removeEventListener('touchmove', handleTouchMove);
       canvas.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [activeTicker, hoveredNode, isFullscreen, rotationSpeed, liveQuotes]);
+  }, [activeTicker, hoveredNode, isFullscreen, rotationSpeed, liveQuotes, isDark]);
 
   return (
     <div

@@ -101,7 +101,19 @@ The build followed an iterative, test-driven approach using Antigravity's agenti
     - One-click Markdown investment memo download.
     - Confetti celebration on high-conviction insights.
   - `sound.ts`: Zero-dependency Web Audio API synthesizer for tactile mechanical clicks, chimes, and chords.
-  - Global Keyboard Shortcuts: `⌘K` for search modal, keys `1`-`5` for instant tab switching with audio feedback.
+### Step 8: Adaptive Light/Dark Theme Architecture & Onboarding Walkthrough
+- **Components & Systems Engineered:**
+  - `themeContext.tsx`: Full Theme Provider with `useTheme()`, `toggleTheme()`, localStorage persistence (`finn_theme`), and HTML `data-theme` + `.dark` / `.light` class synchronization.
+  - `globals.css`: Tokenized neutral palette remapping (`--color-neutral-950` to `--color-neutral-100`) plus custom light mode high-contrast accent overrides for emerald (`#059669`), indigo (`#4f46e5`), amber (`#d97706`), and rose (`#e11d48`) with smooth transitions.
+  - `OnboardingTutorial.tsx`: Comprehensive 5-stage interactive guided tour covering:
+    1. ENAM Holdings Mandate & Zero-Cost Architecture ($0.00 spend on free tiers, zero secondary gossip).
+    2. Push Feed (Windowed digests, routine paperwork collapsing, volume/price triggers).
+    3. 8-Module Pull Diligence (Primary-grounded research, cash conversion sentinel, arbitrary ticker generalization).
+    4. Narrative vs. Numbers Audit (4-quarter concall guidance vs filing delivery, 0-100 Reliability Score).
+    5. 3D Constellation & Copilot (Interactive 3D universe, voice dictation, `⌘K` search, `1`–`5` hotkeys, memo export).
+  - First-time visitor auto-launch via `localStorage.getItem('finn_tutorial_seen')`, progress indicators, tab auto-switching, and celebratory confetti upon completion.
+  - Header Sun/Moon toggle button and Platform Tutorial button for instantaneous on-demand access.
+  - SVG and Canvas dynamic theme adaptation (`InteractiveFinancialChart`, `PortfolioConstellation3D`).
 
 ---
 
@@ -110,3 +122,5 @@ The build followed an iterative, test-driven approach using Antigravity's agenti
 - **Deterministic Financial Calculations:** Using code logic for financial ratios ensured that numbers, margins, and QoQ/YoY percentages are 100% accurate, completely eliminating LLM calculation errors.
 - **Instant Response Times:** In-memory caching and optimized Next.js 16 route handlers ensure sub-second latency across all mobile interactions.
 - **High Information Density:** Avoided unnecessary whitespace and generic illustrations. Emphasized tabular typography, compact badges, and financial figures that respect the investor's time.
+- **Dual Aesthetic Excellence:** Seamlessly delivers both the high-focus Bloomberg/Linear dark mode and an executive, glare-free light mode with uncompromising contrast and tactile sound design.
+

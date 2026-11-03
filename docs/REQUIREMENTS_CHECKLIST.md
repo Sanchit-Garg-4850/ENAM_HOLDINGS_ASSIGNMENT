@@ -158,3 +158,14 @@ Audited against `docs/2. ENAM_AI_Engineer_Build_Challenge_Reference.pdf`:
 6. **Power User Keyboard Navigation:**
    - `⌘K` or `Ctrl+K`: Instant ticker search modal.
    - Number keys `1`–`5`: Instant tab switching (`1: Push`, `2: Pull`, `3: Narrative`, `4: 3D Orbit`, `5: Copilot`).
+
+7. **Adaptive Light/Dark Theme Architecture (`themeContext.tsx`, `globals.css`):**
+   - Single-tap Sun/Moon toggle in executive header.
+   - Tokenized CSS variables seamlessly remapping `--color-neutral-*` and `--color-white`.
+   - High-contrast WCAG-compliant accent text for light backgrounds (`emerald-600`, `indigo-600`, `amber-600`, `rose-600`).
+   - SVG charts and 3D Canvas dynamically detect and adapt stroke, grid, and label colors.
+
+8. **Interactive User Onboarding Walkthrough (`OnboardingTutorial.tsx`):**
+   - 5-stage interactive modal tutorial educating new users on the ENAM mandate, push filtering, 8-module diligence, narrative vs numbers audit, and 3D constellation / copilot.
+   - Auto-launches for first-time visitors (persisted in `localStorage`), with step-by-step auto-navigation between tabs and confetti celebration.
+

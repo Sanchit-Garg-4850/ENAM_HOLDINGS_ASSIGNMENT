@@ -12,6 +12,7 @@ import { SearchModal } from '@/components/SearchModal';
 import { AlertSettingsModal } from '@/components/AlertSettingsModal';
 import { PortfolioConstellation3D } from '@/components/PortfolioConstellation3D';
 import { NotificationToast } from '@/components/NotificationToast';
+import { OnboardingTutorial } from '@/components/OnboardingTutorial';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
 import { sound } from '@/lib/sound';
@@ -22,6 +23,22 @@ export default function Home() {
   const [quote, setQuote] = useState<StockQuote | null>(null);
   const [diligence, setDiligence] = useState<DiligenceModule | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
+
+  // Auto-launch tutorial for first-time visitors
+  useEffect(() => {
+    try {
+      const seen = localStorage.getItem('finn_tutorial_seen');
+      if (seen !== 'true') {
+        const timer = setTimeout(() => {
+          setIsTutorialOpen(true);
+        }, 800);
+        return () => clearTimeout(timer);
+      }
+    } catch {
+      // Ignore localStorage sandbox restrictions
+    }
+  }, []);
 
   // Dynamic Urgent Alerts Badge & Status
   const [urgentCount, setUrgentCount] = useState<number>(0);
@@ -170,6 +187,7 @@ export default function Home() {
         activeTicker={activeTicker}
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAlerts={() => setIsAlertsOpen(true)}
+        onOpenTutorial={() => setIsTutorialOpen(true)}
         onSelectTicker={(ticker) => {
           handleSelectTicker(ticker);
           setActiveTab('pull');
@@ -269,6 +287,13 @@ export default function Home() {
         onClose={() => setIsAlertsOpen(false)}
         config={alertConfig}
         onSaveConfig={setAlertConfig}
+      />
+
+      {/* Interactive Platform Onboarding Tutorial Modal */}
+      <OnboardingTutorial
+        isOpen={isTutorialOpen}
+        onClose={() => setIsTutorialOpen(false)}
+        onNavigateTab={(tab) => handleTabChange(tab)}
       />
     </div>
   );

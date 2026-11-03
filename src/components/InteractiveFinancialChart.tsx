@@ -73,9 +73,9 @@ export function InteractiveFinancialChart({ data, symbol }: InteractiveFinancial
           </defs>
 
           {/* Grid lines */}
-          <line x1="0" y1="40" x2="500" y2="40" stroke="#262626" strokeDasharray="3 3" />
-          <line x1="0" y1="90" x2="500" y2="90" stroke="#262626" strokeDasharray="3 3" />
-          <line x1="0" y1="140" x2="500" y2="140" stroke="#333333" />
+          <line x1="0" y1="40" x2="500" y2="40" className="stroke-neutral-800" strokeDasharray="3 3" />
+          <line x1="0" y1="90" x2="500" y2="90" className="stroke-neutral-800" strokeDasharray="3 3" />
+          <line x1="0" y1="140" x2="500" y2="140" className="stroke-neutral-700" />
 
           {/* Revenue Bars */}
           {data.map((d, i) => {
@@ -113,11 +113,8 @@ export function InteractiveFinancialChart({ data, symbol }: InteractiveFinancial
                 <text
                   x={x + barWidth / 2}
                   y="155"
-                  fill={isHovered ? '#ffffff' : '#a3a3a3'}
-                  fontSize="9"
-                  fontFamily="monospace"
+                  className={isHovered ? 'fill-neutral-100 font-bold font-mono text-[9px]' : 'fill-neutral-400 font-mono text-[9px]'}
                   textAnchor="middle"
-                  fontWeight={isHovered ? 'bold' : 'normal'}
                 >
                   {d.period.split(' ')[0]}
                 </text>

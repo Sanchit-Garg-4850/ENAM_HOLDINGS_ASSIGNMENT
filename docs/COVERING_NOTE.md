@@ -45,6 +45,9 @@ FINN operates in two cohesive modes:
    - **Primary Citation Inspector**: Tap any citation to inspect verbatim management quotes and filing paragraphs with document metadata.
    - **One-Click Investment Memo Export**: Generates and downloads a structured, publication-ready Markdown research memo.
    - **Tactile Web Audio Engine & Keyboard Shortcuts**: Zero-dependency synthesizer providing subtle mechanical clicks and chimes; pro-grade keyboard shortcuts (`⌘K` for search, `1`-`5` for instant tab switching).
+5. **Adaptive Light/Dark Theme & Interactive User Onboarding Walkthrough**:
+   - **Seamless Light & Dark Modes**: Instant switch via header toggle with tokenized CSS custom variables, persistent in localStorage, adapting all UI cards, SVG charts, and 3D canvas labels with WCAG-compliant high-contrast accents.
+   - **Interactive 5-Stage Guided Tour**: Auto-launches for first-time visitors with keyboard shortcut navigation, tab auto-switching, and celebratory confetti upon completing the tour of ENAM's core mandate and features.
 
 ---
 
