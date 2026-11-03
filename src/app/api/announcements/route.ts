@@ -1,6 +1,6 @@
 // API Route: /api/announcements (Push Feed with Live Multi-Ticker Screener & Live Yahoo Finance Ingestion)
 import { NextResponse } from 'next/server';
-import { SEED_ANNOUNCEMENTS } from '@/data/announcements';
+import { SEED_ANNOUNCEMENTS, getFreshAnnouncements } from '@/data/announcements';
 import { filterAnnouncements, classifyFilingHeadline } from '@/lib/classification';
 import { AnnouncementCategory, Announcement } from '@/lib/types';
 import { fetchScreenerData } from '@/lib/screener';
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       ? Number(searchParams.get('minPriceMovePercent'))
       : undefined;
 
-    let allAnnouncements = [...SEED_ANNOUNCEMENTS];
+    let allAnnouncements = getFreshAnnouncements();
 
     if (ticker) {
       // Specific ticker requested

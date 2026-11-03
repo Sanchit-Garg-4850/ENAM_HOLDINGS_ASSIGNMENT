@@ -12,6 +12,7 @@ import {
   Clock,
   Sparkles,
   Eye,
+  Building2,
 } from 'lucide-react';
 import { Announcement } from '@/lib/types';
 import { CATEGORY_REGISTRY } from '@/lib/classification';
@@ -228,6 +229,43 @@ export function AnnouncementCard({ announcement, onSelectTicker, onQuickPeek }: 
             </span>
           </div>
           <p className="text-neutral-300 text-[11px] leading-relaxed">{announcement.anomaly.headline}</p>
+        </div>
+      )}
+
+      {/* ENRICHED COMPONENT 4: Capex Outlay & Execution Milestones */}
+      {announcement.capexDetails && (
+        <div className="mb-3 p-3 rounded-lg bg-teal-500/5 border border-teal-500/20 text-xs">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <div className="flex items-center gap-1.5 font-semibold text-teal-300">
+              <Building2 className="w-4 h-4 text-teal-400 shrink-0" />
+              <span>{announcement.capexDetails.projectType}</span>
+            </div>
+            <span className="font-mono font-bold text-xs text-emerald-400 px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">
+              ₹{announcement.capexDetails.investmentAmountCr.toLocaleString()} Cr Outlay
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 text-[11px] mb-2 font-mono">
+            <div className="p-1.5 rounded bg-neutral-950/80 border border-neutral-850">
+              <span className="text-neutral-500 block text-[10px]">Location</span>
+              <span className="text-neutral-200">{announcement.capexDetails.location}</span>
+            </div>
+            <div className="p-1.5 rounded bg-neutral-950/80 border border-neutral-850">
+              <span className="text-neutral-500 block text-[10px]">Target Commissioning</span>
+              <span className="text-neutral-200">{announcement.capexDetails.targetCompletion}</span>
+            </div>
+          </div>
+
+          <div className="text-[11px] text-neutral-300 space-y-1">
+            <p>
+              <strong className="text-neutral-200 font-medium">Capacity Addition:</strong>{' '}
+              {announcement.capexDetails.capacityAddition}
+            </p>
+            <p className="text-neutral-400">
+              <strong className="text-teal-400/90 font-medium">Strategic Rationale:</strong>{' '}
+              {announcement.capexDetails.strategicRationale}
+            </p>
+          </div>
         </div>
       )}
 

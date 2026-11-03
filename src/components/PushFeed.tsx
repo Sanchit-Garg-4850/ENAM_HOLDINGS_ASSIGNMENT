@@ -92,11 +92,11 @@ export function PushFeed({ onSelectTicker, onOpenAlertSettings, onClearUrgent }:
         const res = await fetch(`/api/announcements?${params.toString()}`);
         const json = await res.json();
         if (!isCancelled && json.success) {
-          const newIds = JSON.stringify(json.data.map((d: any) => d.id));
-          const oldIds = cached ? JSON.stringify(cached.data.map((d: any) => d.id)) : '';
+          const newDataStr = JSON.stringify(json.data);
+          const oldDataStr = cached ? JSON.stringify(cached.data) : '';
 
-          // Only update state if new data was fetched or cache was empty
-          if (newIds !== oldIds || !cached) {
+          // Update state if data changed or cache was empty
+          if (newDataStr !== oldDataStr || !cached) {
             setAnnouncements(json.data);
             setCollapsedRoutineCount(json.collapsedRoutineCount || 0);
           }

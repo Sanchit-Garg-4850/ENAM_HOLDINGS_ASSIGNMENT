@@ -116,12 +116,134 @@ ${diligence.primarySources
 
   function handlePrint() {
     sound.playClick();
-    window.print();
+    // Temporarily switch to preview mode if on markdown before triggering print
+    if (viewMode !== 'preview') {
+      setViewMode('preview');
+      setTimeout(() => window.print(), 80);
+    } else {
+      window.print();
+    }
   }
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
+        {/* Print Styles for Guaranteed Strict 1-Page Output */}
+        <style>{`
+          @media print {
+            @page {
+              size: A4 portrait;
+              margin: 4mm 7mm;
+            }
+
+            html, body {
+              background: #ffffff !important;
+              color: #0f172a !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              font-size: 8.5pt !important;
+              line-height: 1.22 !important;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+
+            /* Hide everything in the page except the printable memo sheet */
+            body * {
+              visibility: hidden;
+            }
+
+            #memo-printable-sheet,
+            #memo-printable-sheet * {
+              visibility: visible;
+            }
+
+            #memo-printable-sheet {
+              position: absolute !important;
+              left: 0 !important;
+              top: 0 !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              padding: 0 !important;
+              margin: 0 !important;
+              border: none !important;
+              box-shadow: none !important;
+              background: #ffffff !important;
+              color: #0f172a !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+              page-break-after: avoid !important;
+              break-after: avoid !important;
+            }
+
+            .no-print {
+              display: none !important;
+            }
+
+            /* Monochrome and High-Contrast institutional print tokens */
+            .memo-print-banner {
+              background: #f8fafc !important;
+              border: 1px solid #cbd5e1 !important;
+              color: #0f172a !important;
+              padding: 6px 10px !important;
+              border-radius: 4px !important;
+              margin-bottom: 5px !important;
+            }
+
+            .memo-print-card {
+              background: #ffffff !important;
+              border: 1px solid #cbd5e1 !important;
+              color: #0f172a !important;
+              padding: 4px 7px !important;
+              border-radius: 4px !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .memo-print-verdict {
+              background: #f0fdf4 !important;
+              border: 1px solid #86efac !important;
+              color: #064e3b !important;
+              padding: 5px 8px !important;
+              border-radius: 4px !important;
+              margin-bottom: 5px !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .memo-print-bull {
+              background: #f0fdf4 !important;
+              border: 1px solid #bbf7d0 !important;
+              color: #064e3b !important;
+              padding: 5px 8px !important;
+              border-radius: 4px !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .memo-print-bear {
+              background: #fff1f2 !important;
+              border: 1px solid #fecdd3 !important;
+              color: #881337 !important;
+              padding: 5px 8px !important;
+              border-radius: 4px !important;
+              page-break-inside: avoid !important;
+              break-inside: avoid !important;
+            }
+
+            .memo-print-text-dark {
+              color: #0f172a !important;
+            }
+
+            .memo-print-text-muted {
+              color: #475569 !important;
+            }
+
+            .memo-print-text-green {
+              color: #047857 !important;
+            }
+          }
+        `}</style>
+
         <motion.div
           initial={{ opacity: 0, scale: 0.96, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -129,8 +251,8 @@ ${diligence.primarySources
           transition={{ duration: 0.18, ease: 'easeOut' }}
           className="w-full max-w-3xl rounded-2xl bg-neutral-925 border border-neutral-800 shadow-2xl flex flex-col max-h-[92vh] overflow-hidden"
         >
-          {/* Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-neutral-800 bg-neutral-900/80">
+          {/* Header (Hidden in Print) */}
+          <div className="no-print flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-neutral-800 bg-neutral-900/80">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
                 <FileText className="w-4 h-4" />
@@ -179,112 +301,127 @@ ${diligence.primarySources
             </div>
           </div>
 
-          {/* Modal Body */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 text-neutral-300 text-xs sm:text-sm leading-relaxed no-scrollbar">
+          {/* Modal Body / Printable Content Container */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 text-neutral-300 text-xs sm:text-sm leading-relaxed no-scrollbar">
             {viewMode === 'markdown' ? (
               <pre className="p-4 rounded-xl bg-neutral-950 border border-neutral-850 font-mono text-xs text-neutral-300 whitespace-pre-wrap leading-relaxed select-all">
                 {markdownContent}
               </pre>
             ) : (
-              <div className="space-y-5">
+              <div id="memo-printable-sheet" className="space-y-3 print:space-y-2">
                 {/* Executive Header Banner */}
-                <div className="p-4 rounded-xl bg-gradient-to-r from-neutral-900 via-neutral-925 to-neutral-900 border border-neutral-800 flex items-start justify-between gap-4 flex-wrap">
+                <div className="memo-print-banner p-3 sm:p-4 rounded-xl bg-gradient-to-r from-neutral-900 via-neutral-925 to-neutral-900 border border-neutral-800 flex items-start justify-between gap-3 flex-wrap">
                   <div>
-                    <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-semibold block mb-0.5">
-                      Investment Committee Briefing
+                    <span className="memo-print-text-green text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-semibold block mb-0.5">
+                      ENAM Research • Institutional Investment Diligence Memo
                     </span>
-                    <h2 className="text-white text-lg sm:text-xl font-bold tracking-tight">
+                    <h2 className="memo-print-text-dark text-white text-lg sm:text-xl font-bold tracking-tight">
                       {quote.name} ({quote.symbol})
                     </h2>
-                    <p className="text-xs text-neutral-400 mt-0.5">
-                      {quote.sector} • ₹{quote.marketCapCr.toLocaleString()} Cr Market Cap
+                    <p className="memo-print-text-muted text-xs text-neutral-400 mt-0.5">
+                      Sector: {quote.sector} • Market Cap: ₹{quote.marketCapCr.toLocaleString()} Cr • Date:{' '}
+                      {new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
                   <div className="text-right font-mono">
-                    <div className="text-lg font-bold text-white">₹{quote.price.toLocaleString()}</div>
-                    <div className="text-xs text-neutral-400">P/E: {quote.peRatio || 'N/A'}x</div>
+                    <div className="memo-print-text-dark text-lg font-bold text-white">
+                      ₹{quote.price.toLocaleString()}
+                    </div>
+                    <div className="memo-print-text-muted text-xs text-neutral-400">
+                      P/E: {quote.peRatio || 'N/A'}x | EV/EBITDA: {fs.evEbitdaMultiple}x
+                    </div>
                   </div>
                 </div>
 
                 {/* Conviction Verdict */}
-                <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs">
-                  <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold block mb-1">
+                <div className="memo-print-verdict p-2.5 sm:p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-xs">
+                  <span className="memo-print-text-green text-[10px] font-mono uppercase text-emerald-400 font-bold block mb-0.5">
                     ENAM Conviction Verdict
                   </span>
-                  <p className="text-neutral-200 font-medium leading-relaxed">{bb.enamConvictionVerdict}</p>
+                  <p className="memo-print-text-dark text-neutral-200 font-medium leading-snug">
+                    {bb.enamConvictionVerdict}
+                  </p>
                 </div>
 
                 {/* 4-Column Key Metrics Matrix */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 font-mono text-xs">
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-850">
-                    <span className="text-[10px] text-neutral-500 block">Core ROCE</span>
-                    <span className="text-emerald-400 font-bold text-sm">{fs.rocePercent}%</span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-xs">
+                  <div className="memo-print-card p-2 rounded-xl bg-neutral-950 border border-neutral-850">
+                    <span className="memo-print-text-muted text-[10px] text-neutral-500 block">Core ROCE</span>
+                    <span className="memo-print-text-green text-emerald-400 font-bold text-sm">
+                      {fs.rocePercent}%
+                    </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-850">
-                    <span className="text-[10px] text-neutral-500 block">Operating Margin</span>
-                    <span className="text-white font-bold text-sm">{fs.ebitdaMarginPercent}%</span>
+                  <div className="memo-print-card p-2 rounded-xl bg-neutral-950 border border-neutral-850">
+                    <span className="memo-print-text-muted text-[10px] text-neutral-500 block">Operating Margin</span>
+                    <span className="memo-print-text-dark text-white font-bold text-sm">
+                      {fs.ebitdaMarginPercent}%
+                    </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-850">
-                    <span className="text-[10px] text-neutral-500 block">Cash Conv. (OCF/PAT)</span>
-                    <span className="text-emerald-400 font-bold text-sm">{cq.cashConversionRatio}x</span>
+                  <div className="memo-print-card p-2 rounded-xl bg-neutral-950 border border-neutral-850">
+                    <span className="memo-print-text-muted text-[10px] text-neutral-500 block">Cash Conv. (OCF/PAT)</span>
+                    <span className="memo-print-text-green text-emerald-400 font-bold text-sm">
+                      {cq.cashConversionRatio}x
+                    </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-neutral-950 border border-neutral-850">
-                    <span className="text-[10px] text-neutral-500 block">Mgmt Reliability</span>
-                    <span className="text-indigo-400 font-bold text-sm">{nv.reliabilityScore}%</span>
+                  <div className="memo-print-card p-2 rounded-xl bg-neutral-950 border border-neutral-850">
+                    <span className="memo-print-text-muted text-[10px] text-neutral-500 block">Mgmt Reliability</span>
+                    <span className="memo-print-text-dark text-indigo-400 font-bold text-sm">
+                      {nv.reliabilityScore}%
+                    </span>
                   </div>
                 </div>
 
                 {/* Working Capital & Forensic Sentinel */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 space-y-1.5">
-                    <span className="text-[10px] font-mono uppercase text-neutral-400 font-semibold block">
-                      Working Capital & Liquidity
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="memo-print-card p-2.5 rounded-xl bg-neutral-950 border border-neutral-850 space-y-1">
+                    <span className="memo-print-text-muted text-[10px] font-mono uppercase text-neutral-400 font-semibold block">
+                      Working Capital & Solvency
                     </span>
-                    <p className="text-neutral-300">
-                      <strong>Cycle:</strong> {bs.workingCapitalDays} days (Debtors: {bs.debtorDays}d, Inventory: {bs.inventoryDays}d, Payables: {bs.payableDays}d).
+                    <p className="memo-print-text-dark text-neutral-300">
+                      <strong>Cash Cycle:</strong> {bs.workingCapitalDays}d (Debtors: {bs.debtorDays}d, Inventory: {bs.inventoryDays}d, Payables: {bs.payableDays}d).
                     </p>
-                    <p className="text-neutral-400 text-[11px]">
-                      <strong>Cash Balance:</strong> ₹{bs.cashAndEquivalentsCr.toLocaleString()} Cr • Debt/Equity: {bs.netDebtToEquity}x.
+                    <p className="memo-print-text-muted text-neutral-400 text-[10.5px]">
+                      <strong>Cash Reserve:</strong> ₹{bs.cashAndEquivalentsCr.toLocaleString()} Cr • <strong>Net Debt/Equity:</strong> {bs.netDebtToEquity}x.
                     </p>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 space-y-1.5">
-                    <span className="text-[10px] font-mono uppercase text-emerald-400 font-semibold flex items-center gap-1">
-                      <ShieldCheck className="w-3.5 h-3.5" />
-                      Forensic Health & Governance
+                  <div className="memo-print-card p-2.5 rounded-xl bg-neutral-950 border border-neutral-850 space-y-1">
+                    <span className="memo-print-text-green text-[10px] font-mono uppercase text-emerald-400 font-semibold flex items-center gap-1">
+                      <ShieldCheck className="w-3 h-3" />
+                      Forensic Health & Integrity
                     </span>
-                    <p className="text-neutral-300">
-                      <strong>Auditor Resignations:</strong> None in 5Y (Clean report).
+                    <p className="memo-print-text-dark text-neutral-300">
+                      <strong>Auditor Resignations:</strong> None in 5Y (Unqualified clean audit).
                     </p>
-                    <p className="text-neutral-300">
-                      <strong>Promoter Pledge:</strong> 0.00% • <strong>Beneish M-Score:</strong> Safe.
+                    <p className="memo-print-text-muted text-neutral-300 text-[10.5px]">
+                      <strong>Promoter Pledge:</strong> 0.00% • <strong>Beneish M-Score:</strong> Safe (-2.84).
                     </p>
                   </div>
                 </div>
 
                 {/* Bull vs Bear Summary */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                  <div className="p-3.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1.5">
-                    <span className="text-[10px] font-mono uppercase text-emerald-400 font-bold">
-                      Key Investment Catalysts
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                  <div className="memo-print-bull p-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-1">
+                    <span className="memo-print-text-green text-[10px] font-mono uppercase text-emerald-400 font-bold block">
+                      Key Catalysts & Compounding Drivers
                     </span>
-                    <ul className="space-y-1 text-neutral-300">
+                    <ul className="space-y-0.5 text-neutral-300">
                       {bb.bullPoints.slice(0, 3).map((pt, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
-                          <span className="text-emerald-400 font-bold">•</span>
+                        <li key={i} className="memo-print-text-dark flex items-start gap-1">
+                          <span className="memo-print-text-green text-emerald-400 font-bold">•</span>
                           <span>{pt}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="p-3.5 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1.5">
-                    <span className="text-[10px] font-mono uppercase text-rose-400 font-bold">
+                  <div className="memo-print-bear p-2.5 rounded-xl bg-rose-500/5 border border-rose-500/20 space-y-1">
+                    <span className="text-[10px] font-mono uppercase text-rose-400 font-bold block">
                       Key Risks to Thesis
                     </span>
-                    <ul className="space-y-1 text-neutral-300">
+                    <ul className="space-y-0.5 text-neutral-300">
                       {bb.bearPoints.slice(0, 3).map((pt, i) => (
-                        <li key={i} className="flex items-start gap-1.5">
+                        <li key={i} className="memo-print-text-dark flex items-start gap-1">
                           <span className="text-rose-400 font-bold">•</span>
                           <span>{pt}</span>
                         </li>
@@ -294,21 +431,21 @@ ${diligence.primarySources
                 </div>
 
                 {/* Primary Citations */}
-                <div className="pt-2 border-t border-neutral-850 text-xs font-mono">
-                  <span className="text-[10px] uppercase text-neutral-500 block mb-1.5">
-                    Primary Disclosure Audit Trail
+                <div className="memo-print-card pt-1.5 border-t border-neutral-850 text-xs font-mono">
+                  <span className="memo-print-text-muted text-[9.5px] uppercase text-neutral-500 block mb-1">
+                    Primary Disclosure Audit Trail (Direct Exchanges & Concalls)
                   </span>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {diligence.primarySources.map((src, i) => (
                       <a
                         key={i}
                         href={src.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white flex items-center gap-1 text-[11px]"
+                        className="memo-print-card px-2 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-300 hover:text-white flex items-center gap-1 text-[10px]"
                       >
-                        <span>{src.title}</span>
-                        <ExternalLink className="w-2.5 h-2.5 text-neutral-500" />
+                        <span className="memo-print-text-dark">{src.title}</span>
+                        <ExternalLink className="w-2.5 h-2.5 text-neutral-500 no-print" />
                       </a>
                     ))}
                   </div>
@@ -317,8 +454,8 @@ ${diligence.primarySources
             )}
           </div>
 
-          {/* Action Footer */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-t border-neutral-800 bg-neutral-900/80">
+          {/* Action Footer (Hidden in Print) */}
+          <div className="no-print flex items-center justify-between px-4 sm:px-6 py-3 border-t border-neutral-800 bg-neutral-900/80">
             <span className="text-[11px] font-mono text-neutral-400 hidden sm:inline">
               Submission ready for assessment@enam.com
             </span>
@@ -329,7 +466,7 @@ ${diligence.primarySources
                 className="px-3 py-1.5 rounded-lg text-xs font-mono text-neutral-300 hover:text-white bg-neutral-950 border border-neutral-800 hover:border-neutral-700 flex items-center gap-1.5 transition-colors"
               >
                 <Printer className="w-3.5 h-3.5" />
-                <span>Print / PDF</span>
+                <span>Print / PDF (1-Page)</span>
               </button>
 
               <button

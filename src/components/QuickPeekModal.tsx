@@ -198,6 +198,27 @@ export function QuickPeekModal({
               </div>
             )}
 
+            {/* If Capex Details */}
+            {announcement.capexDetails && (
+              <div className="p-3.5 rounded-xl bg-teal-500/5 border border-teal-500/20 space-y-2 text-xs">
+                <div className="flex items-center justify-between text-teal-400 font-mono text-[11px] font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <Building2 className="w-4 h-4" />
+                    <span>Capex Project: {announcement.capexDetails.projectType}</span>
+                  </span>
+                  <span className="text-emerald-400 font-bold px-2 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/30">
+                    ₹{announcement.capexDetails.investmentAmountCr.toLocaleString()} Cr Outlay
+                  </span>
+                </div>
+                <div className="space-y-1 text-neutral-300">
+                  <p><strong className="text-white">Facility Location:</strong> {announcement.capexDetails.location}</p>
+                  <p><strong className="text-white">Capacity Expansion:</strong> {announcement.capexDetails.capacityAddition}</p>
+                  <p><strong className="text-white">Target Commissioning:</strong> {announcement.capexDetails.targetCompletion}</p>
+                  <p className="pt-1 text-teal-300"><strong className="text-teal-400">Strategic Rationale:</strong> {announcement.capexDetails.strategicRationale}</p>
+                </div>
+              </div>
+            )}
+
             {/* Raw Disclosure Excerpt */}
             <div className="p-3.5 rounded-xl bg-neutral-950 border border-neutral-850 space-y-2">
               <span className="text-[10px] font-mono uppercase text-neutral-400 font-semibold block">

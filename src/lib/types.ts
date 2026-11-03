@@ -63,6 +63,15 @@ export interface AnomalyData {
   headline: string;
 }
 
+export interface CapexData {
+  projectType: string;
+  investmentAmountCr: number;
+  location: string;
+  capacityAddition: string;
+  targetCompletion: string;
+  strategicRationale: string;
+}
+
 export interface Announcement {
   id: string;
   ticker: string;
@@ -78,6 +87,7 @@ export interface Announcement {
   results?: QuarterlyResultsData;
   managementChange?: ManagementChangeData;
   anomaly?: AnomalyData;
+  capexDetails?: CapexData;
   isRead?: boolean;
 }
 

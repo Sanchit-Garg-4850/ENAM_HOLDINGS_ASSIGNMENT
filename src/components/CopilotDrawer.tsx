@@ -21,6 +21,7 @@ import {
   Check,
   X,
   FileText,
+  RotateCcw,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { StockQuote } from '@/lib/types';
@@ -194,6 +195,26 @@ function FormattedMarkdown({ text }: { text: string }) {
   return <div className="space-y-0.5">{elements}</div>;
 }
 
+// Module-level in-memory cache to persist conversations across tab switches
+const COPILOT_MESSAGES_CACHE: Record<string, Message[]> = {};
+
+function createWelcomeMessage(quote: StockQuote): Message {
+  return {
+    id: 'welcome',
+    sender: 'assistant',
+    text: `### 🤖 FINN Primary Intelligence Copilot\n\nI am grounded **strictly in primary company filings** (Annual Reports, Concall Transcripts, and Audited Results). No broker notes or secondary gossip.\n\nActive Security: **${quote.name} (${quote.symbol})**\n\nHow can I assist your diligence? Select a command below or ask directly:`,
+    citations: [
+      {
+        source: `${quote.symbol} Latest Regulatory Disclosures`,
+        quote: 'Primary exchange filings, concalls & audited P&L statements',
+        type: 'NSE Primary Filing',
+      },
+    ],
+    engineUsed: 'finn_primary_engine',
+    timestamp: 'Just now',
+  };
+}
+
 export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
   const [input, setInput] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -210,22 +231,72 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
     }
   }, []);
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      sender: 'assistant',
-      text: `### 🤖 FINN Primary Intelligence Copilot\n\nI am grounded **strictly in primary company filings** (Annual Reports, Concall Transcripts, and Audited Results). No broker notes or secondary gossip.\n\nActive Security: **${quote.name} (${quote.symbol})**\n\nHow can I assist your diligence? Select a command below or ask directly:`,
-      citations: [
-        {
-          source: `${quote.symbol} Latest Regulatory Disclosures`,
-          quote: 'Primary exchange filings, concalls & audited P&L statements',
-          type: 'NSE Primary Filing',
-        },
-      ],
-      engineUsed: 'finn_primary_engine',
-      timestamp: 'Just now',
-    },
-  ]);
+  // Initialize messages from in-memory cache or sessionStorage
+  const [messages, setMessages] = useState<Message[]>(() => {
+    if (COPILOT_MESSAGES_CACHE[quote.symbol] && COPILOT_MESSAGES_CACHE[quote.symbol].length > 0) {
+      return COPILOT_MESSAGES_CACHE[quote.symbol];
+    }
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem(`finn_copilot_chat_${quote.symbol}`);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            COPILOT_MESSAGES_CACHE[quote.symbol] = parsed;
+            return parsed;
+          }
+        }
+      } catch {}
+    }
+    const initialWelcome = [createWelcomeMessage(quote)];
+    COPILOT_MESSAGES_CACHE[quote.symbol] = initialWelcome;
+    return initialWelcome;
+  });
+
+  // Keep cache and sessionStorage in sync with any message changes
+  useEffect(() => {
+    if (messages.length > 0) {
+      COPILOT_MESSAGES_CACHE[quote.symbol] = messages;
+      try {
+        sessionStorage.setItem(`finn_copilot_chat_${quote.symbol}`, JSON.stringify(messages));
+      } catch {}
+    }
+  }, [messages, quote.symbol]);
+
+  // Synchronize when the active ticker changes
+  useEffect(() => {
+    if (COPILOT_MESSAGES_CACHE[quote.symbol] && COPILOT_MESSAGES_CACHE[quote.symbol].length > 0) {
+      setMessages(COPILOT_MESSAGES_CACHE[quote.symbol]);
+    } else {
+      if (typeof window !== 'undefined') {
+        try {
+          const stored = sessionStorage.getItem(`finn_copilot_chat_${quote.symbol}`);
+          if (stored) {
+            const parsed = JSON.parse(stored);
+            if (Array.isArray(parsed) && parsed.length > 0) {
+              COPILOT_MESSAGES_CACHE[quote.symbol] = parsed;
+              setMessages(parsed);
+              return;
+            }
+          }
+        } catch {}
+      }
+      const initialWelcome = [createWelcomeMessage(quote)];
+      COPILOT_MESSAGES_CACHE[quote.symbol] = initialWelcome;
+      setMessages(initialWelcome);
+    }
+  }, [quote.symbol]);
+
+  function handleClearChat() {
+    sound.playClick();
+    const freshWelcome = [createWelcomeMessage(quote)];
+    COPILOT_MESSAGES_CACHE[quote.symbol] = freshWelcome;
+    try {
+      sessionStorage.removeItem(`finn_copilot_chat_${quote.symbol}`);
+    } catch {}
+    setMessages(freshWelcome);
+  }
+
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -485,6 +556,18 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
             <Download className="w-3.5 h-3.5 text-emerald-400" />
             <span className="hidden sm:inline">Export Memo</span>
           </button>
+
+          {/* Reset / Clear Conversation */}
+          {messages.length > 1 && (
+            <button
+              onClick={handleClearChat}
+              className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-neutral-900 border border-neutral-800 hover:border-neutral-700 text-neutral-400 hover:text-rose-400 text-xs font-mono transition-colors"
+              title="Reset conversation"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span className="hidden sm:inline">Reset</span>
+            </button>
+          )}
 
           <span className="font-mono text-xs px-2.5 py-1 rounded-lg bg-neutral-900 border border-neutral-800 text-emerald-400 font-semibold">
             {quote.symbol}
