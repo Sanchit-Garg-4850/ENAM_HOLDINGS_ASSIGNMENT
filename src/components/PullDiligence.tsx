@@ -166,8 +166,17 @@ export function PullDiligence({
               ₹{quote.fiftyTwoWeekLow} - ₹{quote.fiftyTwoWeekHigh}
             </span>
           </div>
-          <div className="p-2 rounded-lg bg-neutral-950/60 border border-neutral-850">
-            <span className="text-[10px] text-neutral-400 block">Cash Conv. (OCF/PAT)</span>
+          <button
+            onClick={() => {
+              sound.playClick();
+              setActiveModuleTab('cash');
+            }}
+            className="p-2 rounded-lg bg-neutral-950/60 border border-neutral-850 hover:border-emerald-500/50 text-left transition-all group cursor-pointer"
+            title="Click to inspect Cash Conversion Waterfall"
+          >
+            <span className="text-[10px] text-neutral-400 group-hover:text-emerald-400 block transition-colors">
+              Cash Conv. (OCF/PAT) ↗
+            </span>
             <span
               className={`font-bold text-sm ${
                 cq.cashConversionRatio >= 1.0 ? 'text-emerald-400' : 'text-amber-400'
@@ -175,7 +184,7 @@ export function PullDiligence({
             >
               {cq.cashConversionRatio}x ({cq.qualityRating})
             </span>
-          </div>
+          </button>
         </div>
 
         {/* One-Tap Sector Peer Chips */}
