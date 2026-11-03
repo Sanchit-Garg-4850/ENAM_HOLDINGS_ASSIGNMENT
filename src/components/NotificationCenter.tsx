@@ -204,22 +204,22 @@ export function NotificationCenter({
         )}
       </motion.button>
 
-      {/* Dropdown Panel */}
+      {/* Centered Modal Overlay */}
       <AnimatePresence>
         {isOpen && (
-          <>
-            {/* Backdrop for click-away */}
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+            {/* Backdrop click dismiss */}
             <div
-              className="fixed inset-0 z-40"
+              className="fixed inset-0"
               onClick={() => setIsOpen(false)}
             />
 
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ duration: 0.18, ease: 'easeOut' }}
-              className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-neutral-950/95 backdrop-blur-xl border border-neutral-800 shadow-2xl z-50 overflow-hidden font-sans"
+              className="relative w-full max-w-md rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl z-10 overflow-hidden font-sans max-h-[85vh] flex flex-col"
             >
               {/* Header */}
               <div className="p-3.5 border-b border-neutral-850 flex items-center justify-between bg-neutral-900/50">
@@ -361,7 +361,7 @@ export function NotificationCenter({
                 </button>
               </div>
             </motion.div>
-          </>
+          </div>
         )}
       </AnimatePresence>
     </div>

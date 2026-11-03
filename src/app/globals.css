@@ -4,68 +4,64 @@
 
 /* Base default variables (Dark Mode - Default) */
 :root {
-  --background: #0a0a0a;
+  --background: #0a0a0c;
   --foreground: #f4f4f5;
   color-scheme: dark;
 }
 
-/* Light Mode Token Overrides */
+/* =========================================================================
+   LIGHT MODE PALETTE (Natural, Soft, Executive Warm Gray / Linear Aesthetic)
+   ========================================================================= */
 html.light {
   color-scheme: light;
   --background: #f8fafc;
   --foreground: #0f172a;
 
-  /* Remap neutral palette for light mode */
-  --color-neutral-950: #f8fafc; /* Canvas background (slate-50) */
-  --color-neutral-925: #ffffff;
-  --color-neutral-900: #ffffff; /* Card / Drawer background */
-  --color-neutral-850: #f1f5f9; /* Secondary card / Hover (slate-100) */
-  --color-neutral-800: #e2e8f0; /* Borders / Dividers (slate-200) */
-  --color-neutral-750: #cbd5e1; /* Hover borders (slate-300) */
-  --color-neutral-700: #94a3b8; /* Subtle borders (slate-400) */
+  /* Remap neutral palette for natural, soft light mode */
+  --color-neutral-950: #f8fafc; /* Canvas background */
+  --color-neutral-925: #ffffff; /* Modal/Drawer background */
+  --color-neutral-900: #ffffff; /* Card background */
+  --color-neutral-850: #f1f5f9; /* Secondary card / Surface / Hover */
+  --color-neutral-800: #e2e8f0; /* Borders / Dividers */
+  --color-neutral-750: #cbd5e1; /* Hover borders */
+  --color-neutral-700: #94a3b8; /* Muted borders */
   --color-neutral-600: #64748b;
-  --color-neutral-500: #64748b; /* Subtle text (slate-500) */
-  --color-neutral-400: #475569; /* Secondary labels (slate-600) */
-  --color-neutral-300: #334155; /* Body text (slate-700) */
-  --color-neutral-200: #1e293b; /* Strong text (slate-800) */
-  --color-neutral-100: #0f172a; /* Main text (slate-900) */
-  --color-white: #0f172a;       /* Headings in light mode */
+  --color-neutral-500: #64748b; /* Subtle text */
+  --color-neutral-400: #475569; /* Secondary labels */
+  --color-neutral-300: #334155; /* Body text */
+  --color-neutral-200: #1e293b; /* Strong text */
+  --color-neutral-100: #0f172a; /* Headings */
 }
 
-/* Dark Mode Token Overrides */
-html.dark {
-  color-scheme: dark;
-  --background: #0a0a0a;
-  --foreground: #f4f4f5;
-
-  --color-neutral-950: #0a0a0a;
-  --color-neutral-925: #111111;
-  --color-neutral-900: #141416;
-  --color-neutral-850: #1c1c1f;
-  --color-neutral-800: #26262a;
-  --color-neutral-750: #323238;
-  --color-neutral-700: #3f3f46;
-  --color-neutral-600: #52525b;
-  --color-neutral-500: #71717a;
-  --color-neutral-400: #a1a1aa;
-  --color-neutral-300: #d4d4d8;
-  --color-neutral-200: #e4e4e7;
-  --color-neutral-100: #f4f4f5;
-  --color-white: #ffffff;
+/* Specific heading text colors in light mode */
+html.light h1,
+html.light h2,
+html.light h3,
+html.light h4,
+html.light .text-white {
+  color: #0f172a;
 }
 
-/* Light mode specific enhancements */
+/* Preserve true white text on solid colored buttons & badges in light mode */
+html.light button.bg-emerald-500,
+html.light button.bg-emerald-600,
+html.light .badge-solid,
+html.light .btn-primary,
+html.light [data-text-white="true"] {
+  color: #ffffff !important;
+}
+
+/* Light mode card surface depth & gentle shadows */
+html.light .bg-neutral-900,
+html.light .bg-neutral-925,
 html.light .bg-neutral-950\/95,
-html.light .bg-neutral-950\/90,
-html.light .bg-neutral-950\/80 {
-  background-color: rgba(248, 250, 252, 0.94) !important;
+html.light .bg-neutral-950\/90 {
+  background-color: #ffffff !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
 }
 
-html.light .bg-neutral-900\/95,
-html.light .bg-neutral-900\/90,
-html.light .bg-neutral-900\/80 {
-  background-color: rgba(255, 255, 255, 0.96) !important;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+html.light .bg-neutral-850 {
+  background-color: #f1f5f9 !important;
 }
 
 html.light .border-neutral-800,
@@ -77,29 +73,102 @@ html.light input,
 html.light textarea {
   color: #0f172a !important;
   background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
 }
 
-/* Light mode high-contrast accent text */
-html.light .text-emerald-400 {
+/* =========================================================================
+   DARK MODE PALETTE (Bloomberg / Terminal / Deep Void)
+   ========================================================================= */
+html.dark {
+  color-scheme: dark;
+  --background: #0a0a0c;
+  --foreground: #f4f4f5;
+
+  --color-neutral-950: #0a0a0c;
+  --color-neutral-925: #111114;
+  --color-neutral-900: #141418;
+  --color-neutral-850: #1c1c22;
+  --color-neutral-800: #26262e;
+  --color-neutral-750: #32323c;
+  --color-neutral-700: #3f3f4c;
+  --color-neutral-600: #525262;
+  --color-neutral-500: #717182;
+  --color-neutral-400: #a1a1b0;
+  --color-neutral-300: #d4d4de;
+  --color-neutral-200: #e4e4ee;
+  --color-neutral-100: #f4f4f8;
+}
+
+/* =========================================================================
+   5 DYNAMIC ACCENT COLOR SCHEMES
+   ========================================================================= */
+
+/* 1. Emerald (Classic ENAM / Terminal) */
+[data-accent="emerald"] {
+  --color-emerald-300: #6ee7b7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10b981;
+  --color-emerald-600: #059669;
+  --color-emerald-950: #022c22;
+}
+html.light[data-accent="emerald"] .text-emerald-400,
+html.light[data-accent="emerald"] .text-emerald-300 {
   color: #059669 !important;
 }
-html.light .text-emerald-300 {
-  color: #047857 !important;
+
+/* 2. Sapphire Blue (Institutional / Bloomberg) */
+[data-accent="blue"] {
+  --color-emerald-300: #93c5fd;
+  --color-emerald-400: #60a5fa;
+  --color-emerald-500: #3b82f6;
+  --color-emerald-600: #2563eb;
+  --color-emerald-950: #082f49;
 }
-html.light .text-indigo-400 {
-  color: #4f46e5 !important;
-}
-html.light .text-amber-400 {
-  color: #d97706 !important;
-}
-html.light .text-rose-400 {
-  color: #e11d48 !important;
-}
-html.light .text-cyan-400 {
-  color: #0891b2 !important;
+html.light[data-accent="blue"] .text-emerald-400,
+html.light[data-accent="blue"] .text-emerald-300 {
+  color: #2563eb !important;
 }
 
-/* Smooth transition for theme switching */
-body {
-  transition: background-color 0.2s ease, color 0.2s ease;
+/* 3. Amethyst Violet (Modern Alpha / Linear) */
+[data-accent="violet"] {
+  --color-emerald-300: #c4b5fd;
+  --color-emerald-400: #a78bfa;
+  --color-emerald-500: #8b5cf6;
+  --color-emerald-600: #7c3aed;
+  --color-emerald-950: #2e1065;
+}
+html.light[data-accent="violet"] .text-emerald-400,
+html.light[data-accent="violet"] .text-emerald-300 {
+  color: #7c3aed !important;
+}
+
+/* 4. Imperial Amber (Private Wealth / Gold) */
+[data-accent="amber"] {
+  --color-emerald-300: #fde68a;
+  --color-emerald-400: #fbbf24;
+  --color-emerald-500: #f59e0b;
+  --color-emerald-600: #d97706;
+  --color-emerald-950: #451a03;
+}
+html.light[data-accent="amber"] .text-emerald-400,
+html.light[data-accent="amber"] .text-emerald-300 {
+  color: #d97706 !important;
+}
+
+/* 5. Crimson Rose (High Energy / Alpha Momentum) */
+[data-accent="rose"] {
+  --color-emerald-300: #fda4af;
+  --color-emerald-400: #fb7185;
+  --color-emerald-500: #f43f5e;
+  --color-emerald-600: #e11d48;
+  --color-emerald-950: #4c0519;
+}
+html.light[data-accent="rose"] .text-emerald-400,
+html.light[data-accent="rose"] .text-emerald-300 {
+  color: #e11d48 !important;
+}
+
+/* Smooth transition for theme & accent switching */
+body, button, input, div, header, nav {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.15s ease;
 }

@@ -40,6 +40,160 @@ interface Message {
   timestamp: string;
 }
 
+function FormattedMarkdown({ text }: { text: string }) {
+  const lines = text.split('\n');
+  const elements: React.ReactNode[] = [];
+  let currentList: { type: 'ul' | 'ol'; items: string[] } | null = null;
+
+  function flushList() {
+    if (!currentList) return;
+    if (currentList.type === 'ul') {
+      elements.push(
+        <ul key={`ul-${elements.length}`} className="my-1.5 space-y-1 pl-1">
+          {currentList.items.map((it, i) => (
+            <li key={i} className="flex items-start gap-2 text-neutral-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1.5" />
+              <span>{renderInline(it)}</span>
+            </li>
+          ))}
+        </ul>
+      );
+    } else {
+      elements.push(
+        <ol key={`ol-${elements.length}`} className="my-1.5 space-y-1 pl-1">
+          {currentList.items.map((it, i) => (
+            <li key={i} className="flex items-start gap-2 text-neutral-200">
+              <span className="font-mono text-[10px] text-emerald-400 font-bold shrink-0 mt-0.5">
+                {i + 1}.
+              </span>
+              <span>{renderInline(it)}</span>
+            </li>
+          ))}
+        </ol>
+      );
+    }
+    currentList = null;
+  }
+
+  function renderInline(str: string): React.ReactNode[] {
+    const parts: React.ReactNode[] = [];
+    const regex = /(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g;
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = regex.exec(str)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(str.substring(lastIndex, match.index));
+      }
+      const token = match[0];
+      if (token.startsWith('**') && token.endsWith('**')) {
+        parts.push(
+          <strong key={`${match.index}-b`} className="font-semibold text-white">
+            {token.slice(2, -2)}
+          </strong>
+        );
+      } else if (token.startsWith('`') && token.endsWith('`')) {
+        parts.push(
+          <code key={`${match.index}-c`} className="px-1.5 py-0.2 rounded bg-neutral-900 border border-neutral-800 font-mono text-[11px] text-emerald-300">
+            {token.slice(1, -1)}
+          </code>
+        );
+      } else if (token.startsWith('*') && token.endsWith('*')) {
+        parts.push(
+          <em key={`${match.index}-i`} className="italic text-neutral-300">
+            {token.slice(1, -1)}
+          </em>
+        );
+      }
+      lastIndex = match.index + token.length;
+    }
+    if (lastIndex < str.length) {
+      parts.push(str.substring(lastIndex));
+    }
+    return parts;
+  }
+
+  for (let idx = 0; idx < lines.length; idx++) {
+    const rawLine = lines[idx];
+    const trimmed = rawLine.trim();
+
+    // Check horizontal rule (*** or --- or ___ or ***)
+    if (/^(\*{3,}|-{3,}|_{3,})$/.test(trimmed)) {
+      flushList();
+      elements.push(<hr key={`hr-${idx}`} className="my-2 border-neutral-800" />);
+      continue;
+    }
+
+    // Check headings
+    if (trimmed.startsWith('### ')) {
+      flushList();
+      elements.push(
+        <h4 key={`h4-${idx}`} className="text-xs sm:text-sm font-bold text-white mt-2 mb-0.5 flex items-center gap-1.5">
+          {renderInline(trimmed.slice(4))}
+        </h4>
+      );
+      continue;
+    }
+    if (trimmed.startsWith('## ')) {
+      flushList();
+      elements.push(
+        <h3 key={`h3-${idx}`} className="text-sm font-bold text-white mt-2.5 mb-1">
+          {renderInline(trimmed.slice(3))}
+        </h3>
+      );
+      continue;
+    }
+    if (trimmed.startsWith('# ')) {
+      flushList();
+      elements.push(
+        <h2 key={`h2-${idx}`} className="text-base font-bold text-white mt-3 mb-1">
+          {renderInline(trimmed.slice(2))}
+        </h2>
+      );
+      continue;
+    }
+
+    // Check unordered list item (* or -)
+    const ulMatch = trimmed.match(/^[-*]\s+(.+)$/);
+    if (ulMatch) {
+      if (!currentList || currentList.type !== 'ul') {
+        flushList();
+        currentList = { type: 'ul', items: [] };
+      }
+      currentList.items.push(ulMatch[1]);
+      continue;
+    }
+
+    // Check ordered list item (1. 2.)
+    const olMatch = trimmed.match(/^\d+\.\s+(.+)$/);
+    if (olMatch) {
+      if (!currentList || currentList.type !== 'ol') {
+        flushList();
+        currentList = { type: 'ol', items: [] };
+      }
+      currentList.items.push(olMatch[1]);
+      continue;
+    }
+
+    // Blank line
+    if (!trimmed) {
+      flushList();
+      continue;
+    }
+
+    // Regular paragraph
+    flushList();
+    elements.push(
+      <p key={`p-${idx}`} className="text-xs text-neutral-300 leading-relaxed my-0.5">
+        {renderInline(trimmed)}
+      </p>
+    );
+  }
+
+  flushList();
+  return <div className="space-y-0.5">{elements}</div>;
+}
+
 export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
   const [input, setInput] = useState('');
   const [apiKey, setApiKey] = useState('');
@@ -435,7 +589,9 @@ export function CopilotDrawer({ quote, onSelectTicker }: CopilotDrawerProps) {
             </div>
 
             {/* Markdown-style formatted body */}
-            <div className="whitespace-pre-wrap space-y-2">{msg.text}</div>
+            <div className="space-y-1">
+              <FormattedMarkdown text={msg.text} />
+            </div>
 
             {/* Citations Pill Bar */}
             {msg.citations && msg.citations.length > 0 && (

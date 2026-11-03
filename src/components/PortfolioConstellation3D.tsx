@@ -322,12 +322,12 @@ export function PortfolioConstellation3D({
   return (
     <div
       ref={containerRef}
-      className={`relative rounded-2xl bg-neutral-950/90 border border-neutral-800 overflow-hidden shadow-2xl transition-all ${
-        isFullscreen ? 'fixed inset-4 z-50 bg-neutral-950 flex flex-col' : 'p-3'
+      className={`relative rounded-2xl bg-neutral-900 border border-neutral-800 overflow-hidden shadow-2xl transition-all ${
+        isFullscreen ? 'fixed inset-0 z-50 bg-neutral-950/95 backdrop-blur-md flex flex-col p-4 sm:p-6 items-center justify-center' : 'p-3 w-full'
       }`}
     >
       {/* Top Controls Overlay */}
-      <div className="flex items-center justify-between gap-2 mb-1 px-2 pt-1 z-10 relative">
+      <div className="w-full flex items-center justify-between gap-2 mb-1 px-2 pt-1 z-10 relative">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></div>
           <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
@@ -353,11 +353,11 @@ export function PortfolioConstellation3D({
         </div>
       </div>
 
-      {/* 3D Canvas Viewport */}
-      <div className="relative flex-1 flex items-center justify-center cursor-grab active:cursor-grabbing">
+      {/* 3D Canvas Viewport - Centered */}
+      <div className="relative flex-1 w-full min-h-[340px] sm:min-h-[400px] flex items-center justify-center cursor-grab active:cursor-grabbing overflow-hidden">
         <canvas
           ref={canvasRef}
-          className="w-full h-auto block select-none touch-none"
+          className="block select-none touch-none mx-auto"
           onClick={() => {
             if (hoveredNode) {
               sound.playClick();
@@ -366,9 +366,9 @@ export function PortfolioConstellation3D({
           }}
         />
 
-        {/* Hover Holographic Tooltip */}
+        {/* Hover Holographic Tooltip - Centered at Bottom */}
         {hoveredNode && (
-          <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-xs p-3 rounded-xl bg-neutral-900/95 backdrop-blur-md border border-neutral-750 shadow-2xl animate-in fade-in zoom-in-95 duration-100 z-20 pointer-events-auto">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-[92%] sm:w-auto sm:min-w-[340px] max-w-md p-3 rounded-xl bg-neutral-900/95 backdrop-blur-md border border-neutral-750 shadow-2xl animate-in fade-in zoom-in-95 duration-100 z-20 pointer-events-auto">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <div className="flex items-center gap-1.5">

@@ -13,6 +13,7 @@ import { AlertSettingsModal } from '@/components/AlertSettingsModal';
 import { PortfolioConstellation3D } from '@/components/PortfolioConstellation3D';
 import { NotificationToast } from '@/components/NotificationToast';
 import { OnboardingTutorial } from '@/components/OnboardingTutorial';
+import { AppearanceModal } from '@/components/AppearanceModal';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
 import { sound } from '@/lib/sound';
@@ -24,6 +25,7 @@ export default function Home() {
   const [diligence, setDiligence] = useState<DiligenceModule | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
+  const [isAppearanceOpen, setIsAppearanceOpen] = useState<boolean>(false);
 
   // Auto-launch tutorial for first-time visitors
   useEffect(() => {
@@ -188,6 +190,7 @@ export default function Home() {
         onOpenSearch={() => setIsSearchOpen(true)}
         onOpenAlerts={() => setIsAlertsOpen(true)}
         onOpenTutorial={() => setIsTutorialOpen(true)}
+        onOpenAppearance={() => setIsAppearanceOpen(true)}
         onSelectTicker={(ticker) => {
           handleSelectTicker(ticker);
           setActiveTab('pull');
@@ -203,7 +206,7 @@ export default function Home() {
       />
 
       {/* Main Content Area with Fluid Page Transition Animations */}
-      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 sm:py-6">
+      <main className="flex-1 w-full max-w-4xl mx-auto px-4 py-4 sm:py-6 pb-24 sm:pb-28">
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -294,6 +297,16 @@ export default function Home() {
         isOpen={isTutorialOpen}
         onClose={() => setIsTutorialOpen(false)}
         onNavigateTab={(tab) => handleTabChange(tab)}
+      />
+
+      {/* Appearance & 5-Accent Color Schemes Modal */}
+      <AppearanceModal
+        isOpen={isAppearanceOpen}
+        onClose={() => setIsAppearanceOpen(false)}
+        onOpenTutorial={() => {
+          setIsAppearanceOpen(false);
+          setIsTutorialOpen(true);
+        }}
       />
     </div>
   );
