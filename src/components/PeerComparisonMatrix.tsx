@@ -18,6 +18,24 @@ export function PeerComparisonMatrix({ onSelectTicker, activeTicker }: PeerCompa
     'ZOMATO.NS',
     'RELIANCE.NS',
   ]);
+  const [dynamicDiligenceMap, setDynamicDiligenceMap] = useState<Record<string, any>>({});
+
+  // Dynamically fetch research for any selected ticker not in pre-seeded store
+  React.useEffect(() => {
+    selectedTickers.forEach(async (t) => {
+      if (!PRIMARY_DILIGENCE_STORE[t] && !dynamicDiligenceMap[t]) {
+        try {
+          const res = await fetch(`/api/research?ticker=${encodeURIComponent(t)}`);
+          const json = await res.json();
+          if (json.success && json.diligence) {
+            setDynamicDiligenceMap((prev) => ({ ...prev, [t]: json.diligence }));
+          }
+        } catch (err) {
+          console.warn('Failed to fetch dynamic diligence for peer:', err);
+        }
+      }
+    });
+  }, [selectedTickers, dynamicDiligenceMap]);
 
   const presetComparisons = [
     { label: 'High-Growth Champions', tickers: ['TRENT.NS', 'DIXON.NS', 'ZOMATO.NS'] },
@@ -38,7 +56,7 @@ export function PeerComparisonMatrix({ onSelectTicker, activeTicker }: PeerCompa
     }
   }
 
-  // Get data for each ticker
+  // Get data for each ticker dynamically
   const peers = selectedTickers.map((t) => {
     const meta = PORTFOLIO_COMPANIES.find((c) => c.ticker === t) || {
       ticker: t,
@@ -49,7 +67,7 @@ export function PeerComparisonMatrix({ onSelectTicker, activeTicker }: PeerCompa
       marketCapCr: 50000,
       peRatio: 35,
     };
-    const diligence = PRIMARY_DILIGENCE_STORE[t];
+    const diligence = PRIMARY_DILIGENCE_STORE[t] || dynamicDiligenceMap[t];
 
     return {
       ticker: t,

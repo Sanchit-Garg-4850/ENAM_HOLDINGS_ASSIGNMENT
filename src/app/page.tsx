@@ -17,6 +17,7 @@ import { AppearanceModal } from '@/components/AppearanceModal';
 import { MorningBriefingPill } from '@/components/MorningBriefingPill';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
+import { PORTFOLIO_COMPANIES } from '@/data/portfolio';
 import { sound } from '@/lib/sound';
 
 export default function Home() {
@@ -163,28 +164,32 @@ export default function Home() {
     setActiveTicker(newTicker);
   }
 
-  // Fallback quote if still loading
+  // Dynamic quote fallback while in flight matching activeTicker
+  const activeMeta = PORTFOLIO_COMPANIES.find(
+    (c) => c.ticker === activeTicker || c.symbol === activeTicker.replace(/\.(NS|BO)$/, '')
+  );
+
   const currentQuote: StockQuote = quote || {
     ticker: activeTicker,
     symbol: activeTicker.replace(/\.(NS|BO)$/, ''),
-    name: activeTicker === 'TRENT.NS' ? 'Trent Ltd' : activeTicker,
-    sector: 'Retail & Consumer Discretionary',
-    marketCapCategory: 'Large Cap',
-    price: 6850.0,
-    change: 94.5,
-    changePercent: 1.4,
-    volume: 840000,
-    avgVolume10d: 650000,
-    volumeRatio: 1.29,
-    fiftyTwoWeekHigh: 7200.0,
-    fiftyTwoWeekLow: 3200.0,
-    marketCapCr: 243000,
-    peRatio: 125.0,
-    isPortfolio: true,
+    name: activeMeta?.name || activeTicker.replace(/\.(NS|BO)$/, ''),
+    sector: activeMeta?.sector || 'Diversified Indian Equities',
+    marketCapCategory: activeMeta?.marketCapCategory || 'Large Cap',
+    price: activeMeta?.basePrice || 1000.0,
+    change: 0.0,
+    changePercent: 0.0,
+    volume: 500000,
+    avgVolume10d: 500000,
+    volumeRatio: 1.0,
+    fiftyTwoWeekHigh: activeMeta ? Number((activeMeta.basePrice * 1.25).toFixed(1)) : 1250.0,
+    fiftyTwoWeekLow: activeMeta ? Number((activeMeta.basePrice * 0.75).toFixed(1)) : 750.0,
+    marketCapCr: activeMeta?.marketCapCr || 50000,
+    peRatio: activeMeta?.peRatio || 30.0,
+    isPortfolio: activeMeta?.isPortfolio ?? false,
   };
 
   const currentDiligence: DiligenceModule =
-    diligence || PRIMARY_DILIGENCE_STORE['TRENT.NS'];
+    diligence || PRIMARY_DILIGENCE_STORE[activeTicker] || PRIMARY_DILIGENCE_STORE['TRENT.NS'];
 
   return (
     <div className="min-h-screen bg-neutral-950 text-neutral-100 flex flex-col font-sans selection:bg-emerald-500/30 selection:text-emerald-200">

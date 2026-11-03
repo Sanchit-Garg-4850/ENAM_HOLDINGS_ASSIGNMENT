@@ -22,6 +22,8 @@ export function MorningBriefingPill({ onSelectTicker, onOpenPushFeed }: MorningB
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isDismissed, setIsDismissed] = useState<boolean>(false);
   const [lastReviewDate, setLastReviewDate] = useState<string>('Yesterday 18:30');
+  const [briefingItems, setBriefingItems] = useState<BriefingItem[]>([]);
+  const [marginAlertTicker, setMarginAlertTicker] = useState<string | null>(null);
 
   useEffect(() => {
     try {
@@ -35,29 +37,60 @@ export function MorningBriefingPill({ onSelectTicker, onOpenPushFeed }: MorningB
     }
   }, []);
 
-  const briefingItems: BriefingItem[] = [
-    {
-      ticker: 'TRENT.NS',
-      badge: 'Margin Divergence',
-      summary: 'Q2 EBITDA Margin contracted 120bps to 13.8% due to raw material and freight inflation despite +39% YoY revenue.',
-      impact: 'negative',
-      timeAgo: '4h ago',
-    },
-    {
-      ticker: 'TITAN.NS',
-      badge: 'Gold Procurement Alert',
-      summary: 'Custom duty reduction impact: Short-term inventory loss of ₹290 Cr absorbed; jewelry LTL volumes up +25%.',
-      impact: 'neutral',
-      timeAgo: '7h ago',
-    },
-    {
-      ticker: 'DIXON.NS',
-      badge: 'Volume Multiplier 3.4x',
-      summary: 'Institutional accumulation surge following mobile PLI component localization announcement with global ODM.',
-      impact: 'positive',
-      timeAgo: '11h ago',
-    },
-  ];
+  // Fetch real overnight announcements dynamically
+  useEffect(() => {
+    async function loadOvernightDisclosures() {
+      try {
+        const res = await fetch('/api/announcements?windowHours=24&onlyMaterial=true');
+        const json = await res.json();
+        if (json.success && Array.isArray(json.data)) {
+          const rawAnnouncements: any[] = json.data;
+
+          let alertTicker: string | null = null;
+          const mappedItems: BriefingItem[] = rawAnnouncements.slice(0, 5).map((a) => {
+            let badge = 'Material Disclosure';
+            let impact: 'positive' | 'negative' | 'neutral' = 'neutral';
+
+            if (a.results) {
+              const marginDown = a.results.ebitdaMargin < 15 || a.results.ebitdaYoY < 0;
+              badge = marginDown ? 'Margin Divergence' : 'Earnings Growth';
+              impact = marginDown ? 'negative' : 'positive';
+              if (marginDown && !alertTicker) {
+                alertTicker = a.ticker.replace('.NS', '');
+              }
+            } else if (a.managementChange) {
+              badge = 'Executive Transition';
+              impact = 'neutral';
+            } else if (a.anomaly) {
+              badge = `Volume Multiplier ${a.anomaly.volumeSpikeRatio}x`;
+              impact = a.anomaly.priceChangePercent >= 0 ? 'positive' : 'negative';
+            } else if (a.category === 'M&A') {
+              badge = 'Strategic M&A';
+              impact = 'positive';
+            } else if (a.category === 'capex') {
+              badge = 'Capex Expansion';
+              impact = 'positive';
+            }
+
+            return {
+              ticker: a.ticker,
+              badge,
+              summary: a.oneLineTakeaway || a.headline,
+              impact,
+              timeAgo: a.publishedAt || 'Recently',
+            };
+          });
+
+          setBriefingItems(mappedItems);
+          setMarginAlertTicker(alertTicker);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch morning disclosures:', err);
+      }
+    }
+
+    loadOvernightDisclosures();
+  }, []);
 
   function handleMarkAsRead() {
     sound.playSuccess();
@@ -73,7 +106,7 @@ export function MorningBriefingPill({ onSelectTicker, onOpenPushFeed }: MorningB
       <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-neutral-900/40 border border-neutral-850/60 text-[11px] font-mono text-neutral-400">
         <span className="flex items-center gap-1.5 text-neutral-400">
           <Check className="w-3 h-3 text-emerald-400" />
-          Morning briefing reviewed • All 3 overnight disclosures triaged
+          Morning briefing reviewed • All {briefingItems.length} overnight disclosures triaged
         </span>
         <button
           onClick={() => {
@@ -114,9 +147,11 @@ export function MorningBriefingPill({ onSelectTicker, onOpenPushFeed }: MorningB
             <span className="text-neutral-500 text-xs hidden sm:inline">•</span>
 
             <span className="text-xs text-neutral-200 font-medium truncate">
-              <strong className="text-white">3 New Filings</strong>
+              <strong className="text-white">{briefingItems.length} New Filings</strong>
               <span className="text-neutral-400 mx-1.5">|</span>
-              <span className="text-rose-400">1 Margin Alert (TRENT)</span>
+              <span className={marginAlertTicker ? 'text-rose-400' : 'text-neutral-300'}>
+                {marginAlertTicker ? `1 Margin Alert (${marginAlertTicker})` : 'All Margins Stable'}
+              </span>
               <span className="text-neutral-400 mx-1.5">|</span>
               <span className="text-emerald-400">0 Forensic Flags</span>
             </span>
