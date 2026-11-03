@@ -22,9 +22,27 @@ export interface ScreenerDocumentLink {
 
 export interface ScreenerCompanyData {
   symbol: string;
+  name?: string;
+  overview?: string;
+  segmentsDescription?: string;
+  pros?: string[];
+  cons?: string[];
+  salesCagr3Y?: number;
+  profitCagr3Y?: number;
+  roe3Y?: number;
+  stockPriceCagr3Y?: number;
   roce?: number;
   roe?: number;
   bookValue?: number;
+  debtCr?: number;
+  reservesCr?: number;
+  workingCapitalDays?: number;
+  debtorDays?: number;
+  inventoryDays?: number;
+  payableDays?: number;
+  cashConversionCycle?: number;
+  operatingCashFlowCr?: number;
+  freeCashFlowCr?: number;
   quarters: ScreenerQuarterData[];
   annualReports: ScreenerDocumentLink[];
   filings: ScreenerDocumentLink[];
@@ -39,7 +57,7 @@ const SYMBOL_SLUG_MAP: Record<string, string> = {
   ZOMATO: 'ETERNAL',
 };
 
-export async function fetchScreenerData(symbol: string): Promise<ScreenerCompanyData | null> {
+export async function fetchScreenerData(symbol: string, companyName?: string): Promise<ScreenerCompanyData | null> {
   const cleanSymbol = symbol.toUpperCase().replace(/\.(NS|BO)$/, '');
   const now = Date.now();
 
@@ -70,16 +88,24 @@ export async function fetchScreenerData(symbol: string): Promise<ScreenerCompany
     // If 404, resolve slug dynamically via Screener search API
     if (res.status === 404) {
       try {
-        const searchRes = await fetch(`https://www.screener.in/api/company/search/?q=${cleanSymbol}`, {
+        let searchRes = await fetch(`https://www.screener.in/api/company/search/?q=${encodeURIComponent(cleanSymbol)}`, {
           headers,
           signal: AbortSignal.timeout(6000),
         });
-        if (searchRes.status === 200) {
-          const results = await searchRes.json();
-          if (results && results.length > 0 && results[0].url) {
-            url = `https://www.screener.in${results[0].url}`;
-            res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+        let results = searchRes.status === 200 ? await searchRes.json() : [];
+        if ((!results || results.length === 0) && companyName) {
+          const cleanName = companyName.replace(/Limited|Ltd\.|Ltd|\(India\)|\.NS|\.BO/gi, '').trim();
+          if (cleanName.length > 2) {
+            searchRes = await fetch(`https://www.screener.in/api/company/search/?q=${encodeURIComponent(cleanName)}`, {
+              headers,
+              signal: AbortSignal.timeout(6000),
+            });
+            results = searchRes.status === 200 ? await searchRes.json() : [];
           }
+        }
+        if (results && results.length > 0 && results[0].url) {
+          url = `https://www.screener.in${results[0].url}`;
+          res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
         }
       } catch {}
     }
@@ -198,11 +224,81 @@ export async function fetchScreenerData(symbol: string): Promise<ScreenerCompany
       }
     }
 
+    // 4. Parse Real Company Profile & Segments Description
+    const paras = [...html.matchAll(/<div class="company-profile"[\s\S]*?<p[^>]*>([\s\S]*?)<\/p>/g)]
+      .map((m) => m[1].replace(/<[^>]+>/g, '').replace(/\[\d+\]/g, '').trim())
+      .filter((t) => t.length > 30);
+    const overview = paras[0] || undefined;
+    const segmentsDescription = paras[1] || undefined;
+
+    // 5. Parse Real Pros and Cons
+    const pros = [...html.matchAll(/<div class="pros"[\s\S]*?<ul>([\s\S]*?)<\/ul>/g)]
+      .flatMap((m) => [...m[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map((li) => li[1].replace(/<[^>]+>/g, '').trim()));
+    const cons = [...html.matchAll(/<div class="cons"[\s\S]*?<ul>([\s\S]*?)<\/ul>/g)]
+      .flatMap((m) => [...m[1].matchAll(/<li>([\s\S]*?)<\/li>/g)].map((li) => li[1].replace(/<[^>]+>/g, '').trim()));
+
+    // 6. Parse Real CAGRs
+    const salesCagrMatch = html.match(/Compounded Sales Growth[\s\S]*?3 Years:\s*<\/td>\s*<td[^>]*>([-\d\.]+)%/);
+    const profitCagrMatch = html.match(/Compounded Profit Growth[\s\S]*?3 Years:\s*<\/td>\s*<td[^>]*>([-\d\.]+)%/);
+    const roe3YMatch = html.match(/Return on Equity[\s\S]*?3 Years:\s*<\/td>\s*<td[^>]*>([-\d\.]+)%/);
+    const stockCagrMatch = html.match(/Stock Price CAGR[\s\S]*?3 Years:\s*<\/td>\s*<td[^>]*>([-\d\.]+)%/);
+
+    const salesCagr3Y = salesCagrMatch ? parseFloat(salesCagrMatch[1]) : undefined;
+    const profitCagr3Y = profitCagrMatch ? parseFloat(profitCagrMatch[1]) : undefined;
+    const roe3Y = roe3YMatch ? parseFloat(roe3YMatch[1]) : undefined;
+    const stockPriceCagr3Y = stockCagrMatch ? parseFloat(stockCagrMatch[1]) : undefined;
+
+    // 7. Helper: Extract Latest Numeric Cell from a Specific Table Section
+    function getLatestRowNumber(sectionId: string, rowNameRegex: RegExp): number | undefined {
+      const sec = html.match(new RegExp(`<section id="${sectionId}"[\\s\\S]*?</section>`));
+      if (!sec) return undefined;
+      const rows = [...sec[0].matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/g)];
+      for (const r of rows) {
+        const cells = [...r[1].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/g)].map((c) =>
+          c[1].replace(/<[^>]+>/g, '').trim()
+        );
+        if (cells.length > 1 && rowNameRegex.test(cells[0])) {
+          const valStr = cells[cells.length - 1].replace(/,/g, '').replace(/%/g, '');
+          const parsed = parseFloat(valStr);
+          if (!isNaN(parsed)) return parsed;
+        }
+      }
+      return undefined;
+    }
+
+    const debtorDays = getLatestRowNumber('ratios', /debtor days/i);
+    const inventoryDays = getLatestRowNumber('ratios', /inventory days/i);
+    const payableDays = getLatestRowNumber('ratios', /days payable|payable days/i);
+    const workingCapitalDays = getLatestRowNumber('ratios', /working capital days/i);
+    const cashConversionCycle = getLatestRowNumber('ratios', /cash conversion cycle/i);
+
+    const operatingCashFlowCr = getLatestRowNumber('cash-flow', /cash from operating/i);
+    const freeCashFlowCr = getLatestRowNumber('cash-flow', /free cash flow/i);
+    const debtCr = getLatestRowNumber('balance-sheet', /borrowings/i);
+    const reservesCr = getLatestRowNumber('balance-sheet', /reserves/i);
+
     const companyData: ScreenerCompanyData = {
       symbol: cleanSymbol,
+      overview,
+      segmentsDescription,
+      pros: pros.length > 0 ? pros : undefined,
+      cons: cons.length > 0 ? cons : undefined,
+      salesCagr3Y,
+      profitCagr3Y,
+      roe3Y,
+      stockPriceCagr3Y,
       roce,
       roe,
       bookValue,
+      debtCr,
+      reservesCr,
+      workingCapitalDays,
+      debtorDays,
+      inventoryDays,
+      payableDays,
+      cashConversionCycle,
+      operatingCashFlowCr,
+      freeCashFlowCr,
       quarters,
       annualReports: annualReports.slice(0, 6),
       filings: filings.slice(0, 10),
