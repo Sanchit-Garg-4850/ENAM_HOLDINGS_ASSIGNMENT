@@ -3,7 +3,8 @@
 **Candidate:** Sanchit Garg  
 **Roll Number:** 230908  
 **Agent:** Google Antigravity (Powered by Gemini 3.8 / Advanced Agentic Coding)  
-**Workspace:** `/home/abhi/sanchit/antigravity`  
+**Workspace:** `/home/sanchit/antigravity`  
+**Live Deployed Prototype (Vercel):** [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app)  
 **Date:** November 3, 2026  
 **Email Subject:** `ENAM - IIT screening - 2027`  
 **Status:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`)
@@ -47,7 +48,7 @@ The build followed an iterative, test-driven approach using Antigravity's agenti
 
 ### Step 2: Architecture Planning & Zero-Cost Pipeline
 - **Decision:** Rather than relying on paid API keys or brittle multi-container setups, architected a unified full-stack Next.js 16 application with `yahoo-finance2` for real-time EOD market data and pre-cached primary filings for 18 portfolio stocks + 4 ad-hoc stocks.
-- **Artifact Created:** Saved [`finn_architecture_and_execution_plan.md`](file:///home/abhi/.gemini/antigravity/brain/bcc83810-79ca-4547-b611-d17606bc1785/finn_architecture_and_execution_plan.md).
+- **Artifact Created:** Saved [`finn_architecture_and_execution_plan.md`](finn_architecture_and_execution_plan.md).
 
 ### Step 3: Domain Models & Data Pipelines
 - **Tooling:** Created `src/lib/types.ts` defining strict TypeScript models for:

@@ -7,6 +7,7 @@
 **Submission For:** ENAM Holdings — AI Engineer Build Challenge  
 **Email Subject:** `ENAM - IIT screening - 2027`  
 **GitHub Repository:** [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)  
+**Live Deployed Prototype (Vercel):** [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app)  
 **Test Suite Status:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`)
 
 ---
@@ -183,8 +184,8 @@ FINN includes an end-to-end integration test suite (`scripts/test_suite.ts`) ver
 
 ## 📋 Evaluation Deliverables Check
 
-- [x] **Mobile-first Working Prototype**: Built and optimized for mobile viewports, responsive, runs on `localhost:3000` and deployable to Vercel in 1 click.
-- [x] **GitHub Repository**: Clean, modular, typed codebase at `https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT`.
-- [x] **AI Build History**: Documented in [`docs/AI_BUILD_HISTORY.md`](file:///home/abhi/sanchit/antigravity/docs/AI_BUILD_HISTORY.md).
-- [x] **Covering Note**: Complete writeup in [`docs/COVERING_NOTE.md`](file:///home/abhi/sanchit/antigravity/docs/COVERING_NOTE.md).
-- [x] **Requirements Checklist**: Line-by-line verification in [`docs/REQUIREMENTS_CHECKLIST.md`](file:///home/abhi/sanchit/antigravity/docs/REQUIREMENTS_CHECKLIST.md).
+- [x] **Mobile-first Working Prototype**: Built and optimized for mobile viewports, responsive, live on Vercel at [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app) and runs locally on `http://localhost:3000`.
+- [x] **GitHub Repository**: Clean, modular, typed codebase at [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT).
+- [x] **AI Build History**: Documented in [`docs/AI_BUILD_HISTORY.md`](docs/AI_BUILD_HISTORY.md).
+- [x] **Covering Note**: Complete writeup in [`docs/COVERING_NOTE.md`](docs/COVERING_NOTE.md).
+- [x] **Requirements Checklist**: Line-by-line verification in [`docs/REQUIREMENTS_CHECKLIST.md`](docs/REQUIREMENTS_CHECKLIST.md).

@@ -11,10 +11,10 @@
 
 Here is our submission for the **FINN: Financial Investment Agent** challenge.
 
+- **Deployed Mobile Prototype (Live Vercel):** [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app) (also runnable locally via `bun run start` on `http://localhost:3000`)
 - **GitHub Repository:** [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)
-- **Deployed Mobile Prototype:** Ready for local run via `bun run start` on `http://localhost:3000` (and instant 1-click Vercel deployment via `npx vercel --prod` / GitHub import)
-- **Requirements Verification Checklist:** Line-by-line audit matrix against both challenge PDF briefs documented in [`docs/REQUIREMENTS_CHECKLIST.md`](file:///home/abhi/sanchit/antigravity/docs/REQUIREMENTS_CHECKLIST.md).
-- **AI Build History:** Detailed prompt trajectories, tool traces, and decisions documented in [`docs/AI_BUILD_HISTORY.md`](file:///home/abhi/sanchit/antigravity/docs/AI_BUILD_HISTORY.md).
+- **Requirements Verification Checklist:** Line-by-line audit matrix against both challenge PDF briefs documented in [`docs/REQUIREMENTS_CHECKLIST.md`](docs/REQUIREMENTS_CHECKLIST.md).
+- **AI Build History:** Detailed prompt trajectories, tool traces, and decisions documented in [`docs/AI_BUILD_HISTORY.md`](docs/AI_BUILD_HISTORY.md).
 - **Automated Test Suite:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`).
 
 ---
@@ -114,4 +114,5 @@ Warm regards,
 **Sanchit Garg**  
 Roll Number: 230908  
 IIT Screening Candidate — 2027  
-GitHub: [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)
+GitHub: [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)  
+Live Demo: [https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app)
