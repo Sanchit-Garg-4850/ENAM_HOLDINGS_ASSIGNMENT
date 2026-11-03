@@ -18,6 +18,7 @@ import { MorningBriefingPill } from '@/components/MorningBriefingPill';
 import { StockQuote, DiligenceModule, AlertConfig } from '@/lib/types';
 import { PRIMARY_DILIGENCE_STORE } from '@/data/diligence';
 import { PORTFOLIO_COMPANIES } from '@/data/portfolio';
+import { AlertTriangle, CornerDownLeft, Search } from 'lucide-react';
 import { sound } from '@/lib/sound';
 
 export default function Home() {
@@ -130,27 +131,40 @@ export default function Home() {
     monitoredCategories: ['results', 'management_change', 'M&A', 'capex', 'pledging', 'litigation'],
   });
 
+  const [invalidTickerState, setInvalidTickerState] = useState<{
+    symbol: string;
+    requestedTicker: string;
+    didYouMean?: { ticker: string; symbol: string; name: string; sector: string };
+    error: string;
+  } | null>(null);
+
   // Fetch company research and live quote whenever activeTicker changes
   useEffect(() => {
     async function loadCompanyData() {
       setIsLoading(true);
+      setInvalidTickerState(null);
       try {
         const res = await fetch(`/api/research?ticker=${encodeURIComponent(activeTicker)}`);
         const json = await res.json();
         if (json.success) {
           setQuote(json.quote);
           setDiligence(json.diligence);
+          setInvalidTickerState(null);
+        } else if (json.isInvalidTicker) {
+          setInvalidTickerState({
+            symbol: json.symbol || activeTicker.replace(/\.(NS|BO)$/, ''),
+            requestedTicker: json.requestedTicker || activeTicker,
+            didYouMean: json.didYouMean,
+            error: json.error || `Symbol ${activeTicker} was not found on NSE.`,
+          });
         } else {
-          // Fallback to local store
-          const fallbackDiligence =
-            PRIMARY_DILIGENCE_STORE[activeTicker] || PRIMARY_DILIGENCE_STORE['TRENT.NS'];
-          setDiligence(fallbackDiligence);
+          const fallbackDiligence = PRIMARY_DILIGENCE_STORE[activeTicker];
+          if (fallbackDiligence) {
+            setDiligence(fallbackDiligence);
+          }
         }
       } catch (err) {
         console.error('Failed to load company data:', err);
-        const fallbackDiligence =
-          PRIMARY_DILIGENCE_STORE[activeTicker] || PRIMARY_DILIGENCE_STORE['TRENT.NS'];
-        setDiligence(fallbackDiligence);
       } finally {
         setIsLoading(false);
       }
@@ -250,20 +264,104 @@ export default function Home() {
             )}
 
             {activeTab === 'pull' && (
-              <PullDiligence
-                quote={currentQuote}
-                diligence={currentDiligence}
-                onSelectTicker={handleSelectTicker}
-                onOpenSearch={() => setIsSearchOpen(true)}
-              />
+              invalidTickerState ? (
+                <div className="p-6 sm:p-8 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl space-y-6 text-center max-w-xl mx-auto my-6 animate-in fade-in">
+                  <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto shadow-md shadow-amber-950">
+                    <AlertTriangle className="w-7 h-7" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <h2 className="text-white text-lg sm:text-xl font-bold tracking-tight">
+                      Symbol &ldquo;{invalidTickerState.symbol}&rdquo; Not Found on NSE
+                    </h2>
+                    <p className="text-xs sm:text-sm text-neutral-400 leading-relaxed max-w-md mx-auto">
+                      No active listed security matches this symbol. FINN will not generate synthetic estimates for unverified tickers.
+                    </p>
+                  </div>
+
+                  {invalidTickerState.didYouMean && (
+                    <div className="p-4 rounded-xl bg-neutral-850/80 border border-emerald-500/30 text-left space-y-3">
+                      <div className="text-[11px] text-emerald-400 font-mono font-medium uppercase tracking-wider flex items-center gap-1.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                        Did you mean this company?
+                      </div>
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <div className="text-base font-bold font-mono text-white">
+                            {invalidTickerState.didYouMean.symbol}
+                          </div>
+                          <div className="text-xs text-neutral-300">
+                            {invalidTickerState.didYouMean.name}
+                          </div>
+                          <div className="text-[11px] text-neutral-500">
+                            {invalidTickerState.didYouMean.sector}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => {
+                            sound.playClick();
+                            handleSelectTicker(invalidTickerState.didYouMean!.ticker);
+                          }}
+                          className="px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold font-mono text-xs flex items-center gap-1.5 shrink-0 transition-all shadow-md shadow-emerald-950"
+                        >
+                          <span>Load {invalidTickerState.didYouMean.symbol}</span>
+                          <CornerDownLeft className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="pt-2 flex items-center justify-center gap-3 flex-wrap">
+                    <button
+                      onClick={() => setIsSearchOpen(true)}
+                      className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-750 text-white text-xs font-mono flex items-center gap-2 border border-neutral-700 transition-colors"
+                    >
+                      <Search className="w-3.5 h-3.5 text-emerald-400" />
+                      <span>Search 4,500+ Indian Equities (⌘K)</span>
+                    </button>
+                    <button
+                      onClick={() => handleSelectTicker('TRENT.NS')}
+                      className="px-4 py-2 rounded-xl bg-neutral-800 hover:bg-neutral-750 text-neutral-300 hover:text-white text-xs font-mono border border-neutral-700 transition-colors"
+                    >
+                      Return to Trent (TRENT)
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <PullDiligence
+                  quote={currentQuote}
+                  diligence={currentDiligence}
+                  onSelectTicker={handleSelectTicker}
+                  onOpenSearch={() => setIsSearchOpen(true)}
+                />
+              )
             )}
 
             {activeTab === 'narrative' && (
-              <NarrativeVsNumbers
-                quote={currentQuote}
-                diligence={currentDiligence}
-                onSelectTicker={handleSelectTicker}
-              />
+              invalidTickerState ? (
+                <div className="p-6 sm:p-8 rounded-2xl bg-neutral-900 border border-neutral-800 shadow-2xl space-y-4 text-center max-w-xl mx-auto my-6">
+                  <div className="text-amber-400 font-mono text-sm font-semibold">
+                    Audits Unavailable for &ldquo;{invalidTickerState.symbol}&rdquo;
+                  </div>
+                  <p className="text-xs text-neutral-400">
+                    Cannot audit management guidance divergence for unverified security &ldquo;{invalidTickerState.symbol}&rdquo;.
+                  </p>
+                  {invalidTickerState.didYouMean && (
+                    <button
+                      onClick={() => handleSelectTicker(invalidTickerState.didYouMean!.ticker)}
+                      className="px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-neutral-950 font-bold font-mono text-xs inline-flex items-center gap-1.5"
+                    >
+                      Audit {invalidTickerState.didYouMean.symbol} Instead
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <NarrativeVsNumbers
+                  quote={currentQuote}
+                  diligence={currentDiligence}
+                  onSelectTicker={handleSelectTicker}
+                />
+              )
             )}
 
             {activeTab === 'constellation' && (

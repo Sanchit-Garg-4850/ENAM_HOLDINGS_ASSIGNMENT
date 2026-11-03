@@ -23,6 +23,9 @@ export interface ScreenerDocumentLink {
 export interface ScreenerCompanyData {
   symbol: string;
   name?: string;
+  currentPrice?: number;
+  marketCapCr?: number;
+  peRatio?: number;
   overview?: string;
   segmentsDescription?: string;
   pros?: string[];
@@ -117,7 +120,18 @@ export async function fetchScreenerData(symbol: string, companyName?: string): P
 
     const html = await res.text();
 
-    // 1. Parse Key Ratios
+    // 1. Parse Key Header Stats & Ratios
+    const h1Match = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
+    const parsedCompanyName = h1Match ? h1Match[1].replace(/<[^>]+>/g, '').trim() : undefined;
+
+    const priceMatch = html.match(/Current Price[\s\S]*?<span class="number">([\d,.]+)<\/span>/);
+    const mcapMatch = html.match(/Market Cap[\s\S]*?<span class="number">([\d,.]+)<\/span>/);
+    const peMatch = html.match(/Stock P\/E[\s\S]*?<span class="number">([\d,.]+)<\/span>/);
+
+    const currentPrice = priceMatch ? parseFloat(priceMatch[1].replace(/,/g, '')) : undefined;
+    const marketCapCr = mcapMatch ? parseFloat(mcapMatch[1].replace(/,/g, '')) : undefined;
+    const peRatio = peMatch ? parseFloat(peMatch[1].replace(/,/g, '')) : undefined;
+
     const roceMatch = html.match(/ROCE[\s\S]*?<span class="number">([\d\.]+)<\/span>/);
     const roeMatch = html.match(/ROE[\s\S]*?<span class="number">([\d\.]+)<\/span>/);
     const bvMatch = html.match(/Book Value[\s\S]*?<span class="number">([\d\.]+)<\/span>/);
@@ -279,6 +293,10 @@ export async function fetchScreenerData(symbol: string, companyName?: string): P
 
     const companyData: ScreenerCompanyData = {
       symbol: cleanSymbol,
+      name: parsedCompanyName || companyName,
+      currentPrice,
+      marketCapCr,
+      peRatio,
       overview,
       segmentsDescription,
       pros: pros.length > 0 ? pros : undefined,

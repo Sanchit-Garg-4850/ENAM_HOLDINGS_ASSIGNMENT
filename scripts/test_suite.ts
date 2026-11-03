@@ -160,6 +160,27 @@ async function runTests() {
     if (!zomato) throw new Error('Failed to find ZOMATO in search');
   });
 
+  // TEST 13: Typo Tolerance & "Did You Mean?" in /api/search
+  await assertTest('/api/search suggests correct ticker on typos (HALLL -> HAL)', async () => {
+    const res = await fetch(`${BASE_URL}/api/search?q=HALLL`);
+    const json = await res.json();
+    if (!json.success) throw new Error('Search request failed');
+    if (!json.didYouMean || json.didYouMean.symbol !== 'HAL') {
+      throw new Error(`Expected didYouMean HAL but got: ${JSON.stringify(json.didYouMean)}`);
+    }
+  });
+
+  // TEST 14: Invalid Ticker Protection & Typo Suggestion in /api/research
+  await assertTest('/api/research rejects typos with 404 and provides didYouMean instead of static page', async () => {
+    const res = await fetch(`${BASE_URL}/api/research?ticker=HALLL.NS`);
+    if (res.status !== 404) throw new Error(`Expected 404 status for invalid ticker, got ${res.status}`);
+    const json = await res.json();
+    if (json.success !== false || !json.isInvalidTicker) throw new Error('Failed to flag invalid ticker');
+    if (!json.didYouMean || json.didYouMean.symbol !== 'HAL') {
+      throw new Error(`Expected suggestion HAL, got: ${JSON.stringify(json.didYouMean)}`);
+    }
+  });
+
   console.log('\n====================================================');
   console.log(`📊 TEST RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log('====================================================');
