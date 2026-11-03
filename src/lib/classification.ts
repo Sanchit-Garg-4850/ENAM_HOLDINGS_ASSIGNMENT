@@ -159,20 +159,43 @@ export function classifyFilingHeadline(headline: string): {
 } {
   const h = headline.toLowerCase();
 
+  // 1. Routine Secretarial Paperwork (Collapse by default)
+  if (
+    h.includes('esop') ||
+    h.includes('esps') ||
+    h.includes('newspaper publication') ||
+    h.includes('trading window') ||
+    h.includes('reg. 74') ||
+    h.includes('reg 74') ||
+    h.includes('certificate under reg') ||
+    h.includes('duplicate') ||
+    h.includes('loss of share')
+  ) {
+    return { category: 'unclassified', tier: 'tier3_routine' };
+  }
+
+  // 2. Financial Results (Tier 1 Urgent)
   if (
     h.includes('financial result') ||
     h.includes('board meeting outcome') ||
     h.includes('quarterly result') ||
     h.includes('audited result') ||
-    h.includes('unaudited result')
+    h.includes('unaudited result') ||
+    h.includes('results for the quarter') ||
+    h.includes('financials for the quarter')
   ) {
     return { category: 'results', tier: 'tier1_urgent' };
   }
+
+  // 3. Management Changes & Key Managerial Personnel (Tier 1 Urgent)
   if (
     h.includes('resignation') ||
     h.includes('appointment') ||
     h.includes('retirement') ||
     h.includes('change in directorate') ||
+    h.includes('change in management') ||
+    h.includes('superannuat') ||
+    h.includes('ceasing as') ||
     h.includes('kmp') ||
     h.includes('cfo') ||
     h.includes('ceo') ||
@@ -180,15 +203,21 @@ export function classifyFilingHeadline(headline: string): {
   ) {
     return { category: 'management_change', tier: 'tier1_urgent' };
   }
+
+  // 4. M&A, Restructuring, Subsidiaries & Acquisitions (Tier 1 Urgent)
   if (
     h.includes('merger') ||
     h.includes('acquisition') ||
     h.includes('demerger') ||
     h.includes('joint venture') ||
-    h.includes('scheme of arrangement')
+    h.includes('subsidiary') ||
+    h.includes('scheme of arrangement') ||
+    h.includes('business transfer agreement')
   ) {
     return { category: 'M&A', tier: 'tier1_urgent' };
   }
+
+  // 5. Litigation & Regulatory Actions (Tier 1 Urgent)
   if (
     h.includes('litigation') ||
     h.includes('nclt') ||
@@ -199,18 +228,30 @@ export function classifyFilingHeadline(headline: string): {
   ) {
     return { category: 'litigation', tier: 'tier1_urgent' };
   }
+
+  // 6. Promoter Pledging (Tier 1 Urgent)
   if (h.includes('pledge') || h.includes('encumbrance') || h.includes('reg 31')) {
     return { category: 'pledging', tier: 'tier1_urgent' };
   }
+
+  // 7. Capex & Capacity Expansions (Tier 2 Material)
   if (
     h.includes('capex') ||
     h.includes('expansion') ||
     h.includes('new plant') ||
     h.includes('facility') ||
-    h.includes('capacity')
+    h.includes('capacity') ||
+    h.includes('development center') ||
+    h.includes('store opening') ||
+    h.includes('opened new store') ||
+    h.includes('store opened') ||
+    h.includes('commissioning') ||
+    h.includes('epc complex')
   ) {
     return { category: 'capex', tier: 'tier2_material' };
   }
+
+  // 8. Credit Rating Actions (Tier 2 Material)
   if (
     h.includes('credit rating') ||
     h.includes('rating update') ||
@@ -219,6 +260,18 @@ export function classifyFilingHeadline(headline: string): {
     h.includes('care')
   ) {
     return { category: 'credit_rating', tier: 'tier2_material' };
+  }
+
+  // 9. Earnings Calls & Transcripts (Tier 2 Material)
+  if (
+    h.includes('transcript') ||
+    h.includes('earnings call') ||
+    h.includes('analyst / investor meet') ||
+    h.includes('analyst meet') ||
+    h.includes('investor presentation') ||
+    h.includes('audio recording')
+  ) {
+    return { category: 'earnings_call', tier: 'tier2_material' };
   }
   if (h.includes('dividend') || h.includes('record date')) {
     return { category: 'dividend', tier: 'tier2_material' };

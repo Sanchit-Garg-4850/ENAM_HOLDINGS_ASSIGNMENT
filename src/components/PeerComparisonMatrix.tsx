@@ -20,10 +20,10 @@ export function PeerComparisonMatrix({ onSelectTicker, activeTicker }: PeerCompa
   ]);
   const [dynamicDiligenceMap, setDynamicDiligenceMap] = useState<Record<string, any>>({});
 
-  // Dynamically fetch research for any selected ticker not in pre-seeded store
+  // Dynamically fetch live research for all selected tickers
   React.useEffect(() => {
     selectedTickers.forEach(async (t) => {
-      if (!PRIMARY_DILIGENCE_STORE[t] && !dynamicDiligenceMap[t]) {
+      if (!dynamicDiligenceMap[t]) {
         try {
           const res = await fetch(`/api/research?ticker=${encodeURIComponent(t)}`);
           const json = await res.json();

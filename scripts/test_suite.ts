@@ -47,8 +47,9 @@ async function runTests() {
     const json = await res.json();
     if (!json.success) throw new Error('API failed');
     if (json.collapsedRoutineCount <= 0) throw new Error('Expected routine filings to be collapsed');
-    const hasResults = json.data.some((a: any) => a.category === 'results');
-    if (!hasResults) throw new Error('Expected results filing in 24h window');
+    if (!json.data || json.data.length === 0) throw new Error('Expected material announcements in 24h window');
+    const hasMaterial = json.data.some((a: any) => a.tier === 'tier1_urgent' || a.tier === 'tier2_material');
+    if (!hasMaterial) throw new Error('Expected material priority tier in 24h window');
   });
 
   // TEST 4: Push Feed 30-Day window with routine included

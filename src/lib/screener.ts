@@ -59,18 +59,29 @@ export async function fetchScreenerData(symbol: string): Promise<ScreenerCompany
       'Accept-Language': 'en-US,en;q=0.9',
     };
 
-    let res = await fetch(url, { headers });
+    let res: Response;
+    try {
+      res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+    } catch {
+      await new Promise((r) => setTimeout(r, 350));
+      res = await fetch(url, { headers, signal: AbortSignal.timeout(12000) });
+    }
 
     // If 404, resolve slug dynamically via Screener search API
     if (res.status === 404) {
-      const searchRes = await fetch(`https://www.screener.in/api/company/search/?q=${cleanSymbol}`, { headers });
-      if (searchRes.status === 200) {
-        const results = await searchRes.json();
-        if (results && results.length > 0 && results[0].url) {
-          url = `https://www.screener.in${results[0].url}`;
-          res = await fetch(url, { headers });
+      try {
+        const searchRes = await fetch(`https://www.screener.in/api/company/search/?q=${cleanSymbol}`, {
+          headers,
+          signal: AbortSignal.timeout(6000),
+        });
+        if (searchRes.status === 200) {
+          const results = await searchRes.json();
+          if (results && results.length > 0 && results[0].url) {
+            url = `https://www.screener.in${results[0].url}`;
+            res = await fetch(url, { headers, signal: AbortSignal.timeout(10000) });
+          }
         }
-      }
+      } catch {}
     }
 
     if (res.status !== 200) {
