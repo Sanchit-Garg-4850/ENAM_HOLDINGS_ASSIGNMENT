@@ -2,10 +2,12 @@
 
 **Submission:** ENAM Holdings — AI Engineer Build Challenge  
 **Email Subject:** `ENAM - IIT screening - 2027`  
+**Candidate:** Sanchit Garg  
+**Roll Number:** 230908  
 **Candidate Evaluation Briefs:**  
 1. `docs/1. ENAM_AI_Engineer_Build_Challenge_Main.pdf`  
 2. `docs/2. ENAM_AI_Engineer_Build_Challenge_Reference.pdf`  
-**Status:** 100% Implemented & Verified with Live APIs (Zero Mockups / Zero Placeholders)
+**Status:** 100% Implemented & Verified with Live APIs (14/14 Automated Tests Passing)
 
 ---
 

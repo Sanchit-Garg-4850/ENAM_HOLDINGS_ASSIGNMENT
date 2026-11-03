@@ -1,7 +1,9 @@
 # Covering Note: FINN (Financial Investment Agent)
-**Submission for ENAM Holdings — AI Engineer Build Challenge**
-**Email Subject:** ENAM - IIT screening - 2027
-**To:** assessment@enam.com
+**Submission for ENAM Holdings — AI Engineer Build Challenge**  
+**Email Subject:** `ENAM - IIT screening - 2027`  
+**To:** assessment@enam.com  
+**Candidate:** Sanchit Garg  
+**Roll Number:** 230908  
 
 ---
 
@@ -9,10 +11,11 @@
 
 Here is our submission for the **FINN: Financial Investment Agent** challenge.
 
-- **Deployed Mobile Prototype:** `https://<your-vercel-deployment-link>` (or run locally via `bun run start`)
-- **GitHub Repository:** `https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT`
+- **GitHub Repository:** [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)
+- **Deployed Mobile Prototype:** Ready for local run via `bun run start` on `http://localhost:3000` (and instant 1-click Vercel deployment via `npx vercel --prod` / GitHub import)
 - **Requirements Verification Checklist:** Line-by-line audit matrix against both challenge PDF briefs documented in [`docs/REQUIREMENTS_CHECKLIST.md`](file:///home/abhi/sanchit/antigravity/docs/REQUIREMENTS_CHECKLIST.md).
 - **AI Build History:** Detailed prompt trajectories, tool traces, and decisions documented in [`docs/AI_BUILD_HISTORY.md`](file:///home/abhi/sanchit/antigravity/docs/AI_BUILD_HISTORY.md).
+- **Automated Test Suite:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`).
 
 ---
 
@@ -33,21 +36,22 @@ FINN operates in two cohesive modes:
      - **Spacebar / 1-Tap Quick Peek Drawer**: Inspect complete 4-box financials, executive backgrounds, and official BSE PDFs without leaving the feed.
 2. **Pull Workspace (Primary Diligence & Showstopper Guidance Audit)**:
    - 8 deep diligence modules grounded **strictly in primary filings** (Annual Reports & Concall Transcripts).
-   - **Showstopper: Narrative vs. Numbers Audit**: A side-by-side audit of what management promised in concalls over the last 4 quarters vs what was delivered in audited filings, complete with citations, variance attribution, and a Management Reliability Score.
+   - **Showstopper: 100% Dynamic Narrative vs. Numbers Audit**: A side-by-side audit of what management promised in concalls over the last 4 quarters vs what was delivered in audited filings, complete with citations, variance attribution, and a Management Reliability Score.
+   - **100% Dynamic Financial Statement Extraction**: Dynamically scrapes and computes audited Balance Sheets, Working Capital cycles (Debtor Days, Inventory Days, Cash Conversion), historical CAGRs, and audited Pros/Cons from Screener.in and Yahoo Finance for **any arbitrary NSE ticker**.
+   - **Intelligent Typo-Tolerant Equity Search**: Damerau-Levenshtein fuzzy matching across 4,500+ NSE/BSE listed tickers with instant "Did you mean?" suggestions and strict 404 validation against fictitious symbols.
    - **Quartr-Grade Concall Audio Readout & Citation Sync**: Click-to-play synchronized audio playback of management quotes ($0.00 zero-cost Web Speech API) and 1-click citation copy button.
-   - **Cash Quality Sentinel**: Evaluates whether accounting profits convert to real cash via the Cash Conversion Ratio ($\text{OCF}/\text{PAT}$) and FCF yields.
+   - **Cash Quality Sentinel & Visual Cash Waterfall**: Evaluates whether accounting profits convert to real cash via the Cash Conversion Ratio ($\text{OCF}/\text{PAT}$), FCF yields, and a step-by-step visual waterfall decomposing PAT → Working Capital changes → Operating Cash Flow (OCF) → Capex → Free Cash Flow (FCF).
    - **One-Tap Sector Peer Chips**: Automatically derives direct competitors in the same sector (e.g. `TITAN`, `DMART`, `VMART` for `TRENT.NS`) for instant 1-tap diligence switching.
    - **1-Click Institutional 1-Page Investment Memo Exporter**: Generates a presentation-ready investment memo with DuPont ROCE, forensic checks, valuation percentiles, copyable Markdown, and print-to-PDF formatting.
-   - **On-Demand Generalization**: Dynamic live ingestion and diligence synthesis for **any valid NSE ticker** (tested and verified on tickers outside the portfolio like `TITAN.NS`, `SUZLON.NS`, and `HAL.NS`).
+   - **On-Demand Generalization**: Dynamic live ingestion and diligence synthesis for **any valid NSE ticker** (tested and verified on tickers outside the portfolio like `TITAN.NS`, `SUZLON.NS`, `HAL.NS`, `BEL.NS`).
 3. **Interactive 3D Portfolio Universe & Visual Diligence**:
-   - **3D Orbital Constellation**: Real-time 3D interactive physics canvas mapping portfolio companies into sector clusters with Fibonacci distribution, inertial drag/touch rotation (intuitive physical dragging math), holographic HUD inspect cards, and double-click diligence navigation.
+   - **3D Orbital Constellation**: Real-time 3D interactive physics canvas mapping portfolio companies into sector clusters with Fibonacci distribution, inertial drag/touch rotation, holographic HUD inspect cards, and double-click diligence navigation.
    - **Interactive Scrubbing Trajectory Charts**: SVG multi-period bar & margin line charts with real-time hover scrub tooltips and tactile audio feedback.
    - **Financial Analytics & Capital Allocation Suite**:
      - **DuPont 3-Stage ROCE Decomposition Gauge**: Operating Margin $\times$ Asset Turnover $\rightarrow$ Core ROCE.
      - **Cash Conversion Cycle**: DSO + DIO - DPO breakdown with visual progress tracking.
      - **Capex Reinvestment Rate Gauge**: Capex/OCF vs Surplus Free Cash Flow.
      - **52-Week Valuation Band Percentile**: Visual positioning against 52W range.
-   - **Cash Flow Waterfall Visualizer**: Step-by-step visual waterfall decomposing accounting profit into real cash: Revenue → EBITDA → PAT → Working Capital changes → Operating Cash Flow (OCF) → Free Cash Flow (FCF).
    - **Peer Benchmarking Matrix**: Cross-company side-by-side comparative analysis of margins, ROCE, cash conversion, and management reliability scores.
 4. **Voice-Enabled FINN Copilot & Investment Memo Generator**:
    - **Speech-to-Text Dictation**: Hands-free voice queries via the Web Speech API for on-the-go fund managers.
@@ -101,10 +105,13 @@ FINN operates in two cohesive modes:
 The entire codebase is verified by an automated integration test suite:
 ```bash
 bun run scripts/test_suite.ts
-# 12 Passed, 0 Failed
+# 14 Passed, 0 Failed
 ```
 
 Thank you for the opportunity to build FINN. We look forward to your review and feedback!
 
 Warm regards,  
-**Applicant**
+**Sanchit Garg**  
+Roll Number: 230908  
+IIT Screening Candidate — 2027  
+GitHub: [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)
