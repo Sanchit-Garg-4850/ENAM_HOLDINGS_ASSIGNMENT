@@ -3,11 +3,11 @@
 *A mobile-first, high-conviction intelligence layer for public-markets investing.*
 
 [![Live App on Vercel](https://img.shields.io/badge/Live_App-enam--holdings--assignment.vercel.app-00DC82?style=for-the-badge&logo=vercel&logoColor=white)](https://enam-holdings-assignment.vercel.app)
-[![Tests Passing](https://img.shields.io/badge/Tests-14%2F14_Passing-brightgreen?style=for-the-badge)](https://enam-holdings-assignment.vercel.app)
+[![Tests Passing](https://img.shields.io/badge/Tests-15%2F15_Passing-brightgreen?style=for-the-badge)](https://enam-holdings-assignment.vercel.app)
 
 > 🚀 **Direct Live App Link:** **[https://enam-holdings-assignment.vercel.app](https://enam-holdings-assignment.vercel.app)**  
 > 👤 **Candidate:** Sanchit Garg | **Roll Number:** 230908 | **Email Subject:** `ENAM - IIT screening - 2027`  
-> 🧪 **Automated Test Suite:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`)
+> 🧪 **Automated Test Suite:** 15 Passed, 0 Failed (`bun run scripts/test_suite.ts`)
 
 ---
 
@@ -17,11 +17,15 @@ An investor today is drowning in hundreds of corporate filings, earnings notific
 
 **FINN** is built from the ground up to solve this for a lean, high-conviction public-markets investment team:
 1. **Push Stream (Proactive Alerting & Windowed Digest)**: Watches end-of-day prices, volumes, and NSE/BSE filings across the portfolio. It prioritizes material events (quarterly results, management changes, M&A, capex) and automatically collapses routine secretarial noise (ESOP allotments, duplicate certificates).
-2. **Pull Workspace (Grounded Diligence)**: On-demand research grounded **strictly in primary sources** (Annual Reports, Concall Transcripts, and Exchange Filings). No secondary news, broker target prices, or speculative noise.
-3. **⭐ 100% Dynamic Narrative vs. Numbers Audit**: Audits management's promises over the past 4 quarters against what was actually delivered in audited financials with direct citations to BSE concall transcripts and primary exchange filings.
-4. **100% Dynamic Financial Statement Extraction**: Dynamically scrapes and computes audited Balance Sheets, Working Capital cycles (Debtor Days, Inventory Days, Cash Conversion), historical CAGRs, and audited Pros/Cons from Screener.in and Yahoo Finance for **any arbitrary NSE ticker**.
-5. **Intelligent Typo-Tolerant Equity Search**: Comprehensive search engine covering 4,500+ NSE/BSE listed tickers with Damerau-Levenshtein fuzzy matching ("Did you mean?") and strict 404 validation against invalid symbols.
-6. **Zero Cost Architecture**: Runs 100% on free tiers (free EOD market data via `yfinance`, free Vercel hosting, deterministic calculations for 100% mathematical accuracy without token burns).
+2. **⚖️ Real-Time SEBI Regulatory Radar (Live Public RSS)**: Ingests official statutory enforcement notices, adjudication orders, forensic inquiries, recovery proceedings, and circulars directly from `https://www.sebi.gov.in/sebirss.xml` with zero third-party API costs or mock data.
+3. **★ High-Conviction Watchlist (`localStorage` Persistence)**: 1-tap star pinning from the Header, Announcement Cards, Holdings Matrix, and 3D Orbit view, with instant `★ Watchlist Only` filter toggles across feeds.
+4. **📊 Institutional Holdings Matrix (Data-Dense Companion to 3D Orbit)**: Directly below the 3D Constellation sphere, an executive data matrix provides live CMP, day change %, volume anomaly multipliers (`🔥 3.4x Vol`), strategic focus nuances, and management reliability scores with 1-tap Diligence and Guidance Audit actions.
+5. **Pull Workspace (Grounded Diligence)**: On-demand research grounded **strictly in primary sources** (Annual Reports, Concall Transcripts, and Exchange Filings). No secondary news, broker target prices, or speculative noise.
+6. **⭐ 100% Dynamic Narrative vs. Numbers Audit**: Audits management's promises over the past 4 quarters against what was actually delivered in audited financials with direct citations to BSE concall transcripts and primary exchange filings.
+7. **100% Dynamic Financial Statement Extraction**: Dynamically scrapes and computes audited Balance Sheets, Working Capital cycles (Debtor Days, Inventory Days, Cash Conversion), historical CAGRs, and audited Pros/Cons from Screener.in and Yahoo Finance for **any arbitrary NSE ticker**.
+8. **Anti-Generic Split-Dossier Workspace & Mobile Drawer Ergonomics**: Replaces generic single-column AI templates with fluid mobile bottom sliding drawers and instant peek dossiers so analysts never lose their place in the feed.
+9. **Intelligent Typo-Tolerant Equity Search**: Comprehensive search engine covering 4,500+ NSE/BSE listed tickers with Damerau-Levenshtein fuzzy matching ("Did you mean?") and strict 404 validation against invalid symbols.
+10. **Zero Cost Architecture**: Runs 100% on free tiers (free EOD market data via `yfinance`, free SEBI RSS stream, free Vercel hosting, deterministic calculations for 100% mathematical accuracy without token burns).
 
 ---
 
@@ -29,21 +33,24 @@ An investor today is drowning in hundreds of corporate filings, earnings notific
 
 - **Bloomberg-meets-Linear Executive Dark & Light Modes**: Ultra-clean typography, tabular figures (`font-mono`), instant responsiveness, and touch-first ergonomics.
 - **Push Stream**:
+  - **Dual Mode Switcher**: Seamlessly toggle between `🏢 Portfolio Filings (BSE/NSE)` and `⚖️ SEBI Regulatory Radar (Live RSS)`.
   - **Windowed Digest**: Toggle between `24 Hours`, `3 Days`, `7 Days`, and `30 Days`.
+  - **★ Watchlist Filter Pill**: Instant 1-tap filter to view only watchlisted companies.
   - **Materiality Filter**: Collapses routine paperwork into an expandable tray with one tap.
   - **Quarterly Results Headline Grid**: Instant 4-box metric card (**Revenue, EBITDA, PBT, PAT** with QoQ & YoY margin changes).
   - **Contextual Management Changes**: Automatically enriches executive changes with incoming pedigree (past company, education, domain tenure).
   - **EOD Anomaly Detector**: Flags volume spikes $> 2\times$ 20-DMA and price moves $> \pm 3\%$.
   - **Morning Briefing Delta Pill**: Quiet header pill calculating overnight deltas ("3 New Filings | 1 Margin Alert | 0 Forensic Flags") with 1-tap executive slide-over synthesis.
-  - **Spacebar / 1-Tap Quick Peek Drawer**: Inspect complete 4-box financials, executive backgrounds, and official BSE PDFs without leaving the feed.
+  - **Spacebar / 1-Tap Quick Peek Drawer**: Fluid sliding bottom sheet on mobile and floating dossier on desktop to inspect full filings, executive backgrounds, and primary PDFs without navigation fatigue.
 - **Pull Diligence**:
   - 8 core modules: Business Model, Financial Snapshot, Multi-Year Trajectory with Interactive Scrubbing SVG Charts, Balance Sheet Health, Cash Quality with Visual Cash Waterfall, Forward Guidance Ledger, Bull vs. Bear Case, and Peer Benchmark Matrix.
   - **Cash Flow Waterfall Visualizer**: Step-by-step visual waterfall decomposing accounting profit into real cash: Revenue → EBITDA → PAT → Working Capital changes → Operating Cash Flow (OCF) → Free Cash Flow (FCF).
   - **Financial Analytics Suite**: DuPont 3-Stage ROCE Decomposition Gauge, Cash Conversion Cycle, Capex Reinvestment Rate, and 52W Valuation Band.
   - **Sector Peer Chips**: Direct 1-tap model switching between competitors (e.g. `TITAN`, `DMART`, `VMART` for `TRENT.NS`).
   - **1-Page Institutional Investment Memo**: Generates presentation-ready memos with DuPont ROCE, forensic checks, valuation percentiles, copyable Markdown, and print-to-PDF formatting.
-- **🌌 3D Portfolio Universe**:
+- **🌌 3D Constellation Sphere & Institutional Holdings Matrix**:
   - Real-time 3D orbital physics canvas mapping portfolio companies into Fibonacci clusters by sector, with inertial mouse/touch drag rotation, holographic HUD inspect cards, and double-click diligence jump.
+  - **Institutional Holdings Matrix**: Positioned directly beneath the 3D sphere. Offers sector filter chips, search filtering, sort by market cap/day change/volume anomaly/reliability score, and 1-tap Diligence and Audit routing.
 - **🎙️ Voice-Enabled FINN Copilot**:
   - Speech-to-Text voice dictation (Web Speech API) for hands-free queries.
   - Text-to-Speech audio readout with animated equalizer waveform.
@@ -67,7 +74,7 @@ An investor today is drowning in hundreds of corporate filings, earnings notific
 
 ## 🏛️ Portfolio & Coverage Scope
 
-### 18 Mock Portfolio Companies
+### 18 Core Portfolio Companies
 | Ticker | Company Name | Sector | Market Cap | Focus Nuance |
 | :--- | :--- | :--- | :--- | :--- |
 | **RELIANCE.NS** | Reliance Industries | Conglomerates | Mega Cap | Telecom & Retail capex turning into FCF |
@@ -105,9 +112,11 @@ FINN dynamically fetches live exchange announcements, quarterly results, audited
 │  • 17-Category Classifier│  • 8-Module Diligence Core    │
 │  • Materiality Filter    │  • Dynamic Guidance Audit     │
 │  • Live Anomaly Detector │  • Cash Flow Waterfall        │
+│  • SEBI RSS Radar Engine │  • Holdings Matrix Table      │
 ├──────────────────────────┴───────────────────────────────┤
 │            Zero-Cost Primary Data Layer                  │
 │   • yahoo-finance2 (Free Real-time EOD Market Quotes)    │
+│   • Official SEBI RSS Feed (sebi.gov.in/sebirss.xml)     │
 │   • Live Screener.in Exchange Scraper & BSE Filings      │
 │   • Damerau-Levenshtein Fuzzy Ticker Matching            │
 │   • In-Memory Cache with Sub-Second Responses            │
@@ -115,7 +124,7 @@ FINN dynamically fetches live exchange announcements, quarterly results, audited
 ```
 
 - **Deterministic Layer ($0.00, 0ms, 100% Accurate)**: Formula-driven calculations for financial metrics (Revenue, EBITDA, PBT, PAT, QoQ/YoY margins, ROCE, D/E, Cash Conversion $\text{OCF}/\text{PAT}$, and anomaly detection). Eliminates LLM math hallucinations.
-- **Semantic Layer**: Synthesizes executive background profiles and concall guidance statements.
+- **Semantic Layer**: Synthesizes executive background profiles, concall guidance statements, and SEBI regulatory enforcement classifications.
 - **Resilience**: Pre-cached high-fidelity primary filings for all portfolio companies ensure zero downtime during offline evaluations, while dynamically fetching live data for any new arbitrary NSE ticker.
 
 ---
@@ -161,7 +170,7 @@ Or connect your GitHub repository directly to Vercel for automatic deployment on
 
 ---
 
-## 🧪 Automated Test Suite (14/14 Tests Passing)
+## 🧪 Automated Test Suite (15/15 Tests Passing)
 
 FINN includes an end-to-end integration test suite (`scripts/test_suite.ts`) verifying:
 - ✅ Homepage UI HTML rendering (200 OK)
@@ -178,6 +187,7 @@ FINN includes an end-to-end integration test suite (`scripts/test_suite.ts`) ver
 - ✅ `/api/search` finds companies by symbol and keyword
 - ✅ `/api/search` suggests correct ticker on typos (e.g. `HALLL` → `HAL`)
 - ✅ `/api/research` rejects typos with 404 and provides `didYouMean` instead of static page
+- ✅ `/api/regulatory-rss` returns live official SEBI regulatory orders
 
 ---
 

@@ -13,11 +13,13 @@ import {
   Sparkles,
   Eye,
   Building2,
+  Star,
 } from 'lucide-react';
 import { Announcement } from '@/lib/types';
 import { CATEGORY_REGISTRY } from '@/lib/classification';
 import { AnimatedCounter } from './AnimatedCounter';
 import { sound } from '@/lib/sound';
+import { useWatchlist } from '@/lib/useWatchlist';
 
 interface AnnouncementCardProps {
   announcement: Announcement;
@@ -26,8 +28,13 @@ interface AnnouncementCardProps {
 }
 
 export function AnnouncementCard({ announcement, onSelectTicker, onQuickPeek }: AnnouncementCardProps) {
-  const catInfo = CATEGORY_REGISTRY[announcement.category] || CATEGORY_REGISTRY.unclassified;
+  const catInfo =
+    announcement.anomaly || announcement.category === 'unusual_activity'
+      ? CATEGORY_REGISTRY.unusual_activity
+      : (CATEGORY_REGISTRY[announcement.category] || CATEGORY_REGISTRY.unclassified);
   const isUrgent = announcement.tier === 'tier1_urgent';
+  const { isWatchlisted, toggleWatchlist } = useWatchlist();
+  const isPinned = isWatchlisted(announcement.ticker);
 
   return (
     <motion.article
@@ -53,7 +60,24 @@ export function AnnouncementCard({ announcement, onSelectTicker, onQuickPeek }: 
             {announcement.ticker.replace('.NS', '')}
           </button>
 
+          {/* Star Watchlist Toggle */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleWatchlist(announcement.ticker);
+            }}
+            className={`p-1 rounded transition-colors ${
+              isPinned
+                ? 'text-amber-400 hover:text-amber-300'
+                : 'text-neutral-500 hover:text-neutral-300'
+            }`}
+            title={isPinned ? 'Remove from Watchlist' : 'Pin to Watchlist'}
+          >
+            <Star className={`w-3.5 h-3.5 ${isPinned ? 'fill-amber-400' : ''}`} />
+          </button>
+
           {/* Category Pill */}
+
           <span
             className={`px-2 py-0.5 rounded text-[10px] font-medium border ${catInfo.badgeBg} ${catInfo.badgeText}`}
           >
@@ -217,7 +241,7 @@ export function AnnouncementCard({ announcement, onSelectTicker, onQuickPeek }: 
           <div className="flex items-center justify-between mb-1.5">
             <span className="font-semibold text-blue-300 flex items-center gap-1.5">
               <AlertTriangle className="w-3.5 h-3.5 text-blue-400" />
-              Volume Spike: {announcement.anomaly.volumeSpikeRatio}x 20-DMA
+              Volume Spike: {announcement.anomaly.volumeSpikeRatio}x 10-DMA
             </span>
             <span
               className={`font-mono font-bold text-xs ${
@@ -270,7 +294,7 @@ export function AnnouncementCard({ announcement, onSelectTicker, onQuickPeek }: 
       )}
 
       {/* Bottom Action Footer with Primary PDF link & Quick Peek */}
-      <div className="flex items-center justify-between pt-2 border-t border-neutral-850/60 text-[11px]">
+      <div className="flex items-center justify-between pt-2 border-t border-neutral-850/60 text-[11px] gap-2 flex-wrap">
         <div className="flex items-center gap-2">
           <button
             onClick={() => onSelectTicker?.(announcement.ticker)}

@@ -128,7 +128,7 @@ export default function Home() {
     volumeMultiplierThreshold: 2.0,
     priceMoveThresholdPercent: 3.0,
     onlyMaterial: true,
-    monitoredCategories: ['results', 'management_change', 'M&A', 'capex', 'pledging', 'litigation'],
+    monitoredCategories: ['results', 'unusual_activity', 'management_change', 'M&A', 'capex', 'pledging', 'litigation'],
   });
 
   const [invalidTickerState, setInvalidTickerState] = useState<{
@@ -255,6 +255,10 @@ export default function Home() {
                   handleSelectTicker(ticker);
                   setActiveTab('pull');
                 }}
+                onNavigateAudit={(ticker) => {
+                  handleSelectTicker(ticker);
+                  setActiveTab('narrative');
+                }}
                 onOpenAlertSettings={() => setIsAlertsOpen(true)}
                 onClearUrgent={() => {
                   setUrgentCount(0);
@@ -371,6 +375,10 @@ export default function Home() {
                 onSelectTicker={(ticker) => {
                   handleSelectTicker(ticker);
                   setActiveTab('pull');
+                }}
+                onNavigateAudit={(ticker) => {
+                  handleSelectTicker(ticker);
+                  setActiveTab('narrative');
                 }}
               />
             )}

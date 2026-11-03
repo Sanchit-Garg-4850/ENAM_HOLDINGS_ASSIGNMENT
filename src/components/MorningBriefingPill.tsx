@@ -141,19 +141,26 @@ export function MorningBriefingPill({ onSelectTicker, onOpenPushFeed }: MorningB
 
             <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400/90 font-bold shrink-0 flex items-center gap-1">
               <Sun className="w-3 h-3 text-amber-400" />
-              Morning Briefing
+              <span className="hidden sm:inline">Morning </span>Briefing
             </span>
 
             <span className="text-neutral-500 text-xs hidden sm:inline">•</span>
 
-            <span className="text-xs text-neutral-200 font-medium truncate">
-              <strong className="text-white">{briefingItems.length} New Filings</strong>
-              <span className="text-neutral-400 mx-1.5">|</span>
-              <span className={marginAlertTicker ? 'text-rose-400' : 'text-neutral-300'}>
+            <span className="text-xs text-neutral-200 font-medium truncate flex items-center gap-1.5 min-w-0">
+              <strong className="text-white shrink-0">
+                {briefingItems.length} <span className="hidden sm:inline">New </span>Filings
+              </strong>
+              <span className="text-neutral-400 mx-1 hidden sm:inline">|</span>
+              <span className={`hidden sm:inline ${marginAlertTicker ? 'text-rose-400' : 'text-neutral-300'}`}>
                 {marginAlertTicker ? `1 Margin Alert (${marginAlertTicker})` : 'All Margins Stable'}
               </span>
-              <span className="text-neutral-400 mx-1.5">|</span>
-              <span className="text-emerald-400">0 Forensic Flags</span>
+              <span className="text-neutral-400 mx-1 hidden md:inline">|</span>
+              <span className="text-emerald-400 hidden md:inline">0 Forensic Flags</span>
+              {/* Ultra-concise mobile status */}
+              <span className="text-neutral-500 sm:hidden">•</span>
+              <span className={`sm:hidden text-xs shrink-0 ${marginAlertTicker ? 'text-rose-400 font-medium' : 'text-emerald-400 font-medium'}`}>
+                {marginAlertTicker ? 'Margin Alert' : 'Stable'}
+              </span>
             </span>
           </div>
 

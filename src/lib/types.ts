@@ -17,6 +17,7 @@ export type AnnouncementCategory =
   | 'postal_ballot'
   | 'agm_egm'
   | 'pledging'
+  | 'unusual_activity'
   | 'unclassified';
 
 export type MaterialityTier = 'tier1_urgent' | 'tier2_material' | 'tier3_routine';

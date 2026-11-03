@@ -15,7 +15,7 @@ Here is our submission for the **FINN: Financial Investment Agent** challenge.
 - **GitHub Repository:** [https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT](https://github.com/Sanchit-Garg-4850/ENAM_HOLDINGS_ASSIGNMENT)
 - **Requirements Verification Checklist:** Line-by-line audit matrix against both challenge PDF briefs documented in [`docs/REQUIREMENTS_CHECKLIST.md`](docs/REQUIREMENTS_CHECKLIST.md).
 - **AI Build History:** Detailed prompt trajectories, tool traces, and decisions documented in [`docs/AI_BUILD_HISTORY.md`](docs/AI_BUILD_HISTORY.md).
-- **Automated Test Suite:** 14 Passed, 0 Failed (`bun run scripts/test_suite.ts`).
+- **Automated Test Suite:** 15 Passed, 0 Failed (`bun run scripts/test_suite.ts`).
 
 ---
 
@@ -23,17 +23,18 @@ Here is our submission for the **FINN: Financial Investment Agent** challenge.
 
 We built **FINN**, a mobile-first, high-density financial intelligence layer designed for how a high-conviction public-markets investor actually works.
 
-FINN operates in two cohesive modes:
+FINN operates in cohesive, anti-generic paradigms:
 1. **Push Stream (Proactive Alerting & Windowed Digest)**:
    - Configurable time horizons (`24 Hours`, `3 Days`, `7 Days`, `30 Days`) monitoring exchange filings, end-of-day volumes, and prices across an 18-company mock portfolio.
-   - Live integration with Screener.in and BSE India exchange repositories, automatically fetching and classifying live filings with direct links to primary regulatory PDFs.
+   - **⚖️ Real-Time SEBI Regulatory Radar (Live Public RSS)**: Ingests real-time statutory enforcement notices, adjudication orders, forensic inquiries, recovery proceedings, and circulars directly from `https://www.sebi.gov.in/sebirss.xml`.
+   - **★ High-Conviction Watchlist (`localStorage` Persistence)**: 1-tap star pinning across Header, Announcement Cards, Holdings Matrix, and 3D Orbit, with instant `[★ Watchlist Only]` filters.
    - An intelligent 17-category classification engine that separates **Tier 1 Urgent / Material filings** from **Tier 3 routine paperwork** (collapsing ESOP allotments, duplicate certificates, and compliance filings into a single expandable count).
    - Enriched presentations:
      - **Quarterly Results**: Direct 4-cell financial grid (**Revenue, EBITDA, PBT, PAT** with QoQ & YoY percentages and margin badges).
      - **Management Changes**: Enriched with incoming executive pedigree (former company, education, and domain tenure).
      - **Configurable Anomaly Triggers**: Sliders for volume spikes ($> 2.0\times$ 20-DMA) and daily price swings ($> \pm 3.0\%$).
      - **Morning Briefing Delta Pill**: Quiet header pill calculating overnight deltas ("3 New Filings | 1 Margin Alert | 0 Forensic Flags") with 1-tap executive slide-over synthesis.
-     - **Spacebar / 1-Tap Quick Peek Drawer**: Inspect complete 4-box financials, executive backgrounds, and official BSE PDFs without leaving the feed.
+     - **Spacebar / 1-Tap Quick Peek Drawer (Paradigm A)**: Fluid sliding bottom sheet on mobile and floating dossier on desktop to inspect full filings, executive backgrounds, and primary PDFs without navigation fatigue.
 2. **Pull Workspace (Primary Diligence & Showstopper Guidance Audit)**:
    - 8 deep diligence modules grounded **strictly in primary filings** (Annual Reports & Concall Transcripts).
    - **Showstopper: 100% Dynamic Narrative vs. Numbers Audit**: A side-by-side audit of what management promised in concalls over the last 4 quarters vs what was delivered in audited filings, complete with citations, variance attribution, and a Management Reliability Score.
@@ -44,8 +45,10 @@ FINN operates in two cohesive modes:
    - **One-Tap Sector Peer Chips**: Automatically derives direct competitors in the same sector (e.g. `TITAN`, `DMART`, `VMART` for `TRENT.NS`) for instant 1-tap diligence switching.
    - **1-Click Institutional 1-Page Investment Memo Exporter**: Generates a presentation-ready investment memo with DuPont ROCE, forensic checks, valuation percentiles, copyable Markdown, and print-to-PDF formatting.
    - **On-Demand Generalization**: Dynamic live ingestion and diligence synthesis for **any valid NSE ticker** (tested and verified on tickers outside the portfolio like `TITAN.NS`, `SUZLON.NS`, `HAL.NS`, `BEL.NS`).
-3. **Interactive 3D Portfolio Universe & Visual Diligence**:
+3. **Interactive 3D Constellation Sphere & Institutional Holdings Matrix**:
    - **3D Orbital Constellation**: Real-time 3D interactive physics canvas mapping portfolio companies into sector clusters with Fibonacci distribution, inertial drag/touch rotation, holographic HUD inspect cards, and double-click diligence navigation.
+   - **Institutional Holdings Matrix**: High-density companion table directly underneath the 3D sphere with search filtering, sector chips, sort selectors, live CMP, day change %, volume anomaly multipliers (`🔥 3.4x Vol`), focus nuance commentary, and management reliability scores.
+
    - **Interactive Scrubbing Trajectory Charts**: SVG multi-period bar & margin line charts with real-time hover scrub tooltips and tactile audio feedback.
    - **Financial Analytics & Capital Allocation Suite**:
      - **DuPont 3-Stage ROCE Decomposition Gauge**: Operating Margin $\times$ Asset Turnover $\rightarrow$ Core ROCE.

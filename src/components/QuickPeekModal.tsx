@@ -14,17 +14,21 @@ import {
   ArrowRight,
   Clock,
   Building2,
+  Star,
+  Scale,
 } from 'lucide-react';
 import { Announcement } from '@/lib/types';
 import { CATEGORY_REGISTRY } from '@/lib/classification';
 import { AnimatedCounter } from './AnimatedCounter';
 import { sound } from '@/lib/sound';
+import { useWatchlist } from '@/lib/useWatchlist';
 
 interface QuickPeekModalProps {
   announcement: Announcement | null;
   isOpen: boolean;
   onClose: () => void;
   onSelectTicker: (ticker: string) => void;
+  onNavigateAudit?: (ticker: string) => void;
 }
 
 export function QuickPeekModal({
@@ -32,7 +36,10 @@ export function QuickPeekModal({
   isOpen,
   onClose,
   onSelectTicker,
+  onNavigateAudit,
 }: QuickPeekModalProps) {
+  const { isWatchlisted, toggleWatchlist } = useWatchlist();
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape' && isOpen) {
@@ -47,19 +54,23 @@ export function QuickPeekModal({
 
   const catInfo = CATEGORY_REGISTRY[announcement.category] || CATEGORY_REGISTRY.unclassified;
   const isUrgent = announcement.tier === 'tier1_urgent';
+  const isPinned = isWatchlisted(announcement.ticker);
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md">
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          transition={{ duration: 0.18, ease: 'easeOut' }}
-          className="w-full max-w-2xl rounded-2xl bg-neutral-925 border border-neutral-800 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 40 }}
+          transition={{ duration: 0.2, ease: 'easeOut' }}
+          className="w-full sm:max-w-2xl rounded-t-3xl sm:rounded-2xl bg-neutral-925 border-t sm:border border-neutral-800 shadow-2xl flex flex-col max-h-[88vh] sm:max-h-[90vh] overflow-hidden"
         >
+          {/* Mobile Bottom Sheet Grab Indicator */}
+          <div className="w-12 h-1.5 rounded-full bg-neutral-700/80 mx-auto my-2.5 sm:hidden shrink-0" />
+
           {/* Header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-3.5 border-b border-neutral-800 bg-neutral-900/80">
+          <div className="flex items-center justify-between px-4 sm:px-6 py-3 border-b border-neutral-800 bg-neutral-900/80">
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => {
@@ -70,6 +81,17 @@ export function QuickPeekModal({
                 className="px-2 py-0.5 rounded bg-neutral-800 hover:bg-neutral-700 text-white font-mono font-bold text-xs tracking-wide transition-colors"
               >
                 {announcement.ticker.replace('.NS', '')}
+              </button>
+
+              {/* Watchlist Pin Toggle */}
+              <button
+                onClick={() => toggleWatchlist(announcement.ticker)}
+                className={`p-1 rounded transition-colors ${
+                  isPinned ? 'text-amber-400 hover:text-amber-300' : 'text-neutral-500 hover:text-neutral-300'
+                }`}
+                title={isPinned ? 'Remove from Watchlist' : 'Pin to Watchlist'}
+              >
+                <Star className={`w-3.5 h-3.5 ${isPinned ? 'fill-amber-400' : ''}`} />
               </button>
 
               <span
@@ -101,6 +123,7 @@ export function QuickPeekModal({
               <X className="w-4 h-4" />
             </button>
           </div>
+
 
           {/* Modal Content */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 no-scrollbar">
@@ -248,12 +271,27 @@ export function QuickPeekModal({
             )}
 
             <div className="flex items-center gap-2">
+              {onNavigateAudit && (
+                <button
+                  onClick={() => {
+                    sound.playClick();
+                    onNavigateAudit(announcement.ticker);
+                    onClose();
+                  }}
+                  className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono font-medium text-amber-400 hover:text-amber-300 bg-amber-500/10 border border-amber-500/30 transition-colors"
+                >
+                  <Scale className="w-3.5 h-3.5" />
+                  <span>Guidance Audit</span>
+                </button>
+              )}
+
               <button
                 onClick={onClose}
                 className="px-3 py-1.5 rounded-lg text-xs font-mono text-neutral-400 hover:text-white bg-neutral-950 border border-neutral-800 hover:border-neutral-700 transition-colors"
               >
-                Esc to Close
+                Close
               </button>
+
 
               <button
                 onClick={() => {

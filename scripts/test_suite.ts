@@ -181,6 +181,35 @@ async function runTests() {
     }
   });
 
+  // TEST 15: Regulatory RSS Ingestion from SEBI
+  await assertTest('/api/regulatory-rss returns official SEBI regulatory orders', async () => {
+    const res = await fetch(`${BASE_URL}/api/regulatory-rss`);
+    if (res.status !== 200) throw new Error(`Status: ${res.status}`);
+    const json = await res.json();
+    if (!json.success) throw new Error('API returned success=false');
+    if (!json.data || json.data.length === 0) throw new Error('Expected at least 1 SEBI order');
+    const first = json.data[0];
+    if (!first.title || !first.link || !first.category) {
+      throw new Error('SEBI item missing required fields (title, link, category)');
+    }
+  });
+
+  // TEST 16: Market Anomaly Classification
+  await assertTest('Market anomalies categorized as unusual_activity, never routine secretarial', async () => {
+    const res = await fetch(`${BASE_URL}/api/announcements?windowHours=24&onlyMaterial=true`);
+    const json = await res.json();
+    if (!json.success) throw new Error('API failed');
+    const anomalies = json.data.filter((a: any) => a.anomaly || a.headline.includes('Unusual Activity'));
+    for (const anom of anomalies) {
+      if (anom.category === 'unclassified') {
+        throw new Error(`Anomaly ${anom.id} incorrectly categorized as unclassified`);
+      }
+      if (anom.tier === 'tier3_routine') {
+        throw new Error(`Anomaly ${anom.id} incorrectly assigned routine priority tier`);
+      }
+    }
+  });
+
   console.log('\n====================================================');
   console.log(`📊 TEST RESULTS: ${passed} PASSED, ${failed} FAILED`);
   console.log('====================================================');

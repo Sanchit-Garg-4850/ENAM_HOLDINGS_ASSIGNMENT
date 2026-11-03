@@ -1,10 +1,13 @@
 'use client';
 
 import React from 'react';
-import { Search, Sun, Moon, HelpCircle, Palette } from 'lucide-react';
+import { Search, Sun, Moon, HelpCircle, Palette, Star } from 'lucide-react';
 import { sound } from '@/lib/sound';
 import { useTheme } from '@/lib/themeContext';
+import { useWatchlist } from '@/lib/useWatchlist';
 import { NotificationCenter } from './NotificationCenter';
+
+
 
 interface HeaderProps {
   onOpenSearch: () => void;
@@ -24,6 +27,8 @@ export function Header({
   activeTicker,
 }: HeaderProps) {
   const { theme, toggleTheme } = useTheme();
+  const { isWatchlisted, toggleWatchlist } = useWatchlist();
+  const isPinned = isWatchlisted(activeTicker);
 
   return (
     <header className="sticky top-0 z-30 w-full bg-neutral-950/90 backdrop-blur-md border-b border-neutral-850 px-3 sm:px-4 py-2 sm:py-2.5 transition-colors">
@@ -59,6 +64,20 @@ export function Header({
               ⌘K
             </kbd>
           </button>
+
+          {/* Quick Active Ticker Watchlist Pin Toggle */}
+          <button
+            onClick={() => toggleWatchlist(activeTicker)}
+            className={`p-1.5 rounded-lg border transition-all ${
+              isPinned
+                ? 'bg-amber-500/15 border-amber-500/30 text-amber-400 hover:text-amber-300'
+                : 'bg-neutral-900 border-neutral-800 text-neutral-400 hover:text-white'
+            }`}
+            title={isPinned ? `Remove ${activeTicker.replace('.NS', '')} from Watchlist` : `Pin ${activeTicker.replace('.NS', '')} to Watchlist`}
+          >
+            <Star className={`w-3.5 h-3.5 ${isPinned ? 'fill-amber-400' : ''}`} />
+          </button>
+
 
           {/* Direct Sun / Moon Toggle (Desktop) */}
           <button

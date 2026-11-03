@@ -23,6 +23,7 @@ export function AlertSettingsModal({
 
   const availableCategories: Array<{ id: AnnouncementCategory; label: string }> = [
     { id: 'results', label: 'Quarterly Results' },
+    { id: 'unusual_activity', label: 'Market Anomalies' },
     { id: 'management_change', label: 'Management Changes' },
     { id: 'M&A', label: 'M&A & Restructuring' },
     { id: 'litigation', label: 'Litigation & Regulatory' },

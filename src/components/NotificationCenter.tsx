@@ -131,39 +131,80 @@ export function NotificationCenter({
     setMounted(true);
   }, []);
 
-  // Load live alerts from /api/announcements
+  // Load 100% dynamic live alerts from /api/announcements AND /api/regulatory-rss
   useEffect(() => {
     async function loadLiveAlerts() {
       try {
-        const res = await fetch('/api/announcements?windowHours=24&onlyMaterial=true');
-        const json = await res.json();
-        if (json.success && json.data && json.data.length > 0) {
-          const liveAlerts: AlertNotification[] = json.data.slice(0, 8).map((a: any) => ({
-            id: a.id,
-            ticker: a.ticker,
-            symbol: a.ticker.replace(/\.(NS|BO)$/, ''),
-            companyName: a.companyName,
-            title: a.headline,
-            detail: a.oneLineTakeaway,
-            timestamp: a.publishedAt,
-            category: a.anomaly ? 'anomaly' : a.category === 'results' ? 'results' : a.category === 'management_change' ? 'mgmt_change' : a.category === 'capex' ? 'capex' : 'regulatory',
-            tier: a.tier === 'tier1_urgent' ? 'urgent' : 'material',
-            isRead: false,
-            metric: a.anomaly ? `${a.anomaly.volumeSpikeRatio}x Vol` : a.results ? `${a.results.revenueYoY >= 0 ? '+' : ''}${a.results.revenueYoY}% YoY` : undefined,
-          }));
+        const [annRes, rssRes] = await Promise.all([
+          fetch('/api/announcements?windowHours=24&onlyMaterial=true'),
+          fetch('/api/regulatory-rss?limit=4'),
+        ]);
 
-          setNotifications((prev) => {
-            const existingIds = new Set(liveAlerts.map((l) => l.id));
-            const remaining = prev.filter((p) => !existingIds.has(p.id));
-            return [...liveAlerts, ...remaining];
+        const [annJson, rssJson] = await Promise.all([annRes.json(), rssRes.json()]);
+
+        const dynamicAlerts: AlertNotification[] = [];
+
+        if (annJson.success && Array.isArray(annJson.data)) {
+          annJson.data.slice(0, 7).forEach((a: any) => {
+            const sym = a.ticker.replace(/\.(NS|BO)$/, '');
+            dynamicAlerts.push({
+              id: a.id,
+              ticker: a.ticker,
+              symbol: sym,
+              companyName: a.companyName || `${sym} Ltd`,
+              title: a.headline,
+              detail: a.oneLineTakeaway,
+              timestamp: a.publishedAt,
+              category: a.anomaly || a.category === 'unusual_activity'
+                ? 'anomaly'
+                : a.category === 'results'
+                ? 'results'
+                : a.category === 'management_change'
+                ? 'mgmt_change'
+                : a.category === 'capex'
+                ? 'capex'
+                : 'regulatory',
+              tier: a.tier === 'tier1_urgent' ? 'urgent' : 'material',
+              isRead: false,
+              metric: a.anomaly
+                ? `${a.anomaly.volumeSpikeRatio}x Vol`
+                : a.results
+                ? `${a.results.revenueYoY >= 0 ? '+' : ''}${a.results.revenueYoY}% YoY`
+                : a.capexDetails
+                ? `₹${a.capexDetails.investmentAmountCr} Cr`
+                : undefined,
+            });
           });
         }
+
+        if (rssJson.success && Array.isArray(rssJson.data)) {
+          rssJson.data.slice(0, 3).forEach((r: any) => {
+            dynamicAlerts.push({
+              id: r.id,
+              ticker: 'TRENT.NS',
+              symbol: 'SEBI',
+              companyName: 'Securities and Exchange Board of India',
+              title: r.title,
+              detail: r.description,
+              timestamp: r.pubDate,
+              category: 'regulatory',
+              tier: r.severity === 'high' ? 'urgent' : 'material',
+              isRead: false,
+              metric: r.category,
+            });
+          });
+        }
+
+        if (dynamicAlerts.length > 0) {
+          setNotifications(dynamicAlerts);
+        }
       } catch (err) {
-        console.warn('Failed to load live alerts in NotificationCenter:', err);
+        console.warn('Failed to load dynamic alerts in NotificationCenter:', err);
       }
     }
     loadLiveAlerts();
   }, []);
+
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 

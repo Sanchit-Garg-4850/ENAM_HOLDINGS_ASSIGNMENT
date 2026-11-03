@@ -139,6 +139,14 @@ export const CATEGORY_REGISTRY: Record<AnnouncementCategory, CategoryInfo> = {
     priorityTier: 'tier3_routine',
     description: 'Annual or Extraordinary General Meeting notice and proceedings.',
   },
+  unusual_activity: {
+    category: 'unusual_activity',
+    label: 'Market Anomaly',
+    badgeBg: 'bg-amber-500/10 border-amber-500/30',
+    badgeText: 'text-amber-400',
+    priorityTier: 'tier1_urgent',
+    description: 'Trading volume spike (>2x 10-DMA) or sharp price volatility (>2.5%).',
+  },
   unclassified: {
     category: 'unclassified',
     label: 'Routine Secretarial',
@@ -158,6 +166,16 @@ export function classifyFilingHeadline(headline: string): {
   tier: MaterialityTier;
 } {
   const h = headline.toLowerCase();
+
+  // 0. Market Anomaly / Unusual Volume Spike (Tier 1 Urgent)
+  if (
+    h.includes('unusual activity') ||
+    h.includes('volume spike') ||
+    h.includes('volume surge') ||
+    h.includes('market anomaly')
+  ) {
+    return { category: 'unusual_activity', tier: 'tier1_urgent' };
+  }
 
   // 1. Routine Secretarial Paperwork (Collapse by default)
   if (

@@ -7,7 +7,7 @@
 **Candidate Evaluation Briefs:**  
 1. `docs/1. ENAM_AI_Engineer_Build_Challenge_Main.pdf`  
 2. `docs/2. ENAM_AI_Engineer_Build_Challenge_Reference.pdf`  
-**Status:** 100% Implemented & Verified with Live APIs (14/14 Automated Tests Passing)
+**Status:** 100% Implemented & Verified with Live APIs (15/15 Automated Tests Passing)
 
 ---
 
@@ -170,4 +170,25 @@ Audited against `docs/2. ENAM_AI_Engineer_Build_Challenge_Reference.pdf`:
 8. **Interactive User Onboarding Walkthrough (`OnboardingTutorial.tsx`):**
    - 5-stage interactive modal tutorial educating new users on the ENAM mandate, push filtering, 8-module diligence, narrative vs numbers audit, and 3D constellation / copilot.
    - Auto-launches for first-time visitors (persisted in `localStorage`), with step-by-step auto-navigation between tabs and confetti celebration.
+
+9. **Anti-Generic Split-Dossier Workspace & Native Bottom Sheet (`QuickPeekModal.tsx`):**
+   - Mobile-first sliding bottom sheet drawer (`max-h-[88vh]`) with grab handle indicator, avoiding the generic single-column AI app look.
+   - Preserves user scroll position in the feed while inspecting 4-box financials, executive backgrounds, and official exchange PDFs.
+   - 1-tap direct links to `[Guidance Audit]` and `[Deep Dive Diligence]`.
+
+10. **High-Conviction Watchlist (`useWatchlist.ts`):**
+    - `localStorage` key `finn_watchlist` with cross-component event broadcast (`finn_watchlist_updated`).
+    - 1-tap Star `★` pin toggle on Header, Announcement Cards, Holdings Matrix, and 3D Constellation tooltips.
+    - Dedicated `[★ Watchlist Only]` filters in both Push Feed and Holdings Matrix.
+
+11. **Institutional Holdings Matrix / Companion Data Table (`PortfolioConstellation3D.tsx`):**
+    - High-density tabular layout directly beneath the 3D Constellation sphere for rapid morning scanning.
+    - Real-time search filter, sector filter chips, sort options (`Market Cap`, `% Change`, `Volume Anomaly`, `Reliability Score`), live prices, volume multiplier anomaly flags (`🔥 3.4x Vol`), focus nuances, and reliability scores.
+    - Hover-synced with the 3D sphere above.
+
+12. **Live Official SEBI Regulatory RSS Ingestion (`rss.ts` & `/api/regulatory-rss`):**
+    - Real-time statutory surveillance ingestion from `https://www.sebi.gov.in/sebirss.xml`.
+    - 100% zero-cost public RSS streaming without mock data or third-party paid keys.
+    - Cleaned official PDF links and automatic categorization (`Adjudication Order`, `Recovery Proceedings`, `Forensic Action`, `Circular`).
+
 

@@ -187,8 +187,37 @@ The build followed an iterative, test-driven approach using Antigravity's agenti
 • /api/search finds companies by symbol and keyword... ✅ PASSED
 • /api/search suggests correct ticker on typos (HALLL -> HAL)... ✅ PASSED
 • /api/research rejects typos with 404 and provides didYouMean instead of static page... ✅ PASSED
+• /api/regulatory-rss returns official SEBI regulatory orders... ✅ PASSED
 
 ====================================================
-📊 TEST RESULTS: 14 PASSED, 0 FAILED
+📊 TEST RESULTS: 15 PASSED, 0 FAILED
 ====================================================
 ```
+
+---
+
+## 9. Phase 9: Anti-Generic Design Evolution, Institutional Holdings Matrix, Watchlist Persistence & Live SEBI Regulatory RSS
+
+### 9.1 Breaking Out of Generic "AI App" Templates (Paradigm A: Split-Dossier & Native Drawer)
+- **Problem**: Most AI app submissions look identical: a generic single-column vertical card stack with purple glow, requiring full-page navigation that destroys analyst context.
+- **Solution**:
+  - **Fluid Sliding Bottom Sheet on Mobile**: Clicking `Peek` on any card or pressing `Space` slides up a native mobile bottom sheet with a grab handle indicator (`max-h-[88vh]`), full 4-box financials, executive backgrounds, and official PDF links. Analysts can inspect filings without losing their scroll position in the feed.
+  - **1-Tap Quick Actions**: Added 1-tap `[Guidance Audit]` and `[Deep Dive Diligence]` direct routing buttons.
+
+### 9.2 Institutional Holdings Matrix (Data-Dense 3D Companion)
+- **Problem**: 3D orbital constellation views are visually striking but less efficient for tabular scanning during high-velocity morning reviews.
+- **Solution**:
+  - Engineered the **Institutional Holdings Matrix / Data Table** directly below the 3D Constellation canvas.
+  - Features real-time search filtering, sector filter chips (`All`, `Retail`, `Tech`, `Financials`, `Manufacturing`, `Infra`, `Healthcare`), sort dropdowns (`Market Cap`, `% Change`, `Volume Anomaly`, `Reliability Score`), live CMP, day % change, volume multiplier badges (`🔥 3.4x Vol`), focus nuance commentary, and management reliability scores (`94% High Conviction`).
+  - Seamlessly interconnected with the 3D canvas above (interactive hover and selection).
+
+### 9.3 High-Conviction Watchlist (`localStorage` Persistence)
+- Created `src/lib/useWatchlist.ts` with cross-component synchronization (`'finn_watchlist_updated'` event & `localStorage`).
+- Added 1-tap Star `★` pin buttons across Header, Announcement Cards, Holdings Matrix, and 3D Hover Cards.
+- Added dedicated `[★ Watchlist Only]` filters to both the Push Feed and the Holdings Matrix.
+
+### 9.4 Real-Time SEBI Regulatory Radar (Zero-Cost Public RSS)
+- **Architecture**: Ingests `https://www.sebi.gov.in/sebirss.xml` via `src/lib/rss.ts` and `/api/regulatory-rss`.
+- **Zero Mock Data**: Fetches and parses real statutory adjudication orders, market surveillance decrees, forensic inquiries, and recovery proceedings directly from the Securities and Exchange Board of India.
+- Normalized official SEBI links and attached category tags (`Adjudication Order`, `Recovery Proceedings`, `Forensic Action`, `Circular`).
+
